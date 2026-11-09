@@ -1,0 +1,7 @@
+// Merges the server's ATT&CK matrix and actor library into the board's built-in lists before the page renders.
+import { api } from './api.js';
+export async function mergeLibraries(Component) {
+  const K = Component.K; if (!K) return;
+  try { const a = await api('GET', '/api/attack'); if (a && Array.isArray(a.techniques) && a.techniques.length) { const have = new Set(K.ATTACK.map(x => x[0])); let n = 0; for (const t of a.techniques) if (!have.has(t[0])) { K.ATTACK.push([t[0], t[1], t[2]]); have.add(t[0]); n++; } for (const t of a.techniques) if (t[2] && !K.TACTICS.includes(t[2])) K.TACTICS.push(t[2]); window.CIBAttack = { count: K.ATTACK.length, added: n, version: a.version, fetchedAt: a.fetchedAt }; } else window.CIBAttack = { count: K.ATTACK.length, added: 0, version: '', fetchedAt: null }; } catch (e) { window.CIBAttack = { count: K.ATTACK.length, added: 0, error: e.message }; }
+  try { const r = await api('GET', '/api/actors'); const have = new Set(K.ACTORS.map(x => x.name.toLowerCase())); for (const a of r.actors || []) { if (have.has(a.name.toLowerCase())) { const ex = K.ACTORS.find(x => x.name.toLowerCase() === a.name.toLowerCase()); ex.aliases = [...new Set([...(ex.aliases || []), ...a.aliases])]; ex.techniques = [...new Set([...(ex.techniques || []), ...a.techniques])]; if (a.summary) ex.summary = a.summary; } else K.ACTORS.push({ name: a.name, aliases: a.aliases, origin: a.origin, motive: a.motive, summary: a.summary, techniques: a.techniques, serverId: a.id }); } window.CIBActors = { count: K.ACTORS.length }; } catch (e) {}
+}

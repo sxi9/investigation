@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "X01 setup and open the board",
+      "detail": "ATT&CK techniques known at start: 42"
+    },
+    {
+      "ok": true,
+      "name": "X02 enrichment on pin: a quick-added IP gets RDAP/ASN written onto the card; a Cloudflare IP is flagged shared",
+      "detail": "ASN AS61272 UAB Bacloud · Cloudflare tagged shared-infra"
+    },
+    {
+      "ok": true,
+      "name": "X03 watcher: watch the C2 IP, run it now, see it in the list",
+      "detail": "ip 88.119.167.239 every 24h (dns, cert, blocklist)"
+    },
+    {
+      "ok": true,
+      "name": "X04 duplicate finder merges two cards for the same indicator",
+      "detail": "merged to one card"
+    },
+    {
+      "ok": true,
+      "name": "X05 actor library: add an actor on the server; it is available to the board's Drop in after reload",
+      "detail": "1 actor(s) on the server"
+    },
+    {
+      "ok": true,
+      "name": "X06 full ATT&CK matrix download from MITRE (needs internet; skipped gracefully if blocked)",
+      "detail": "706 techniques (ATT&CK ); T1569.002 → Service Execution"
+    },
+    {
+      "ok": true,
+      "name": "X07 drop in a server-defined actor from the Actor library",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "x01-enrich-on-pin.png",
+      "title": "X01 · Enrichment on pin",
+      "caption": "Enrichment on pin: the moment an indicator lands on the board the server looks it up once (RDAP owner, ASN, country; for domains DNS, registrar and age, certificate log; for CVEs CVSS and KEV; for wallets balance; VirusTotal and MalwareBazaar when keyed). The result is written into the card body and tags. A CDN or cloud address is tagged shared-infra with a warning, so it is not blocklisted on its own.",
+      "marks": [
+        "Shared-infrastructure warning written on the card",
+        "Enrichment block: RDAP, ASN, country, dates"
+      ]
+    },
+    {
+      "file": "x02-watchers.png",
+      "title": "X02 · Watchers",
+      "caption": "Watchers: pick an indicator, choose the interval and the checks (DNS, certificate log, blocklist, wallet, NVD), optionally a webhook, and \"Watch it\". The server re-checks on schedule; when something changes an event card lands in the case inbox, you are notified, and the webhook is called. \"Run now\" checks immediately.",
+      "marks": [
+        "Watch the selected indicator",
+        "Run now"
+      ]
+    },
+    {
+      "file": "x03-duplicates.png",
+      "title": "X03 · Duplicates",
+      "caption": "Duplicate finder: cards with the same indicator value, technique id or title are grouped; \"Merge into one\" keeps the pinned card, re-points threads and unions tags, tasks and comments.",
+      "marks": [
+        "Merge the group into one card"
+      ]
+    },
+    {
+      "file": "x04-actors.png",
+      "title": "X04 · Actors and ATT&CK",
+      "caption": "Actor library and ATT&CK: add or update actors (name, aliases, origin, motive, techniques, summary) or import a STIX bundle / MISP galaxy; they merge into the board's Actor library. Admins can download the full MITRE Enterprise matrix so every technique id resolves to a name and tactic.",
+      "marks": [
+        "Add or update an actor",
+        "Download the full ATT&CK matrix (admin)"
+      ]
+    },
+    {
+      "file": "x05-actor-library.png",
+      "title": "X05 · Actor library with server actors",
+      "caption": "The board's Actor library now lists the server-defined SafePay entry next to the built-in groups; Drop in pins the actor with its techniques threaded.",
+      "marks": []
+    }
+  ]
+}

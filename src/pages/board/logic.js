@@ -1,5 +1,5 @@
 // Logic for the board page, carried over from design/Investigation Board.dc.html with the runtime base
-// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; desk route; desk route (bookmarklet string); server mode: an empty visible set does not re-seed the sample cases; server mode: start a blank case instead of the sample when the user has none; board applies other people's changes arriving from the server; CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win; jget routes CORS-blocked hosts through the proxy; media blobs are mirrored to the server file store; media blobs missing locally are fetched from the server.
+// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; desk route; desk route (bookmarklet string); server mode: an empty visible set does not re-seed the sample cases; server mode: start a blank case instead of the sample when the user has none; board applies other people's changes arriving from the server; enrichment on pin: indicators added to the board are looked up once; enrichment when an inbox indicator is pinned; CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win; jget routes CORS-blocked hosts through the proxy; media blobs are mirrored to the server file store; media blobs missing locally are fetched from the server.
 /* eslint-disable */
 import React from 'react';
 import { DCLogic } from '../../dc.js';
@@ -337,6 +337,7 @@ class Component extends DCLogic {
     this.upCase(c => ({ ...c, items: [...c.items, it] }));
     this.setState({ sel: id, selThread: null, selGroup: null, tab: 'inspector', showRight: true });
     this.logEvt((pinned ? 'Pinned ' : 'Added to inbox: ') + K.TYPES[type].label.toLowerCase() + (this.itemLabel(it) ? ' — ' + this.itemLabel(it) : ''));
+    if (pinned && type === 'indicator' && it.value && window.CIBEnrich) window.CIBEnrich.schedule(id);
     return id;
   }
   addThread(from, to, rel, why) {
@@ -371,6 +372,7 @@ class Component extends DCLogic {
     this.upItem(id, { pinned: true, ...pos });
     this.setState({ sel: id, selThread: null, selGroup: null, tab: 'inspector' });
     this.logEvt('Pinned to board: ' + this.itemLabel(it));
+    if (it.type === 'indicator' && it.value && window.CIBEnrich) window.CIBEnrich.schedule(id);
   }
 
   // ---------- log, clusters, snapshots

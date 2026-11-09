@@ -77,4 +77,14 @@ if (fs.existsSync(v3Json)) {
   v += `## Checks\n\n**${ok} of ${run.checks.length} passed** in the run that produced these screenshots.\n\n| Result | Check | Detail |\n| --- | --- | --- |\n` + run.checks.map(x => `| ${x.ok ? 'PASS' : 'FAIL'} | ${x.name} | ${(x.detail || '').replace(/\|/g, '\\|')} |`).join('\n') + '\n';
   fs.writeFileSync(path.join(docs, 'V3.md'), v);
 }
-console.log('wrote docs/FEATURES.md, docs/TUTORIAL.md' + (fs.existsSync(caseJson) ? ', docs/CASE-SAFEPAY.md' : '') + (fs.existsSync(v2Json) ? ', docs/V2.md' : '') + (fs.existsSync(v3Json) ? ', docs/V3.md' : ''));
+// ---- V4.md
+const v4Json = path.join(docs, 'v4', 'v4-run.json');
+if (fs.existsSync(v4Json)) {
+  const run = JSON.parse(fs.readFileSync(v4Json, 'utf8'));
+  let v = fs.readFileSync(path.join(root, 'tools', 'v4-intro.md'), 'utf8') + '\n';
+  for (const s of run.shots) v += section(s, 'v4');
+  const ok = run.checks.filter(x => x.ok).length;
+  v += `## Checks\n\n**${ok} of ${run.checks.length} passed** in the run that produced these screenshots.\n\n| Result | Check | Detail |\n| --- | --- | --- |\n` + run.checks.map(x => `| ${x.ok ? 'PASS' : 'FAIL'} | ${x.name} | ${(x.detail || '').replace(/\|/g, '\\|')} |`).join('\n') + '\n';
+  fs.writeFileSync(path.join(docs, 'V4.md'), v);
+}
+console.log('wrote docs');
