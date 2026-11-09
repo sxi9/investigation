@@ -16,6 +16,10 @@ import { complete, listProviders, setDisabled, chainLabel } from './ai/index.js'
 import { research, availableSources, gather, buildPrompt, parseAnswer } from './research.js';
 import { subscribe, broadcast, keepAlive, setClientCase } from './events.js';
 import { setPresence, clearPresence, listPresence, notifications, startSchedulers } from './collab.js';
+import { enrichIndicator, enrichKinds } from './enrich.js';
+import { loadAttack, refreshAttack } from './attack.js';
+import { actors } from './actors.js';
+import { watchers, runWatcher, startWatcherScheduler, WATCH_INTERVALS, WATCH_CHECKS } from './watchers.js';
 
 const COOKIE = 'cib_session';
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
@@ -196,6 +200,29 @@ export function buildApp(opts = {}) {
     return { ...out, engine: 'pasted' };
   });
 
+  // ---- enrichment on pin
+  app.post('/api/enrich', { config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req) => {
+    needAccount(req); const b = req.body || {}; if (!enrichKinds.includes(b.kind)) throw err('kind must be one of ' + enrichKinds.join(', '));
+    if (!b.value || String(b.value).length > 300) throw err('value required');
+    return await enrichIndicator(b.kind, String(b.value), { fresh: !!b.fresh });
+  });
+
+  // ---- watchers
+  app.get('/api/watchers', async (req) => { const u = need(req); const id = req.query.caseId; if (!id || !store.getCase(u, id)) throw err('Not found', 404); return { watchers: watchers.list(id), intervals: WATCH_INTERVALS, checks: WATCH_CHECKS }; });
+  app.post('/api/watchers', async (req) => { const u = needAccount(req); const b = req.body || {}; const c = store.getCase(u, b.caseId); if (!c) throw err('Not found', 404); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); return { watcher: watchers.create(b, u) }; });
+  app.delete('/api/watchers/:id', async (req) => { const u = needAccount(req); const w = watchers.get(req.params.id); if (!w || !store.getCase(u, w.caseId)) throw err('Not found', 404); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); watchers.remove(w.id, u); return { ok: true }; });
+  app.post('/api/watchers/:id/run', { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (req) => { const u = needAccount(req); const w = watchers.get(req.params.id); if (!w || !store.getCase(u, w.caseId)) throw err('Not found', 404); const r = await runWatcher(w.id); return { ...r, watcher: watchers.get(w.id) }; });
+  app.patch('/api/watchers/:id', async (req) => { const u = needAccount(req); const w = watchers.get(req.params.id); if (!w || !store.getCase(u, w.caseId)) throw err('Not found', 404); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); return { watcher: watchers.toggle(w.id, !!(req.body || {}).enabled) }; });
+
+  // ---- ATT&CK matrix and actor library
+  app.get('/api/attack', async (req) => { need(req); const a = loadAttack(); return a ? { fetchedAt: a.fetchedAt, version: a.version, count: a.techniques.length, techniques: a.techniques } : { fetchedAt: null, version: '', count: 0, techniques: [], note: 'not downloaded yet: POST /api/attack/refresh as admin' }; });
+  app.post('/api/attack/refresh', { config: { rateLimit: { max: 3, timeWindow: '10 minutes' } } }, async (req) => { const me = needAdmin(req); const a = await refreshAttack(); audit(me.name, 'ATT&CK matrix refreshed: ' + a.techniques.length + ' techniques (' + a.version + ')', ip(req)); return { fetchedAt: a.fetchedAt, version: a.version, count: a.techniques.length }; });
+  app.get('/api/actors', async (req) => { need(req); return { actors: actors.list() }; });
+  app.post('/api/actors', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const r = actors.upsert(req.body || {}, u.name); audit(u.name, 'actor ' + (r.updated ? 'updated' : 'added') + ': ' + r.actor.name, ip(req)); return r; });
+  app.patch('/api/actors/:id', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); return { actor: actors.update(req.params.id, req.body || {}, u.name) }; });
+  app.delete('/api/actors/:id', async (req) => { const u = needAdmin(req); actors.remove(req.params.id, u.name); return { ok: true }; });
+  app.post('/api/actors/import', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const b = req.body; const json = Buffer.isBuffer(b) ? JSON.parse(b.toString('utf8')) : (typeof b === 'string' ? JSON.parse(b) : b); return actors.importBundle(json, u.name); });
+
   // ---- live events
   app.get('/api/events', async (req, reply) => {
     const u = need(req);
@@ -205,7 +232,7 @@ export function buildApp(opts = {}) {
     await new Promise(res => reply.raw.on('close', res));
     return reply;
   });
-  keepAlive(); startSchedulers();
+  keepAlive(); startSchedulers(); startWatcherScheduler();
 
   // ---- static site (the built pages) when dist exists
   if (fs.existsSync(path.join(config.distDir, 'index.html'))) {

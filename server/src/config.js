@@ -23,6 +23,7 @@ export const config = {
   anthropicKey: env.ANTHROPIC_API_KEY || '',
   anthropicModel: env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
   trustProxy: env.CIB_TRUST_PROXY === '1',
+  webhookUrl: env.CIB_WEBHOOK_URL || '', // default webhook for watcher changes (per-watcher URLs override)
   // Provider API keys the proxy attaches server-side (the browser never sees them). Hosts are added to the
   // allow-list only when their key is configured.
   providerKeys: {
@@ -40,7 +41,7 @@ export const config = {
     'crt.sh', 'urlscan.io', 'threatfox-api.abuse.ch', 'urlhaus-api.abuse.ch', 'mb-api.abuse.ch', 'bazaar.abuse.ch',
     'archive.org', 'web.archive.org', 'otx.alienvault.com', 'api.greynoise.io', 'www.reddit.com', 'public.api.bsky.app',
     'nominatim.openstreetmap.org', 'ipapi.co', 'ipinfo.io', 'blockchain.info', 'api.blockcypher.com', 'rdap.org',
-    'dns.google', 'services.nvd.nist.gov', 'www.cisa.gov', 'api.ransomware.live', 'www.ransomware.live', 'feeds.feedburner.com',
+    'dns.google', 'services.nvd.nist.gov', 'www.cisa.gov', 'api.ransomware.live', 'www.ransomware.live', 'feeds.feedburner.com', 'raw.githubusercontent.com', 'en.wikipedia.org', 'api.gdeltproject.org', 'hn.algolia.com',
   ].join(',')).split(',').map(s => s.trim()).filter(Boolean),
 };
 for (const [h, k] of Object.entries(config.providerKeys)) if (k && !config.proxyAllow.includes(h)) config.proxyAllow.push(h);

@@ -1,0 +1,135 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "W01 setup admin, create analyst and reviewer",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "W02 the gateway reports its provider chain",
+      "detail": "local"
+    },
+    {
+      "ok": true,
+      "name": "W03 research panel: automatic research on the Binance case",
+      "detail": "3 sources · 14 cards · 8 threads · engine local"
+    },
+    {
+      "ok": true,
+      "name": "W04 import the proposed cards into the inbox",
+      "detail": "items 29 -> 33"
+    },
+    {
+      "ok": true,
+      "name": "W05 manual route: build the prompt, paste a Claude answer, import",
+      "detail": "prompt 4397 chars"
+    },
+    {
+      "ok": true,
+      "name": "W06 presence: two analysts on the same case see each other; editing a card shows a soft lock",
+      "detail": "● Ana Lyst ✎ E01"
+    },
+    {
+      "ok": true,
+      "name": "W07 concurrent edits on the same case are merged, not overwritten",
+      "detail": "rev 3, 2 revisions kept"
+    },
+    {
+      "ok": true,
+      "name": "W08 @mention in a comment notifies the named analyst",
+      "detail": "1 unread for Ana"
+    },
+    {
+      "ok": true,
+      "name": "W09 history tab lists revisions and restores one",
+      "detail": "restored rev 1 → now rev 5 (Operation Lantern)"
+    },
+    {
+      "ok": true,
+      "name": "W10 TLP:RED: the requester cannot publish; a second account can",
+      "detail": "rejected: TLP:RED files need a second account to publish (you sent it for review)"
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "w01-research-start.png",
+      "title": "W01 · AI research: start",
+      "caption": "The ◆ AI research panel on the board. Type what to research (the case title is pre-filled), choose sources, optionally paste URLs, and keep \"use case notes as context\" on so the model knows what the case already says. Sources without a server key are greyed out.",
+      "marks": [
+        "Query",
+        "Research and propose cards",
+        "Manual route: prompt for Claude, paste the answer"
+      ]
+    },
+    {
+      "file": "w02-research-results.png",
+      "title": "W02 · AI research: proposed cards",
+      "caption": "Results: a summary, the sources that were gathered and read, and proposed cards grouped by type with a confidence per card and the source it came from. Low-confidence cards start unticked. Every card keeps its source, URL, collection date and Admiralty grade.",
+      "marks": [
+        "Counts and the engine that extracted (rule engine here; a model when a key is set)",
+        "Tick what to import",
+        "Add selected to inbox",
+        "Pin selected to board"
+      ]
+    },
+    {
+      "file": "w03-research-imported.png",
+      "title": "W03 · AI research: imported",
+      "caption": "After import: the cards wait in the evidence inbox with their source and grade, plus a \"Research:\" document holding the summary and the source list. Pin what holds up; delete what does not. The case log records the import.",
+      "marks": [
+        "Imported research cards in the inbox"
+      ]
+    },
+    {
+      "file": "w04-research-manual.png",
+      "title": "W04 · AI research: prompt for Claude, paste the answer",
+      "caption": "The manual route when the server has no model key or you prefer Claude in the app: step 1 gathers sources and copies a complete prompt (instructions, case context, what is already on the board, the sources, the exact JSON shape); step 2 you run it in Claude; step 3 paste the JSON answer and it is validated into the same review table.",
+      "marks": [
+        "1 · Build and copy the prompt",
+        "The prompt (also on the clipboard)",
+        "2 · Paste Claude's JSON answer",
+        "3 · Check the answer"
+      ]
+    },
+    {
+      "file": "w05-presence.png",
+      "title": "W05 · Presence and soft locks",
+      "caption": "Presence: the strip at the top shows who else is on this case and which exhibit they are looking at; a pencil means they are typing in it. Selecting the same card shows a soft-lock notice. Edits are not blocked: concurrent saves are merged field by field on the server.",
+      "marks": [
+        "Who is here, and what they are on",
+        "Soft lock: someone is editing this card"
+      ]
+    },
+    {
+      "file": "w06-notifications.png",
+      "title": "W06 · Notifications",
+      "caption": "Activity drawer (◆ bottom right): mentions (@name in a comment), review requests, overdue tasks and watcher alerts, pushed live from the server. Click one to jump to the case and card. The History tab lists server revisions; Review sends the file to a reviewer.",
+      "marks": [
+        "Activity button with the unread count",
+        "Notifications · History · Review"
+      ]
+    },
+    {
+      "file": "w07-history.png",
+      "title": "W07 · Revision history",
+      "caption": "History: every save by anyone is a server revision (who, when, size). Restore puts the board back to that revision and keeps the current state in the history, so nothing is lost.",
+      "marks": [
+        "Restore this revision"
+      ]
+    },
+    {
+      "file": "w08-request-review.png",
+      "title": "W08 · Request review",
+      "caption": "Review tab: pick a reviewer and send the file for review. The reviewer is notified. For TLP:RED and AMBER+STRICT files the server refuses to let the same account that requested review also publish it.",
+      "marks": [
+        "Choose the reviewer",
+        "Send for review"
+      ]
+    }
+  ]
+}

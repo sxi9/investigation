@@ -15,7 +15,7 @@ const PW = 'Correct-Horse-Battery-9';
   const api = (page, method, url, body) => page.evaluate(async ({ method, url, body }) => { const headers = { 'X-Requested-With': 'CIB' }; if (body !== undefined) headers['content-type'] = 'application/json'; const r = await fetch(url, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined }); return { status: r.status, body: await r.json().catch(() => null) }; }, { method, url, body });
   const st = (page) => page.evaluate(() => { const L = window.CIBPage; return L ? { activeId: L.state.activeId, sel: L.state.sel, cases: L.state.cases.map(c => ({ id: c.id, number: c.number, title: c.title, items: c.items.length, review: c.review, tlp: c.tlp })) } : null; });
   const login = async (page, name, pass) => { await page.goto(BASE + '/', { waitUntil: 'networkidle' }); await page.waitForTimeout(300); await page.locator('input[autocomplete=username]').fill(name); await page.locator('input[type=password]').first().fill(pass); await btn(page, 'Sign in').click(); await page.waitForURL(/desk\.html/, { timeout: 10000 }); await page.waitForTimeout(600); };
-  const openBoard = async (page, caseId) => { await page.goto(BASE + '/board.html' + (caseId ? '#case=' + caseId : ''), { waitUntil: 'networkidle' }); await page.waitForTimeout(1800); };
+  const openBoard = async (page, caseId) => { await page.goto('about:blank'); await page.goto(BASE + '/board.html' + (caseId ? '#case=' + caseId : ''), { waitUntil: 'networkidle' }); await page.waitForTimeout(1800); };
   const selectCard = async (page, idx) => { const loc = page.locator('[data-card][data-kind="card"]').nth(idx); const bb = await loc.boundingBox(); await loc.dispatchEvent('pointerdown', { button: 0, buttons: 1, clientX: bb.x + 5, clientY: bb.y + 20, pointerId: 1, isPrimary: true, bubbles: true }); await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointerup', { button: 0, pointerId: 1, bubbles: true }))); await page.waitForTimeout(200); };
 
   // ---- setup: admin + analyst + reviewer with TLP:RED
@@ -70,7 +70,7 @@ const PW = 'Correct-Horse-Battery-9';
     await login(b, 'Ana Lyst', PW); await openBoard(b, 'c1'); await openBoard(a, 'c1');
     await selectCard(b, 0); await b.locator('aside input').first().focus(); await b.waitForTimeout(2500);
     await selectCard(a, 0); await a.waitForTimeout(2500);
-    const strip = await a.locator('[data-presence]').innerText(); if (!/Ana Lyst/.test(strip)) throw new Error('no presence: ' + strip);
+    let strip = await a.locator('[data-presence]').innerText(); if (!/Ana Lyst/.test(strip)) { await a.waitForTimeout(9000); strip = await a.locator('[data-presence]').innerText(); } if (!/Ana Lyst/.test(strip)) { const p = await api(a, 'GET', '/api/presence?caseId=c1'); throw new Error('no presence: ' + strip + ' | server: ' + JSON.stringify(p.body) + ' | states ' + JSON.stringify([(await st(a)).activeId, (await st(b)).activeId])); }
     if (!(await a.locator('[data-softlock]').count())) throw new Error('no soft lock shown'); return strip.replace(/\n/g, ' ');
   });
   await shot(a, 'w05-presence.png', 'Presence: the strip at the top shows who else is on this case and which exhibit they are looking at; a pencil means they are typing in it. Selecting the same card shows a soft-lock notice. Edits are not blocked: concurrent saves are merged field by field on the server.', [
@@ -113,7 +113,7 @@ const PW = 'Correct-Horse-Battery-9';
   await check('W10 TLP:RED: the requester cannot publish; a second account can', async () => {
     await api(a, 'PUT', '/api/store', { cases: [{ id: 'red1', number: 'CASE 0900', title: 'Red file', tlp: 'red', review: 'draft', items: [], threads: [], groups: [], log: [], dismissed: [] }] });
     await openBoard(a, 'red1'); await a.locator('[data-bell]').click(); await a.waitForTimeout(300); await a.getByRole('button', { name: 'review', exact: true }).click(); await a.waitForTimeout(600);
-    await a.locator('[data-reviewer]').selectOption({ label: /Rev Iewer/ }); 
+    const rv = await a.locator('[data-reviewer] option').evaluateAll(os => { const o = os.find(o => /Rev Iewer/.test(o.textContent)); return o ? o.value : ''; }); await a.locator('[data-reviewer]').selectOption(rv); 
     await shot(a, 'w08-request-review.png', 'Review tab: pick a reviewer and send the file for review. The reviewer is notified. For TLP:RED and AMBER+STRICT files the server refuses to let the same account that requested review also publish it.', [
       { locator: a.locator('[data-reviewer]'), text: 'Choose the reviewer' }, { locator: a.locator('[data-request-review]'), text: 'Send for review' },
     ], { title: 'W08 · Request review' });
