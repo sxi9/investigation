@@ -13,6 +13,7 @@ import { GUEST, canSee, isAdmin } from './acl.js';
 import { audit, verifyAuditChain } from './crypto.js';
 import { proxyFetch } from './proxy.js';
 import { complete, listProviders, setDisabled, chainLabel } from './ai/index.js';
+import { research, availableSources, gather, buildPrompt, parseAnswer } from './research.js';
 import { subscribe, broadcast, keepAlive } from './events.js';
 
 const COOKIE = 'cib_session';
@@ -154,6 +155,31 @@ export function buildApp(opts = {}) {
     return { ok: true, engine: out.engine, latencyMs: Date.now() - t0, sample: String(out.text).slice(0, 80) };
   });
   app.patch('/api/ai/providers/:id', async (req) => { const me = needAdmin(req); const b = req.body || {}; if (typeof b.disabled !== 'boolean') throw err('disabled: boolean required'); setDisabled(req.params.id, b.disabled); audit(me.name, (b.disabled ? 'disabled' : 'enabled') + ' AI provider ' + req.params.id, ip(req)); return { chain: chainLabel() }; });
+
+  // ---- AI research: gather sources, read them, propose cards
+  app.get('/api/research/sources', async (req) => { needAccount(req); return availableSources(); });
+  app.post('/api/research', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (req) => {
+    const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst' || u.role === 'reviewer')) throw err('Read-only role', 403);
+    const b = req.body || {};
+    const out = await research({ query: b.query, sources: Array.isArray(b.sources) ? b.sources.map(String) : null, urls: b.urls, existing: Array.isArray(b.existing) ? b.existing.map(String).slice(0, 500) : [], context: b.context });
+    audit(u.name, 'AI research: "' + String(b.query || '').slice(0, 80) + '" → ' + out.sources.length + ' sources, ' + out.cards.length + ' cards (' + out.engine + ')', ip(req));
+    return out;
+  });
+
+  // manual round-trip: build the prompt (with gathered sources) for an external model, then parse the pasted answer
+  app.post('/api/research/prompt', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (req) => {
+    const u = needAccount(req); if (u.role === 'viewer') throw err('Read-only role', 403);
+    const b = req.body || {}; const query = String(b.query || '').trim().slice(0, 300);
+    const g = b.gather === false ? { sources: [], errors: [] } : await gather({ query, sources: Array.isArray(b.sources) ? b.sources.map(String) : null, urls: Array.isArray(b.urls) ? b.urls.map(String) : [] });
+    const { system, prompt } = buildPrompt({ query, sources: g.sources, existing: Array.isArray(b.existing) ? b.existing.map(String).slice(0, 500) : [], context: b.context });
+    return { system, prompt, text: system + '\n\n' + prompt, sources: g.sources.map(s => ({ provider: s.provider, title: s.title, url: s.url, date: s.date, grade: s.grade, snippet: s.snippet })), errors: g.errors };
+  });
+  app.post('/api/research/parse', async (req) => {
+    const u = needAccount(req); if (u.role === 'viewer') throw err('Read-only role', 403);
+    const b = req.body || {}; const out = parseAnswer(String(b.text || '').slice(0, 200000), Array.isArray(b.sources) ? b.sources : []);
+    audit(u.name, 'AI research (pasted answer) → ' + out.cards.length + ' cards', ip(req));
+    return { ...out, engine: 'pasted' };
+  });
 
   // ---- live events
   app.get('/api/events', async (req, reply) => {

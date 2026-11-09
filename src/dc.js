@@ -43,6 +43,7 @@ export function createHost(Logic, renderTemplate) {
       this.state = { __v: 0, __err: null };
       this.logic = new Logic(props);
       this.logic.__host = this;
+      if (typeof window !== 'undefined' && !window.CIBPage) window.CIBPage = this.logic; // the page's logic, for overlays such as the research panel
     }
     static getDerivedStateFromError(e) { return { __err: e instanceof Error && e.message ? e.message : String(e) }; }
     componentDidCatch(e, info) { console.error('[board] render error:', e, info?.componentStack || ''); }

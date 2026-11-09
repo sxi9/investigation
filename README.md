@@ -5,7 +5,7 @@ A noir-style investigation board for intelligence work: pinned evidence cards, r
 ![Investigation Board](docs/screenshots/01-overview.png)
 
 - **[Version 2 walkthrough](docs/V2.md)** — sign-in, the desk, roles, live sync between analysts, guest access, lockout, AI without a key, with screenshots.
-- **[Backend](docs/BACKEND.md)** — how to run the server, what is secured and how, the API, the built-in analyst engine, tests.
+- **[Backend](docs/BACKEND.md)** — how to run the server, what is secured and how, the API, the multi-provider AI gateway, **AI research** (query → sources → cards, with a manual Claude round-trip), the built-in analyst engine, tests.
 
 - **[Feature guide](docs/FEATURES.md)** — every function with a labelled screenshot.
 - **[Worked investigation](docs/TUTORIAL.md)** — a real October 2026 campaign (vendor-themed Okta / ServiceNow vishing against e-commerce SaaS providers) built up step by step, with instructions.

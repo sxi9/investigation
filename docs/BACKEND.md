@@ -108,6 +108,18 @@ Endpoints: `GET /api/ai/providers` lists the chain (admins also see last status,
 
 Keys never leave the server; the pages only ever call `/api/ai/complete`.
 
+## AI research: from a query to cards
+
+The board's **◆ AI research** button (bottom right; Alt+A) opens a panel that researches a case and proposes cards.
+
+1. **Gather.** The server searches Wikipedia, GDELT (world news), Hacker News and, for any CVE in the query, NVD with its CISA KEV status. With keys it also uses Tavily (`TAVILY_API_KEY`), Brave Search (`BRAVE_SEARCH_API_KEY`) or Serper / Google (`SERPER_API_KEY`). URLs you paste (advisories, vendor reports) are read too. Pages are fetched server-side with the same SSRF guard as the proxy, reduced to readable text, de-duplicated and capped.
+2. **Extract.** The sources go to the AI gateway with a strict prompt: only state what the sources say, attribute every card to a source index, never invent indicators or dates. The answer is validated (types, kinds, dates, lengths) and each card gets its source, URL, collection date and an Admiralty grade (A for NVD/CISA, B for Wikipedia, C for news). Without a model the rule engine proposes cards from the indicators, named entities, dated sources and ATT&CK ids it finds, and says so.
+3. **Review and import.** Cards are grouped by type with confidence; low-confidence ones start unticked. "Add selected to inbox" or "Pin selected to board" creates the cards through the board's own logic (so numbering, custody and the log behave as usual), re-creates the suggested threads, and optionally adds a summary document with the source list. Values already on the board are skipped.
+
+**Manual route (no key on the server, or you prefer Claude in the app):** switch the panel to *Prompt for Claude · paste answer*. Step 1 gathers the sources and copies a complete prompt (system instructions, case context, what is already on the board, the sources, and the exact JSON shape) to the clipboard. Run it in Claude, paste the JSON back, step 3 validates it the same way, and the import works exactly as above. The audit log records both routes.
+
+Endpoints: `POST /api/research` `{query, sources, urls, existing, context}`; `POST /api/research/prompt` (same input, returns `system`, `prompt`, `text`, `sources`); `POST /api/research/parse` `{text, sources}`; `GET /api/research/sources`. Viewers and guests cannot use them; research calls are rate-limited to 10 per minute. `RESEARCH_FETCH_TIMEOUT_MS` (default 15000) bounds each source.
+
 ## The built-in analyst engine
 
 Without a model key the gateway still answers the board's four prompts, from rules, and says so in its text:
