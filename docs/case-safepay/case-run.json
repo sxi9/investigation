@@ -1,0 +1,474 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "S01 import an earlier case (JSON) so cross-case search has something to find",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S01 new case from the Ransomware intrusion template",
+      "detail": "CASE 0420 · TLP:red · 9 starter cards"
+    },
+    {
+      "ok": true,
+      "name": "S02 Extract IOCs: IPs, SHA-256 hashes and CVEs from the advisory text → pin",
+      "detail": "20 pinned → 29"
+    },
+    {
+      "ok": true,
+      "name": "S02b Extract IOCs again: SHA-1 hashes → inbox (unpinned)",
+      "detail": "4 in inbox"
+    },
+    {
+      "ok": true,
+      "name": "S03 inbox: drag one card onto the board, Pin another",
+      "detail": "drag-and-drop worked; pinned 29 -> 31"
+    },
+    {
+      "ok": true,
+      "name": "S04 paste text onto the board → note card; paste a URL → link card",
+      "detail": "note + link pinned"
+    },
+    {
+      "ok": true,
+      "name": "S05 quick add techniques, events, person, target, transfer, document, location",
+      "detail": "54 pinned"
+    },
+    {
+      "ok": true,
+      "name": "S06 photo cards with uploaded images (custody hash recorded)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S06b person, locations, target, transfer and document cards",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S07 arrange the board and add three clusters",
+      "detail": "3 clusters"
+    },
+    {
+      "ok": true,
+      "name": "S08 threads with every relation type, plus a pin-drag connection",
+      "detail": "threads 0 -> 18 (pin-drag worked)"
+    },
+    {
+      "ok": true,
+      "name": "S08b thread editor: evidence, confidence, swap, cut; thread label",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S09 OSINT workbench on the C2 IP (live DNS / RDAP + launchers)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S09b OSINT on the soc.dll hash and on CVE-2024-40711 (live NVD)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S10 Inspector pivots: open VirusTotal for the C2 IP in a new tab",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S10b Copy defanged, Analyse with Claude (falls back to a toast outside the Claude app)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S11 stamp, Admiralty grade, dates, per-card TLP, tasks with due dates, comments",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S12 actor library: drop in LockBit for playbook comparison, then merge duplicate technique cards",
+      "detail": "pinned 57 -> 60 after drop-in and merges"
+    },
+    {
+      "ok": true,
+      "name": "S13 Threads tab: accept one suggestion, dismiss one, add a manual thread",
+      "detail": "suggestions: 8; threads 22 -> 24"
+    },
+    {
+      "ok": true,
+      "name": "S14 search across cases, type filters, Reveal",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S15 timeline and kill-chain layouts",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S16 ACH on the template hypotheses",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S17 Audit tab lists stale indicators, overdue tasks, unsourced cards, inbox leftovers",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S18 snapshot → change → diff → restore; playback; log",
+      "detail": "log entries 102"
+    },
+    {
+      "ok": true,
+      "name": "S19 key judgement, dissent, notes, review → published (sign-off)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S20 request generator: RFI to the hosting provider",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S21 present mode",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S22 case brief and one-pager",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S22 download: STIX",
+      "detail": "case-0420-safepay-ransomware-aa26-293a-triage.stix.json"
+    },
+    {
+      "ok": true,
+      "name": "S22 download: Export image",
+      "detail": "case-0420-safepay-ransomware-aa26-293a-triage.png"
+    },
+    {
+      "ok": true,
+      "name": "S22 download: Export case",
+      "detail": "case-0420-safepay-ransomware-aa26-293a-triage.json"
+    },
+    {
+      "ok": true,
+      "name": "S22 STIX bundle re-imports as a new case (round trip), then Delete that case",
+      "detail": "{\"report\":1,\"note\":14,\"attack-pattern\":17,\"threat-actor\":2,\"vulnerability\":6,\"indicator\":19,\"x-cryptocurrency-transaction\":1,\"location\":2,\"relationship\":24,\"grouping\":4}"
+    },
+    {
+      "ok": true,
+      "name": "S22 CSV import into the inbox",
+      "detail": "items 62 -> 66 (values already on the board are skipped by the importer)"
+    },
+    {
+      "ok": true,
+      "name": "S23 Delete + undo, zoom, Fit, Inbox / Panel toggles",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S23b encrypt at rest and unlock",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "S23c mobile list mode",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors (OSINT CORS refusals are expected)"
+    }
+  ],
+  "shots": [
+    {
+      "file": "s01-template.png",
+      "title": "S01 · Start the case",
+      "caption": "New case → Ransomware intrusion. The template sets TLP:RED, seeds three hypotheses (exposed service, bought credentials, phishing loader), eight starter cards and four tasks. The case is named after the CISA alert code; the analyst name is stamped on everything from here on.",
+      "marks": [
+        "New case",
+        "TLP:RED from the template",
+        "Case switcher: the imported Okta case is also here",
+        "Starter cards"
+      ]
+    },
+    {
+      "file": "s02-extract.png",
+      "title": "S02 · Pull the IOCs out of the advisory",
+      "caption": "Extract IOCs with the advisory's indicator tables pasted in: nine IP addresses, six SHA-256 hashes and five CVEs are recognised and typed automatically. \"Pin selected to board\" creates one indicator card each.",
+      "marks": [
+        "Extract",
+        "20 indicators found"
+      ]
+    },
+    {
+      "file": "s03-inbox.png",
+      "title": "S03 · Evidence inbox",
+      "caption": "The SHA-1 hashes wait in the evidence inbox. Drag a card onto the board or press Pin; the remaining two stay unpinned (they still count in the Audit tab under \"Still in the inbox\").",
+      "marks": [
+        "Inbox with unpinned evidence",
+        "Pin (or drag the card onto the board)",
+        "Type filters"
+      ]
+    },
+    {
+      "file": "s06-photo-custody.png",
+      "title": "S06 · Photos and custody",
+      "caption": "Photo cards: \"+ Photo\" in the inbox, Pin, then Upload image in the Inspector. The file name, its SHA-256, who added it and when are recorded under Chain of custody. Here the analyst's own attack-path diagram; the other photo is a capture of the CISA advisory page.",
+      "marks": [
+        "Upload image (also: drop a file on the board, or paste a screenshot)",
+        "Chain of custody: file name, SHA-256, added by, added at",
+        "Photo card on the board"
+      ]
+    },
+    {
+      "file": "s06b-cards-with-images.png",
+      "title": "S06 · Cards with images",
+      "caption": "Cards with pictures: the person card shows the uploaded placeholder (no photo on file), location cards carry map captures of the hosting regions found through RDAP, photo cards hold the advisory capture and the analyst diagram. Target and transfer cards print sector, region, impact, amount, from and to.",
+      "marks": [
+        "Person card with image",
+        "Location card with map",
+        "Transfer card (chain, amount, from, to)",
+        "Target card"
+      ]
+    },
+    {
+      "file": "s07-clusters.png",
+      "title": "S07 · Arrange and cluster",
+      "caption": "The board arranged: dated events and sources down the left, actor / victim / ransom / tooling next, then three clusters: Infrastructure (the nine IPs with the two location cards), Malware & exploited CVEs (hashes and CVEs), and the ATT&CK playbook. Clusters are created with \"+ Cluster\", renamed in the panel, moved by their label and resized from the corner; cards inside move with them.",
+      "marks": [
+        "+ Cluster",
+        "Cluster label: drag to move the group",
+        "Three clusters"
+      ]
+    },
+    {
+      "file": "s08-threads.png",
+      "title": "S08 · Thread the evidence",
+      "caption": "Threads: Connect (C) with a relation picked on the toolbar, or drag a card's pin onto another card. Relations used here: controls (affiliate → infrastructure), located at (IP → map), resolves to (soc.dll → its C2), alias of (two locker.dll builds), linked to, suspected. The thread editor records the evidence, confidence, direction, and can cut the thread.",
+      "marks": [
+        "Connect tool",
+        "Relation picker",
+        "Evidence for this link",
+        "Confidence",
+        "Swap direction / Cut"
+      ]
+    },
+    {
+      "file": "s09-osint-ip.png",
+      "title": "S09 · OSINT on the C2 IP",
+      "caption": "OSINT on the C2 address 88.119.167[.]239: reverse DNS and RDAP come back live (UAB Bacloud, Lithuania, AS61272); AbuseIPDB, Shodan, Censys, GreyNoise, VirusTotal and the rest open as launchers. \"Pin as card\" writes the findings into the indicator card.",
+      "marks": [
+        "Selector detected as IP",
+        "Run",
+        "Copy findings"
+      ]
+    },
+    {
+      "file": "s09b-osint-hash.png",
+      "title": "S09 · OSINT on a hash",
+      "caption": "The same workbench with the soc.dll SHA-256: hash lookups go to VirusTotal, MalwareBazaar, Hybrid Analysis and others. Services that refuse browser requests are marked \"blocked\" with an Open link.",
+      "marks": [
+        "Detected as a file hash"
+      ]
+    },
+    {
+      "file": "s09c-osint-cve.png",
+      "title": "S09 · OSINT on a CVE",
+      "caption": "CVE-2024-40711 (Veeam Backup & Replication, exploited by SafePay per CISA): the NVD lookup returns the description and CVSS live; launchers go to CVE.org, CISA KEV, EPSS and vendor advisories. Pin as card keeps the NVD text with the CVE.",
+      "marks": [
+        "Detected as a CVE",
+        "Pin as card"
+      ]
+    },
+    {
+      "file": "s10-pivots.png",
+      "title": "S10 · Pivots",
+      "caption": "Pivots on the selected indicator open VirusTotal, AbuseIPDB, Shodan, Censys, GreyNoise, urlscan and more in a new tab (the VirusTotal result for this IP is in the next picture: 14 of 92 vendors flag it). \"Copy defanged\" copies 88.119.167[.]239 for reports. \"Analyse with Claude\" asks for an assessment when the board runs inside the Claude app; elsewhere it says so.",
+      "marks": [
+        "Pivots",
+        "VirusTotal (opens in a new tab)",
+        "Analyse with Claude"
+      ]
+    },
+    {
+      "file": "s11-grading.png",
+      "title": "S11 · Grade and handle",
+      "caption": "Grading the C2 address: stamped Confirmed, source A1 (completely reliable, confirmed), collected and first/last seen dates (last seen Aug 2026, so the Audit tab will list it as stale), a per-card TLP:AMBER override on a TLP:RED case, two tasks with due dates (the first is already overdue) and a dated comment.",
+      "marks": [
+        "Source + Admiralty grade A1",
+        "Per-card TLP override",
+        "First / last seen → staleness"
+      ]
+    },
+    {
+      "file": "s11b-tasks.png",
+      "title": "S11 · Tasks and comments",
+      "caption": "Tasks with due dates and comments on the same card. Overdue tasks are flagged in the Audit tab.",
+      "marks": [
+        "Tasks with due date",
+        "Comments"
+      ]
+    },
+    {
+      "file": "s12-actors.png",
+      "title": "S12 · Actor library",
+      "caption": "Actor library. SafePay is not in it, so LockBit (the closest RaaS playbook: exposed services, valid accounts, remote services, encryption) is dropped in as a comparison. Drop in pins the actor plus a technique card per TTP, threaded together.",
+      "marks": [
+        "Drop in LockBit"
+      ]
+    },
+    {
+      "file": "s12b-merge.png",
+      "title": "S12 · Merge duplicates",
+      "caption": "Merge: LockBit's \"Exploit Public-Facing Application\" duplicates the technique already on the board. Select the duplicate, pick the card to keep under MERGE, press Merge: threads are re-pointed, tags / tasks / comments are unioned and the duplicate is removed (Ctrl+Z undoes it).",
+      "marks": [
+        "Merge this card into…",
+        "Merge"
+      ]
+    },
+    {
+      "file": "s13-threads-tab.png",
+      "title": "S13 · Threads tab",
+      "caption": "Threads tab: suggested threads appear when two cards share a tag, indicator or handle (accept or dismiss each), a manual form pins a thread between any two cards, and every thread is listed with its relation and confidence.",
+      "marks": [
+        "Threads tab",
+        "Manual thread"
+      ]
+    },
+    {
+      "file": "s14-search.png",
+      "title": "S14 · Cross-case search",
+      "caption": "Search covers every case: \"okta\" dims this board (nothing here matches) and lists the hits from the imported Okta vishing case under the search box so you can jump across.",
+      "marks": [
+        "Search box"
+      ]
+    },
+    {
+      "file": "s14b-reveal.png",
+      "title": "S14 · Reveal",
+      "caption": "Reveal (R) with the affiliate card selected: only its direct threads (infrastructure it controls, victims, tools) and second-degree neighbours stay lit.",
+      "marks": [
+        "Reveal",
+        "Selected card"
+      ]
+    },
+    {
+      "file": "s15-timeline.png",
+      "title": "S15 · Timeline",
+      "caption": "Timeline (T): from first SafePay activity in August 2024 through the IOC window to the advisory on 20 October 2026 and the analyst captures of 9 November; undated cards sit on the shelf.",
+      "marks": [
+        "Timeline view",
+        "Timeline rail"
+      ]
+    },
+    {
+      "file": "s15b-kill-chain.png",
+      "title": "S15 · Kill chain",
+      "caption": "Kill chain (K): the thirteen techniques from the advisory fall into their ATT&CK tactic lanes, Initial Access through Impact, with threaded evidence under each.",
+      "marks": [
+        "Kill-chain lanes"
+      ]
+    },
+    {
+      "file": "s16-ach.png",
+      "title": "S16 · Competing hypotheses",
+      "caption": "ACH with the template's hypotheses: affiliate through an exposed service, credential bought from a broker, phishing with a loader. CISA reports both exposed-service CVEs and stolen credentials, so the first two stay consistent and the phishing-loader hypothesis collects the inconsistencies.",
+      "marks": [
+        "ACH matrix"
+      ]
+    },
+    {
+      "file": "s17-audit.png",
+      "title": "S17 · Audit",
+      "caption": "Audit tab: the hygiene backlog. Unconnected cards, indicators without a stamp, events without a date, threads without evidence, stale indicators (last seen beyond 30 days), cards without a source, open and overdue tasks, and what is still in the inbox. Click a row to jump to the card.",
+      "marks": [
+        "Audit tab",
+        "Backlog by category"
+      ]
+    },
+    {
+      "file": "s18-snapshot-diff.png",
+      "title": "S18 · Snapshots and log",
+      "caption": "Log tab: a named snapshot was saved, then a note was added and a CVE card deleted. Diff lists exactly what changed since the snapshot; Restore puts the board back. Below: playback rebuilds the board card by card in date order, and the append-only log records every action with time and analyst.",
+      "marks": [
+        "Snapshots: Save / Diff / Restore",
+        "Diff against the current board",
+        "Playback"
+      ]
+    },
+    {
+      "file": "s18b-playback.png",
+      "title": "S18 · Playback",
+      "caption": "Playback running: cards appear in chronological order so you can walk a reviewer through how the picture built up. Pause, scrub with the slider, or Exit.",
+      "marks": [
+        "Playback controls"
+      ]
+    },
+    {
+      "file": "s19-judgement.png",
+      "title": "S19 · Judgement and sign-off",
+      "caption": "Notes tab: the key judgement with High confidence and the dissent (several IPs sit in CDN / GitHub / Google ranges and should not be blocklisted blindly). Setting the review state to Published records \"Signed off by S. Murugan\" with the time; it prints on the brief.",
+      "marks": [
+        "Key judgement + confidence + dissent + sign-off",
+        "Published → signed off",
+        "Working notes"
+      ]
+    },
+    {
+      "file": "s20-requests.png",
+      "title": "S20 · Request for information",
+      "caption": "Request generator switched to Request for information, addressed to the Bacloud abuse desk, with the indicators ticked. Open letter renders a printable RFI (next picture) that lists them defanged with the case number, TLP and analyst.",
+      "marks": [
+        "Takedown request / RFI",
+        "Open letter"
+      ]
+    },
+    {
+      "file": "s21-present.png",
+      "title": "S21 · Present",
+      "caption": "Present (P): panels hidden, exhibit counter at the bottom, arrow keys step through the numbered exhibits. Esc returns to the board.",
+      "marks": [
+        "Exhibit counter"
+      ]
+    },
+    {
+      "file": "s22d-stix-reimport.png",
+      "title": "S22 · STIX round trip",
+      "caption": "The exported STIX 2.1 bundle imported back through Import: indicators, vulnerabilities, attack patterns, threat actor, identities, locations, the transaction, notes, relationships and groupings all come back as a new case (laid out on a grid). The same path accepts bundles from MISP / OpenCTI / vendor feeds.",
+      "marks": [
+        "Import (JSON / STIX / CSV)",
+        "New case created from the bundle"
+      ]
+    },
+    {
+      "file": "s23-focus.png",
+      "title": "S23 · Finished board",
+      "caption": "Inbox and Panel toggled off for a clean view of the finished board; zoom with the wheel or the − / + buttons, F to fit.",
+      "marks": [
+        "Inbox toggle",
+        "Panel toggle",
+        "Fit (F)"
+      ]
+    },
+    {
+      "file": "s23b-locked.png",
+      "title": "S23 · Encrypted at rest",
+      "caption": "Encrypt saved cases with a passphrase (TLP:RED material should not sit in plain localStorage). The next visit asks for it before anything is shown.",
+      "marks": [
+        "Passphrase prompt"
+      ]
+    },
+    {
+      "file": "s23c-mobile.png",
+      "title": "S23 · Mobile",
+      "caption": "On a phone the same case is a list; Board / List and Panel toggles sit in the top bar.",
+      "marks": []
+    }
+  ]
+}

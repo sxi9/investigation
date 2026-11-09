@@ -3,14 +3,14 @@
   "version": 1,
   "cases": [
     {
-      "id": "imw9fb2e28lqn",
+      "id": "imw9ffitr4m79",
       "v": 3,
       "number": "CASE 0420",
       "title": "SafePay ransomware — AA26-293A triage",
       "notes": "SOURCE\nCISA / FBI / USSS / LKA RLP / NCA / NWROCU joint advisory AA26-293A, 20 Oct 2026. IOCs observed Nov 2024 – Aug 2026.\n\nWHAT TO DO FIRST\n- block the actor-attributed IPs (Bacloud, exfil hosts); review, do not block, the CDN / GitHub / Google ones\n- hunt for ShareFinder.ps1, SharpShares.exe, netscan*, dcsync.exe, Socks_werfault.exe\n- patch CVE-2024-40711 / 40766 / 2023-27532 / 20269 / 2020-3259 on edge devices\n- MFA on VPN, lockouts, offline immutable backups\n\nOPEN\n- Bacloud RFI outstanding\n- no .onion / leak-site address in the advisory",
       "items": [
         {
-          "id": "imw9fb2e2eest",
+          "id": "imw9ffitrhrmi",
           "title": "Initial access",
           "body": "",
           "url": "",
@@ -41,7 +41,7 @@
           "num": 1
         },
         {
-          "id": "imw9fb2e2qlsn",
+          "id": "imw9ffitrzdz9",
           "title": "Encryption begins",
           "body": "",
           "url": "",
@@ -72,7 +72,7 @@
           "num": 2
         },
         {
-          "id": "imw9fb2e2xrk1",
+          "id": "imw9ffitr1sax",
           "title": "Exploit Public-Facing Application",
           "body": "",
           "url": "",
@@ -105,7 +105,7 @@
           "comments": []
         },
         {
-          "id": "imw9fb2e2ckh1",
+          "id": "imw9ffitrwd3a",
           "title": "Data Encrypted for Impact",
           "body": "",
           "url": "",
@@ -138,7 +138,7 @@
           "comments": []
         },
         {
-          "id": "imw9fb2e2bx6a",
+          "id": "imw9ffitromwd",
           "title": "Encryptor sample",
           "body": "",
           "url": "",
@@ -169,7 +169,7 @@
           "num": 5
         },
         {
-          "id": "imw9fb2e2vzvr",
+          "id": "imw9ffitr1uq3",
           "title": "Leak site post",
           "body": "",
           "url": "",
@@ -200,7 +200,7 @@
           "num": 6
         },
         {
-          "id": "imw9fb2e27h9a",
+          "id": "imw9ffitrrpfu",
           "title": "SafePay affiliate (unidentified)",
           "body": "No individual identified. Uses Mullvad VPN exits, phished account profiles and stolen or brute-forced VPN credentials. Lives off the land, then installs AnyDesk / TeamViewer to push the locker. A \"representative\" phones victims after encryption.",
           "url": "",
@@ -231,11 +231,11 @@
           "num": 7,
           "fileName": "operator-placeholder.png",
           "fileHash": "5ad1a959635bd9f324d9b11e27924ef6083205d0b4fa6a2b1b87e51cac179a64",
-          "addedAt": "2026-11-09T15:36:05.803Z",
+          "addedAt": "2026-11-09T15:39:33.911Z",
           "addedBy": "S. Murugan"
         },
         {
-          "id": "imw9fb2e2pccp",
+          "id": "imw9ffitrk5ma",
           "title": "600+ victims — businesses & critical infrastructure",
           "body": "",
           "url": "",
@@ -266,7 +266,7 @@
           "num": 8
         },
         {
-          "id": "imw9fb2e2rf50",
+          "id": "imw9ffitrj2ht",
           "title": "Tools repurposed by the actors",
           "body": "7-Zip · FileZilla · Mimikatz · PowerShell · PsExec · RClone · ScreenConnect · ShareFinder.ps1 · WinRAR · WinRM · AnyDesk · TeamViewer · Acronis Disk Director · SharpShares · NetExec · Backblaze b2.exe\n\nLegitimate on their own; the advisory warns not to attribute them as malicious without evidence.",
           "url": "",
@@ -296,42 +296,42 @@
           "type": "doc",
           "todo": [
             {
-              "id": "imw9fb2e2m5yz",
+              "id": "imw9ffitrihkb",
               "text": "Collect the ransom note and sample hash",
               "owner": "",
               "due": "",
               "done": false,
-              "at": "2026-11-09T15:35:51.002Z"
+              "at": "2026-11-09T15:39:18.927Z"
             },
             {
-              "id": "imw9fb2e21htz",
+              "id": "imw9ffitrwu34",
               "text": "Confirm the entry point from VPN / edge logs",
               "owner": "",
               "due": "",
               "done": false,
-              "at": "2026-11-09T15:35:51.002Z"
+              "at": "2026-11-09T15:39:18.927Z"
             },
             {
-              "id": "imw9fb2e29fu6",
+              "id": "imw9ffitryvh5",
               "text": "Inventory what was exfiltrated before encryption",
               "owner": "",
               "due": "",
               "done": false,
-              "at": "2026-11-09T15:35:51.002Z"
+              "at": "2026-11-09T15:39:18.927Z"
             },
             {
-              "id": "imw9fb2e2hgdt",
+              "id": "imw9ffitrchw6",
               "text": "Decide on negotiation posture and notify counsel",
               "owner": "",
               "due": "",
               "done": false,
-              "at": "2026-11-09T15:35:51.002Z"
+              "at": "2026-11-09T15:39:18.927Z"
             }
           ],
           "num": 9
         },
         {
-          "id": "imw9fb41gemw4",
+          "id": "imw9ffki245u8",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -362,7 +362,7 @@
           "num": 10
         },
         {
-          "id": "imw9fb41gxpzc",
+          "id": "imw9ffki2dyw7",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -393,7 +393,7 @@
           "num": 11
         },
         {
-          "id": "imw9fb41gdj55",
+          "id": "imw9ffki24v82",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -424,7 +424,7 @@
           "num": 12
         },
         {
-          "id": "imw9fb41g5bnq",
+          "id": "imw9ffki2p55b",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -455,7 +455,7 @@
           "num": 13
         },
         {
-          "id": "imw9fb41gyng7",
+          "id": "imw9ffki2bf6s",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -486,7 +486,7 @@
           "num": 14
         },
         {
-          "id": "imw9fb41gez54",
+          "id": "imw9ffki2t4za",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -517,7 +517,7 @@
           "num": 15
         },
         {
-          "id": "imw9fb41gqn8t",
+          "id": "imw9ffki2xnyb",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -548,7 +548,7 @@
           "num": 16
         },
         {
-          "id": "imw9fb41g5uck",
+          "id": "imw9ffki3prf0",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -579,7 +579,7 @@
           "num": 17
         },
         {
-          "id": "imw9fb41gk3ix",
+          "id": "imw9ffki3ylwy",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -610,7 +610,7 @@
           "num": 18
         },
         {
-          "id": "imw9fb41gy3uk",
+          "id": "imw9ffki3xlps",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -641,7 +641,7 @@
           "num": 19
         },
         {
-          "id": "imw9fb41g3qva",
+          "id": "imw9ffki3fqaf",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -672,7 +672,7 @@
           "num": 20
         },
         {
-          "id": "imw9fb41gt573",
+          "id": "imw9ffki3ev1u",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -703,7 +703,7 @@
           "num": 21
         },
         {
-          "id": "imw9fb41g91gd",
+          "id": "imw9ffki33bjb",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -734,7 +734,7 @@
           "num": 22
         },
         {
-          "id": "imw9fb41gpmu9",
+          "id": "imw9ffki3zocj",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -765,7 +765,7 @@
           "num": 23
         },
         {
-          "id": "imw9fb41g9537",
+          "id": "imw9ffki32lq8",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -796,7 +796,7 @@
           "num": 24
         },
         {
-          "id": "imw9fb41h9li7",
+          "id": "imw9ffki3gtoa",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -827,7 +827,7 @@
           "num": 25
         },
         {
-          "id": "imw9fb41hczg9",
+          "id": "imw9ffki3i5ii",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -858,7 +858,7 @@
           "num": 26
         },
         {
-          "id": "imw9fb41hg0hm",
+          "id": "imw9ffki3sm5t",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -889,7 +889,7 @@
           "num": 27
         },
         {
-          "id": "imw9fb41hb9rp",
+          "id": "imw9ffki34hey",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -920,33 +920,33 @@
           "num": 28,
           "todo": [
             {
-              "id": "imw9fdgoys7t4",
+              "id": "imw9fgyviyn7e",
               "text": "Block at the perimeter and search 12 months of proxy / firewall logs",
               "owner": "S. Murugan",
               "due": "2026-11-01",
               "done": false,
-              "at": "2026-11-09T15:37:42.850Z"
+              "at": "2026-11-09T15:40:26.382Z"
             },
             {
-              "id": "imw9fdgqe9b4v",
+              "id": "imw9fgywu8php",
               "text": "Ask Bacloud abuse desk for subscriber details (RFI)",
               "owner": "S. Murugan",
               "due": "2026-11-14",
               "done": false,
-              "at": "2026-11-09T15:37:42.902Z"
+              "at": "2026-11-09T15:40:26.430Z"
             }
           ],
           "comments": [
             {
-              "id": "imw9fdgrbs8a5",
+              "id": "imw9fgyxsp92x",
               "text": "VirusTotal 14/92 on 09 Nov; last CISA sighting Aug 2026 — treat as stale-but-live until Bacloud answers.",
               "by": "S. Murugan",
-              "at": "2026-11-09T15:37:42.935Z"
+              "at": "2026-11-09T15:40:26.464Z"
             }
           ]
         },
         {
-          "id": "imw9fb41h9y79",
+          "id": "imw9ffki3t2lp",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -977,7 +977,7 @@
           "num": 29
         },
         {
-          "id": "imw9fb4wwrpw1",
+          "id": "imw9ffldi1wjg",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -1008,7 +1008,7 @@
           "num": 30
         },
         {
-          "id": "imw9fb4wwpeeh",
+          "id": "imw9ffldj4h8x",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -1039,7 +1039,7 @@
           "num": 31
         },
         {
-          "id": "imw9fb4wwupoe",
+          "id": "imw9ffldjiizv",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -1069,7 +1069,7 @@
           "y": 0
         },
         {
-          "id": "imw9fb4wwqvrs",
+          "id": "imw9ffldjk80w",
           "type": "indicator",
           "title": "",
           "body": "",
@@ -1099,7 +1099,7 @@
           "y": 0
         },
         {
-          "id": "imw9fb5x7phmm",
+          "id": "imw9ffmdukcfj",
           "type": "note",
           "title": "",
           "body": "Hostnames seen in SafePay intrusions (CISA AA26-293A): WIN-SBOE3CPNAL, WIN-3IUUOFVTQAR, WIN-DK18BI83M0S, WIN-I1HRRJHCEIV",
@@ -1126,11 +1126,11 @@
           "image": null,
           "pinned": true,
           "x": 600,
-          "y": 1320.0000000000002,
+          "y": 1320,
           "num": 32
         },
         {
-          "id": "imw9fb630nm7i",
+          "id": "imw9ffmjndsva",
           "type": "link",
           "title": "#StopRansomware: SafePay Ransomware — joint advisory",
           "body": "",
@@ -1156,12 +1156,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 40,
+          "x": 39.99999999999994,
           "y": 900,
           "num": 33
         },
         {
-          "id": "imw9fb69bwul8",
+          "id": "imw9ffmpxdf2y",
           "type": "ttp",
           "title": "External Remote Services",
           "body": "",
@@ -1188,11 +1188,11 @@
           "image": null,
           "pinned": true,
           "x": 2560,
-          "y": 40.00000000000003,
+          "y": 39.99999999999997,
           "num": 34
         },
         {
-          "id": "imw9fb6ik7ots",
+          "id": "imw9ffmz8a027",
           "type": "ttp",
           "title": "Brute Force",
           "body": "",
@@ -1218,12 +1218,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 2560,
+          "x": 2560.0000000000005,
           "y": 209.99999999999994,
           "num": 36
         },
         {
-          "id": "imw9fb6n2mgwn",
+          "id": "imw9ffn3v0w1w",
           "type": "ttp",
           "title": "Command and Scripting Interpreter",
           "body": "",
@@ -1249,12 +1249,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 2800,
-          "y": 210.00000000000003,
+          "x": 2800.0000000000005,
+          "y": 210.00000000000006,
           "num": 37
         },
         {
-          "id": "imw9fb6rlegw8",
+          "id": "imw9ffn8ngnmu",
           "type": "ttp",
           "title": "Account Manipulation",
           "body": "",
@@ -1280,12 +1280,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 2559.9999999999995,
-          "y": 380.00000000000006,
+          "x": 2560,
+          "y": 380,
           "num": 38
         },
         {
-          "id": "imw9fb6w0qicy",
+          "id": "imw9ffnd56rj6",
           "type": "ttp",
           "title": "Obfuscated Files or Information",
           "body": "",
@@ -1311,12 +1311,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 2800,
-          "y": 380.00000000000006,
+          "x": 2800.0000000000005,
+          "y": 380,
           "num": 39
         },
         {
-          "id": "imw9fb70gi38a",
+          "id": "imw9ffnhrhnvx",
           "type": "ttp",
           "title": "Indicator Removal",
           "body": "",
@@ -1342,12 +1342,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 2560,
+          "x": 2560.0000000000005,
           "y": 550,
           "num": 40
         },
         {
-          "id": "imw9fb750ft0c",
+          "id": "imw9ffnmosz2t",
           "type": "ttp",
           "title": "Remote Services",
           "body": "",
@@ -1378,7 +1378,7 @@
           "num": 41
         },
         {
-          "id": "imw9fb7a32lfz",
+          "id": "imw9ffnr88ou7",
           "type": "ttp",
           "title": "Exfiltration Over Web Service",
           "body": "",
@@ -1409,7 +1409,7 @@
           "num": 42
         },
         {
-          "id": "imw9fb7j4cezf",
+          "id": "imw9ffo0gz6fj",
           "type": "ttp",
           "title": "Service Stop",
           "body": "",
@@ -1436,11 +1436,11 @@
           "image": null,
           "pinned": true,
           "x": 2560,
-          "y": 890,
+          "y": 890.0000000000002,
           "num": 44
         },
         {
-          "id": "imw9fb7nqws04",
+          "id": "imw9ffo55f60c",
           "type": "ttp",
           "title": "Masquerading",
           "body": "",
@@ -1471,7 +1471,7 @@
           "num": 45
         },
         {
-          "id": "imw9fb7s84zmv",
+          "id": "imw9ffo9psfao",
           "type": "ttp",
           "title": "Ingress Tool Transfer",
           "body": "",
@@ -1502,7 +1502,7 @@
           "num": 46
         },
         {
-          "id": "imw9fb7wshowl",
+          "id": "imw9ffoee990q",
           "type": "event",
           "title": "SafePay first observed (per CISA)",
           "body": "",
@@ -1528,12 +1528,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 40.00000000000006,
-          "y": 40.00000000000003,
+          "x": 40,
+          "y": 40,
           "num": 47
         },
         {
-          "id": "imw9fb819fq8k",
+          "id": "imw9ffoj52qqa",
           "type": "event",
           "title": "Start of IOC observation window",
           "body": "",
@@ -1559,12 +1559,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 40,
-          "y": 250.00000000000003,
+          "x": 39.999999999999886,
+          "y": 250.00000000000006,
           "num": 48
         },
         {
-          "id": "imw9fb85txbgp",
+          "id": "imw9ffoo8y3nj",
           "type": "event",
           "title": "Last observed IOCs in FBI investigations",
           "body": "",
@@ -1590,12 +1590,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 40,
-          "y": 459.99999999999994,
+          "x": 39.999999999999886,
+          "y": 460,
           "num": 49
         },
         {
-          "id": "imw9fb8akqyzt",
+          "id": "imw9ffot59p8f",
           "type": "event",
           "title": "Joint advisory AA26-293A published",
           "body": "",
@@ -1621,12 +1621,12 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 39.999999999999886,
-          "y": 670,
+          "x": 39.99999999999994,
+          "y": 670.0000000000001,
           "num": 50
         },
         {
-          "id": "imw9fb8frvh2s",
+          "id": "imw9ffoycvp7n",
           "type": "tx",
           "title": "Ransom demand — share of revenue, paid in crypto",
           "body": "Ransom paid in cryptocurrency; no addresses or tx hashes are published in the advisory. Paste them here when a case yields them: the card then links to the block explorer.",
@@ -1657,7 +1657,7 @@
           "num": 51
         },
         {
-          "id": "imw9fb91xuz93",
+          "id": "imw9ffpkfp935",
           "type": "location",
           "title": "Vilnius, Lithuania — UAB Bacloud (AS61272) hosting soc.dll C2",
           "body": "RDAP: LT-BACLOUD, UAB Bacloud, AS61272. Hosts 88.119.167[.]239, the soc.dll command-and-control address in the advisory. VirusTotal: 14/92 vendors flag the IP.",
@@ -1688,11 +1688,11 @@
           "num": 52,
           "fileName": "map-lithuania-baltics.png",
           "fileHash": "51b94a85e3c9c695b4dc228fcb4c5f5ddfa1566baa8de4bac62cb2576a5d0dcc",
-          "addedAt": "2026-11-09T15:36:07.084Z",
+          "addedAt": "2026-11-09T15:39:35.136Z",
           "addedBy": "S. Murugan"
         },
         {
-          "id": "imw9fb9n85v9m",
+          "id": "imw9ffq66b4wp",
           "type": "location",
           "title": "Falkenstein, Germany — Hetzner CLOUD-FSN1 hosting client login panels",
           "body": "RDAP: CLOUD-FSN1 (Hetzner, DE). Hosts 167.235.225[.]149, listed as \"client login panels\".",
@@ -1723,11 +1723,11 @@
           "num": 53,
           "fileName": "map-falkenstein-de.png",
           "fileHash": "490952f124fa63925ea822fbbab6c9c2e23a499f57c77d4bc686150eb30e2a25",
-          "addedAt": "2026-11-09T15:36:08.278Z",
+          "addedAt": "2026-11-09T15:39:36.360Z",
           "addedBy": "S. Murugan"
         },
         {
-          "id": "imw9fba94ihs8",
+          "id": "imw9ffqtgxy2h",
           "type": "note",
           "title": "",
           "body": "Encryption: ChaCha20 stream cipher with RSA key exchange; full or partial by file type/size; extension .SafePay; binary deletes itself afterwards.",
@@ -1754,11 +1754,11 @@
           "image": null,
           "pinned": true,
           "x": 340,
-          "y": 1320.0000000000002,
+          "y": 1319.9999999999998,
           "num": 54
         },
         {
-          "id": "imw9fbaf0qceo",
+          "id": "imw9ffqzd3zvm",
           "type": "photo",
           "title": "CISA advisory page — capture 09 Nov 2026",
           "body": "",
@@ -1789,11 +1789,11 @@
           "num": 55,
           "fileName": "cisa-advisory-aa26-293a.png",
           "fileHash": "8ae3c3eb912f93c00626241fdcbed978ebc923802419bec0f5c088d9e2da6ea6",
-          "addedAt": "2026-11-09T15:36:02.206Z",
+          "addedAt": "2026-11-09T15:39:30.311Z",
           "addedBy": "S. Murugan"
         },
         {
-          "id": "imw9fbbue6tdo",
+          "id": "imw9ffsf6gdem",
           "type": "photo",
           "title": "Attack path — analyst diagram",
           "body": "",
@@ -1824,11 +1824,11 @@
           "num": 56,
           "fileName": "attack-path-diagram.png",
           "fileHash": "1fb770fb940508370186707097f033af9a636aaea06794ff3a6881e993d5bed7",
-          "addedAt": "2026-11-09T15:36:04.055Z",
+          "addedAt": "2026-11-09T15:39:32.168Z",
           "addedBy": "S. Murugan"
         },
         {
-          "id": "imw9fdc2ftl5w",
+          "id": "imw9fgu9uvxwa",
           "type": "indicator",
           "title": "",
           "body": "NVD: A deserialization of untrusted data vulnerability with a malicious payload can allow an unauthenticated remote code execution (RCE). | CVSS 9.8 CRITICAL | Published 2024-09-07 | IN CISA KEV since 2024-10-17 — actively exploited",
@@ -1854,8 +1854,8 @@
           "impact": "",
           "image": null,
           "pinned": true,
-          "x": 1400.9999999999998,
-          "y": 658.5000000000001,
+          "x": 1428.9999999999998,
+          "y": 659.4999999999999,
           "num": 57
         },
         {
@@ -1873,7 +1873,7 @@
           "txTo": "",
           "image": null,
           "pinned": true,
-          "id": "imw9fdi5ztmfg",
+          "id": "imw9fh0bwg1pn",
           "type": "person",
           "x": 60,
           "y": 1697,
@@ -1894,7 +1894,7 @@
           "txTo": "",
           "image": null,
           "pinned": true,
-          "id": "imw9fdi5zx1em",
+          "id": "imw9fh0bwucig",
           "type": "ttp",
           "x": 310,
           "y": 1697,
@@ -1915,7 +1915,7 @@
           "txTo": "",
           "image": null,
           "pinned": true,
-          "id": "imw9fdi5ztu6x",
+          "id": "imw9fh0bw2pgz",
           "type": "ttp",
           "x": 545,
           "y": 1697,
@@ -1936,7 +1936,7 @@
           "txTo": "",
           "image": null,
           "pinned": true,
-          "id": "imw9fdi5zt4d3",
+          "id": "imw9fh0bwsobl",
           "type": "ttp",
           "x": 310,
           "y": 1847,
@@ -1957,7 +1957,7 @@
           "txTo": "",
           "image": null,
           "pinned": true,
-          "id": "imw9fdi5ziz00",
+          "id": "imw9fh0bwch3q",
           "type": "ttp",
           "x": 545,
           "y": 1847,
@@ -1966,240 +1966,249 @@
       ],
       "threads": [
         {
-          "id": "imw9fbp84mmfp",
-          "from": "imw9fb2e27h9a",
-          "to": "imw9fb41hb9rp",
+          "id": "imw9fg5x09wqn",
+          "from": "imw9ffitrrpfu",
+          "to": "imw9ffki34hey",
           "rel": "controls",
           "conf": "high",
           "why": "",
           "num": 1
         },
         {
-          "id": "imw9fbpndvzc9",
-          "from": "imw9fb2e27h9a",
-          "to": "imw9fb41hg0hm",
+          "id": "imw9fg6ctca7r",
+          "from": "imw9ffitrrpfu",
+          "to": "imw9ffki3sm5t",
           "rel": "controls",
           "conf": "high",
           "why": "",
           "num": 2
         },
         {
-          "id": "imw9fbq263nqo",
-          "from": "imw9fb2e27h9a",
-          "to": "imw9fb41h9y79",
+          "id": "imw9fg6r5qru0",
+          "from": "imw9ffitrrpfu",
+          "to": "imw9ffki3t2lp",
           "rel": "controls",
           "conf": "high",
           "why": "",
           "num": 3
         },
         {
-          "id": "imw9fbqgwboc9",
-          "from": "imw9fb41hb9rp",
-          "to": "imw9fb91xuz93",
+          "id": "imw9fg762xpk1",
+          "from": "imw9ffki34hey",
+          "to": "imw9ffpkfp935",
           "rel": "located",
           "conf": "high",
           "why": "",
           "num": 4
         },
         {
-          "id": "imw9fbqw7i3d9",
-          "from": "imw9fb41hczg9",
-          "to": "imw9fb9n85v9m",
+          "id": "imw9fg7kotb50",
+          "from": "imw9ffki3i5ii",
+          "to": "imw9ffq66b4wp",
           "rel": "located",
           "conf": "high",
           "why": "",
           "num": 5
         },
         {
-          "id": "imw9fbrbhe1wh",
-          "from": "imw9fb41gez54",
-          "to": "imw9fb41hb9rp",
+          "id": "imw9fg7z3oj7i",
+          "from": "imw9ffki2t4za",
+          "to": "imw9ffki34hey",
           "rel": "resolves",
-          "conf": "high",
-          "why": "",
+          "conf": "medium",
+          "why": "CISA Table 2: 88.119.167[.]239 is the soc.dll command-and-control address; Table 5 gives soc.dll's SHA-256.",
           "num": 6
         },
         {
-          "id": "imw9fbrrannzj",
-          "from": "imw9fb41gk3ix",
-          "to": "imw9fb41gy3uk",
+          "id": "imw9fg8e1j9vn",
+          "from": "imw9ffki3ylwy",
+          "to": "imw9ffki3xlps",
           "rel": "alias",
           "conf": "high",
           "why": "",
           "num": 7
         },
         {
-          "id": "imw9fbs6s90wv",
-          "from": "imw9fb2e2xrk1",
-          "to": "imw9fb41g5bnq",
+          "id": "imw9fg8taa6cd",
+          "from": "imw9ffitr1sax",
+          "to": "imw9ffki2p55b",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 8
         },
         {
-          "id": "imw9fbsls8k4z",
-          "from": "imw9fb2e2xrk1",
-          "to": "imw9fb41gyng7",
+          "id": "imw9fg98n3sz6",
+          "from": "imw9ffitr1sax",
+          "to": "imw9ffki2bf6s",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 9
         },
         {
-          "id": "imw9fbt0r1x3g",
-          "from": "imw9fb2e27h9a",
-          "to": "imw9fb2e2eest",
+          "id": "imw9fg9o5xmhb",
+          "from": "imw9ffitrrpfu",
+          "to": "imw9ffitrhrmi",
           "rel": "suspected",
           "conf": "high",
           "why": "",
           "num": 10
         },
         {
-          "id": "imw9fbtfwulbw",
-          "from": "imw9fb2e27h9a",
-          "to": "imw9fb2e2pccp",
+          "id": "imw9fga3g4jd2",
+          "from": "imw9ffitrrpfu",
+          "to": "imw9ffitrk5ma",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 11
         },
         {
-          "id": "imw9fbtvdxgh7",
-          "from": "imw9fb2e2pccp",
-          "to": "imw9fb8frvh2s",
+          "id": "imw9fgaj6ht4q",
+          "from": "imw9ffitrk5ma",
+          "to": "imw9ffoycvp7n",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 12
         },
         {
-          "id": "imw9fbuaso70z",
-          "from": "imw9fb2e2ckh1",
-          "to": "imw9fb2e2qlsn",
+          "id": "imw9fgay32v51",
+          "from": "imw9ffitrwd3a",
+          "to": "imw9ffitrzdz9",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 13
         },
         {
-          "id": "imw9fbuqeh32e",
-          "from": "imw9fba94ihs8",
-          "to": "imw9fb2e2ckh1",
+          "id": "imw9fgbdkjy32",
+          "from": "imw9ffqtgxy2h",
+          "to": "imw9ffitrwd3a",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 14
         },
         {
-          "id": "imw9fbv5qa66q",
-          "from": "imw9fb2e2rf50",
-          "to": "imw9fb2e27h9a",
+          "id": "imw9fgbsz98vc",
+          "from": "imw9ffitrj2ht",
+          "to": "imw9ffitrrpfu",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 15
         },
         {
-          "id": "imw9fbvl9hywf",
-          "from": "imw9fbbue6tdo",
-          "to": "imw9fb2e27h9a",
+          "id": "imw9fgc874rvk",
+          "from": "imw9ffsf6gdem",
+          "to": "imw9ffitrrpfu",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 16
         },
         {
-          "id": "imw9fbw0oinae",
-          "from": "imw9fb630nm7i",
-          "to": "imw9fb8akqyzt",
+          "id": "imw9fgcnyngkq",
+          "from": "imw9ffmjndsva",
+          "to": "imw9ffot59p8f",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 17
         },
         {
-          "id": "imw9fdi5z6r8x",
-          "from": "imw9fdi5ztmfg",
-          "to": "imw9fdi5zx1em",
+          "id": "imw9fgdbndhg1",
+          "from": "imw9ffqzd3zvm",
+          "to": "imw9ffmjndsva",
           "rel": "linked",
-          "conf": "medium",
-          "why": "Typical of LockBit in public reporting; confirm against this case.",
+          "conf": "high",
+          "why": "",
           "num": 18
         },
         {
-          "id": "imw9fdi5zbtit",
-          "from": "imw9fdi5ztmfg",
-          "to": "imw9fdi5ztu6x",
+          "id": "imw9fh0bwq3dq",
+          "from": "imw9fh0bwg1pn",
+          "to": "imw9fh0bwucig",
           "rel": "linked",
           "conf": "medium",
           "why": "Typical of LockBit in public reporting; confirm against this case.",
           "num": 19
         },
         {
-          "id": "imw9fdi5zdscl",
-          "from": "imw9fdi5ztmfg",
-          "to": "imw9fdi5zt4d3",
+          "id": "imw9fh0bw0c3t",
+          "from": "imw9fh0bwg1pn",
+          "to": "imw9fh0bw2pgz",
           "rel": "linked",
           "conf": "medium",
           "why": "Typical of LockBit in public reporting; confirm against this case.",
           "num": 20
         },
         {
-          "id": "imw9fdi5z4nv3",
-          "from": "imw9fdi5ztmfg",
-          "to": "imw9fdi5ziz00",
+          "id": "imw9fh0bwxve1",
+          "from": "imw9fh0bwg1pn",
+          "to": "imw9fh0bwsobl",
           "rel": "linked",
           "conf": "medium",
           "why": "Typical of LockBit in public reporting; confirm against this case.",
           "num": 21
         },
         {
-          "id": "imw9fdkblooz0",
-          "from": "imw9fb2e27h9a",
-          "to": "imw9fdi5ztmfg",
+          "id": "imw9fh0bwnvoc",
+          "from": "imw9fh0bwg1pn",
+          "to": "imw9fh0bwch3q",
           "rel": "linked",
-          "conf": "high",
-          "why": "",
+          "conf": "medium",
+          "why": "Typical of LockBit in public reporting; confirm against this case.",
           "num": 22
         },
         {
-          "id": "imw9fdkolxd20",
-          "from": "imw9fb5x7phmm",
-          "to": "imw9fb2e2rf50",
+          "id": "imw9fh2hjahou",
+          "from": "imw9ffitrrpfu",
+          "to": "imw9fh0bwg1pn",
           "rel": "linked",
           "conf": "high",
           "why": "",
           "num": 23
+        },
+        {
+          "id": "imw9fh2v4qxuq",
+          "from": "imw9ffmdukcfj",
+          "to": "imw9ffitrj2ht",
+          "rel": "linked",
+          "conf": "high",
+          "why": "",
+          "num": 24
         }
       ],
       "groups": [
         {
-          "id": "imw9fbn162jwy",
+          "id": "imw9fg3ri64tj",
           "title": "Infrastructure · C2, exfil, panels (9 IPs)",
-          "x": 610,
+          "x": 610.0000000000001,
           "y": -10,
           "w": 800,
           "h": 1060
         },
         {
-          "id": "imw9fbnir1494",
+          "id": "imw9fg494vph3",
           "title": "Malware & exploited CVEs",
-          "x": 1409.9999999999998,
+          "x": 1410,
           "y": -10,
           "w": 1070,
           "h": 800
         },
         {
-          "id": "imw9fbo0cmqbm",
+          "id": "imw9fg4qo85a8",
           "title": "Playbook · ATT&CK techniques",
-          "x": 2529.9999999999995,
+          "x": 2530,
           "y": -10,
           "w": 520,
           "h": 1480
         },
         {
-          "id": "imw9fdi5zao58",
+          "id": "imw9fh0bw5oea",
           "title": "LockBit",
           "x": 40,
           "y": 1653,
@@ -2208,489 +2217,497 @@
         }
       ],
       "dismissed": [
-        "imw9fb2e27h9a|imw9fdi5zx1em"
+        "imw9ffitrrpfu|imw9fh0bwucig"
       ],
       "tlp": "red",
       "hypotheses": [
         {
-          "id": "imw9fb2e22sll",
+          "id": "imw9ffitrclx5",
           "text": "Affiliate entered through an exposed service"
         },
         {
-          "id": "imw9fb2e2o60l",
+          "id": "imw9ffitrn8dd",
           "text": "Credential bought from an initial-access broker"
         },
         {
-          "id": "imw9fb2e2lhvh",
+          "id": "imw9ffitruunm",
           "text": "Phishing with a loader"
         }
       ],
       "log": [
         {
-          "t": "2026-11-09T15:35:51.002Z",
+          "t": "2026-11-09T15:39:18.927Z",
           "m": "Case opened from template: Ransomware intrusion"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.098Z",
           "m": "S. Murugan · Pinned indicator — CVE-2020-3259"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.098Z",
           "m": "S. Murugan · Pinned indicator — CVE-2023-20269"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.098Z",
           "m": "S. Murugan · Pinned indicator — CVE-2023-27532"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.098Z",
           "m": "S. Murugan · Pinned indicator — CVE-2024-40711"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.098Z",
           "m": "S. Murugan · Pinned indicator — CVE-2024-40766"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.098Z",
           "m": "S. Murugan · Pinned indicator — 921df888aaabcd828a3723f4c9f5fe8b8379c6b7067d16b2ea10152300417eae"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 6c1d36df94ebe367823e73ba33cfb4f40756a5e8ee1e30e8f0ae55d47e220a6a"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — e79608cf1d6b51324c14bef8883054c1238ed5f080222cc464810e6e14adc346"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 327b8b61eb446cc4f710771e44484f62b804ae3d262b57a56575053e2df67917"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — a0dc80a37eb7e2716c02a94adc8df9baedec192a77bde31669faed228d9ff526"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — bbdd3620a67aedec4b9a68b2c9cc880b6631215e129816aea19902a6f4bc6f41"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 104.26.2.223"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 140.82.114.4"
         },
         {
-          "t": "2026-11-09T15:35:53.140Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 185.199.108.133"
         },
         {
-          "t": "2026-11-09T15:35:53.141Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 77.37.49.40"
         },
         {
-          "t": "2026-11-09T15:35:53.141Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 173.194.194.94"
         },
         {
-          "t": "2026-11-09T15:35:53.141Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 167.235.225.149"
         },
         {
-          "t": "2026-11-09T15:35:53.141Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 5.255.11.134"
         },
         {
-          "t": "2026-11-09T15:35:53.141Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 88.119.167.239"
         },
         {
-          "t": "2026-11-09T15:35:53.141Z",
+          "t": "2026-11-09T15:39:21.099Z",
           "m": "S. Murugan · Pinned indicator — 37.10.71.188"
         },
         {
-          "t": "2026-11-09T15:35:54.272Z",
+          "t": "2026-11-09T15:39:22.231Z",
           "m": "S. Murugan · Added to inbox: indicator — 07353237350c35d6dc2c8f143b649cd07c71f62b"
         },
         {
-          "t": "2026-11-09T15:35:54.272Z",
+          "t": "2026-11-09T15:39:22.231Z",
           "m": "S. Murugan · Added to inbox: indicator — b498a2683640c983bb069fa2ea9e67cef4a3797d"
         },
         {
-          "t": "2026-11-09T15:35:54.272Z",
+          "t": "2026-11-09T15:39:22.231Z",
           "m": "S. Murugan · Added to inbox: indicator — bbfed53e3bb1f306f4da97d995cf4ae5b73ad081"
         },
         {
-          "t": "2026-11-09T15:35:54.272Z",
+          "t": "2026-11-09T15:39:22.231Z",
           "m": "S. Murugan · Added to inbox: indicator — d711a5af5aed48a3b36b98f4fcf52809aebef7a2"
         },
         {
-          "t": "2026-11-09T15:35:54.687Z",
+          "t": "2026-11-09T15:39:22.642Z",
           "m": "S. Murugan · Pinned to board: 07353237350c35d6dc2c8f143b649cd07c71f62b"
         },
         {
-          "t": "2026-11-09T15:35:55.023Z",
+          "t": "2026-11-09T15:39:22.980Z",
           "m": "S. Murugan · Pinned to board: b498a2683640c983bb069fa2ea9e67cef4a3797d"
         },
         {
-          "t": "2026-11-09T15:35:55.579Z",
+          "t": "2026-11-09T15:39:23.538Z",
           "m": "S. Murugan · Pinned note — Hostnames seen in SafePay intrusions (CI"
         },
         {
-          "t": "2026-11-09T15:35:55.788Z",
+          "t": "2026-11-09T15:39:23.747Z",
           "m": "S. Murugan · Pinned link — www.cisa.gov"
         },
         {
-          "t": "2026-11-09T15:35:56.015Z",
+          "t": "2026-11-09T15:39:23.974Z",
           "m": "S. Murugan · Pinned technique — T1133 · External Remote Services"
         },
         {
-          "t": "2026-11-09T15:35:56.184Z",
+          "t": "2026-11-09T15:39:24.147Z",
           "m": "S. Murugan · Pinned technique — T1190 · Exploit Public-Facing Application"
         },
         {
-          "t": "2026-11-09T15:35:56.348Z",
+          "t": "2026-11-09T15:39:24.309Z",
           "m": "S. Murugan · Pinned technique — T1110 · Brute Force"
         },
         {
-          "t": "2026-11-09T15:35:56.510Z",
+          "t": "2026-11-09T15:39:24.475Z",
           "m": "S. Murugan · Pinned technique — T1059 · Command and Scripting Interpreter"
         },
         {
-          "t": "2026-11-09T15:35:56.673Z",
+          "t": "2026-11-09T15:39:24.647Z",
           "m": "S. Murugan · Pinned technique — T1098 · Account Manipulation"
         },
         {
-          "t": "2026-11-09T15:35:56.832Z",
+          "t": "2026-11-09T15:39:24.809Z",
           "m": "S. Murugan · Pinned technique — T1027 · Obfuscated Files or Information"
         },
         {
-          "t": "2026-11-09T15:35:56.993Z",
+          "t": "2026-11-09T15:39:24.975Z",
           "m": "S. Murugan · Pinned technique — T1070 · Indicator Removal"
         },
         {
-          "t": "2026-11-09T15:35:57.156Z",
+          "t": "2026-11-09T15:39:25.152Z",
           "m": "S. Murugan · Pinned technique — T1021 · Remote Services"
         },
         {
-          "t": "2026-11-09T15:35:57.339Z",
+          "t": "2026-11-09T15:39:25.316Z",
           "m": "S. Murugan · Pinned technique — T1567 · Exfiltration Over Web Service"
         },
         {
-          "t": "2026-11-09T15:35:57.498Z",
+          "t": "2026-11-09T15:39:25.482Z",
           "m": "S. Murugan · Pinned technique — T1486 · Data Encrypted for Impact"
         },
         {
-          "t": "2026-11-09T15:35:57.664Z",
+          "t": "2026-11-09T15:39:25.649Z",
           "m": "S. Murugan · Pinned technique — T1489 · Service Stop"
         },
         {
-          "t": "2026-11-09T15:35:57.830Z",
+          "t": "2026-11-09T15:39:25.818Z",
           "m": "S. Murugan · Pinned technique — T1036 · Masquerading"
         },
         {
-          "t": "2026-11-09T15:35:57.992Z",
+          "t": "2026-11-09T15:39:25.982Z",
           "m": "S. Murugan · Pinned technique — T1105 · Ingress Tool Transfer"
         },
         {
-          "t": "2026-11-09T15:35:58.156Z",
+          "t": "2026-11-09T15:39:26.150Z",
           "m": "S. Murugan · Pinned event — SafePay first observed (per CISA)"
         },
         {
-          "t": "2026-11-09T15:35:58.317Z",
+          "t": "2026-11-09T15:39:26.321Z",
           "m": "S. Murugan · Pinned event — Start of IOC observation window"
         },
         {
-          "t": "2026-11-09T15:35:58.481Z",
+          "t": "2026-11-09T15:39:26.504Z",
           "m": "S. Murugan · Pinned event — Last observed IOCs in FBI investigations"
         },
         {
-          "t": "2026-11-09T15:35:58.652Z",
+          "t": "2026-11-09T15:39:26.682Z",
           "m": "S. Murugan · Pinned event — Joint advisory AA26-293A published"
         },
         {
-          "t": "2026-11-09T15:35:58.840Z",
+          "t": "2026-11-09T15:39:26.868Z",
           "m": "S. Murugan · Added to inbox: transfer — Transfer"
         },
         {
-          "t": "2026-11-09T15:35:59.088Z",
+          "t": "2026-11-09T15:39:27.113Z",
           "m": "S. Murugan · Pinned to board: Transfer"
         },
         {
-          "t": "2026-11-09T15:35:59.638Z",
+          "t": "2026-11-09T15:39:27.663Z",
           "m": "S. Murugan · Added to inbox: location — Unknown location"
         },
         {
-          "t": "2026-11-09T15:35:59.888Z",
+          "t": "2026-11-09T15:39:27.914Z",
           "m": "S. Murugan · Pinned to board: Unknown location"
         },
         {
-          "t": "2026-11-09T15:36:00.405Z",
+          "t": "2026-11-09T15:39:28.446Z",
           "m": "S. Murugan · Added to inbox: location — Unknown location"
         },
         {
-          "t": "2026-11-09T15:36:00.655Z",
+          "t": "2026-11-09T15:39:28.697Z",
           "m": "S. Murugan · Pinned to board: Unknown location"
         },
         {
-          "t": "2026-11-09T15:36:01.193Z",
+          "t": "2026-11-09T15:39:29.284Z",
           "m": "S. Murugan · Pinned note — Encryption: ChaCha20 stream cipher with "
         },
         {
-          "t": "2026-11-09T15:36:01.405Z",
+          "t": "2026-11-09T15:39:29.497Z",
           "m": "S. Murugan · Added to inbox: photo — Untitled photo"
         },
         {
-          "t": "2026-11-09T15:36:01.655Z",
+          "t": "2026-11-09T15:39:29.749Z",
           "m": "S. Murugan · Pinned to board: Untitled photo"
         },
         {
-          "t": "2026-11-09T15:36:02.218Z",
+          "t": "2026-11-09T15:39:30.311Z",
           "m": "S. Murugan · File attached: cisa-advisory-aa26-293a.png sha256 8ae3c3eb912f…"
         },
         {
-          "t": "2026-11-09T15:36:03.204Z",
+          "t": "2026-11-09T15:39:31.313Z",
           "m": "S. Murugan · Stamped CONFIRMED — CISA advisory page — capture 09 Nov 2026"
         },
         {
-          "t": "2026-11-09T15:36:03.254Z",
+          "t": "2026-11-09T15:39:31.362Z",
           "m": "S. Murugan · Added to inbox: photo — Untitled photo"
         },
         {
-          "t": "2026-11-09T15:36:03.504Z",
+          "t": "2026-11-09T15:39:31.613Z",
           "m": "S. Murugan · Pinned to board: Untitled photo"
         },
         {
-          "t": "2026-11-09T15:36:04.065Z",
+          "t": "2026-11-09T15:39:32.179Z",
           "m": "S. Murugan · File attached: attack-path-diagram.png sha256 1fb770fb9405…"
         },
         {
-          "t": "2026-11-09T15:36:05.803Z",
+          "t": "2026-11-09T15:39:33.912Z",
           "m": "S. Murugan · File attached: operator-placeholder.png sha256 5ad1a959635b…"
         },
         {
-          "t": "2026-11-09T15:36:06.805Z",
+          "t": "2026-11-09T15:39:34.913Z",
           "m": "S. Murugan · Stamped UNVERIFIED — SafePay affiliate (unidentified)"
         },
         {
-          "t": "2026-11-09T15:36:07.103Z",
+          "t": "2026-11-09T15:39:35.188Z",
           "m": "S. Murugan · File attached: map-lithuania-baltics.png sha256 51b94a85e3c9…"
         },
         {
-          "t": "2026-11-09T15:36:08.296Z",
+          "t": "2026-11-09T15:39:36.380Z",
           "m": "S. Murugan · File attached: map-falkenstein-de.png sha256 490952f124fa…"
         },
         {
-          "t": "2026-11-09T15:36:09.971Z",
+          "t": "2026-11-09T15:39:38.079Z",
           "m": "S. Murugan · Stamped CONFIRMED — 600+ victims — businesses & critical infrastructure"
         },
         {
-          "t": "2026-11-09T15:36:11.137Z",
+          "t": "2026-11-09T15:39:39.295Z",
           "m": "S. Murugan · Stamped CONFIRMED — Tools repurposed by the actors"
         },
         {
-          "t": "2026-11-09T15:36:11.671Z",
+          "t": "2026-11-09T15:39:39.846Z",
           "m": "S. Murugan · Stamped CONFIRMED — #StopRansomware: SafePay Ransomware — joint advisory"
         },
         {
-          "t": "2026-11-09T15:36:17.757Z",
+          "t": "2026-11-09T15:39:46.065Z",
           "m": "S. Murugan · Cluster added: New cluster"
         },
         {
-          "t": "2026-11-09T15:36:18.390Z",
+          "t": "2026-11-09T15:39:46.699Z",
           "m": "S. Murugan · Cluster added: New cluster"
         },
         {
-          "t": "2026-11-09T15:36:19.023Z",
+          "t": "2026-11-09T15:39:47.332Z",
           "m": "S. Murugan · Cluster added: New cluster"
         },
         {
-          "t": "2026-11-09T15:36:20.599Z",
+          "t": "2026-11-09T15:39:48.855Z",
           "m": "S. Murugan · Thread pinned: SafePay affiliate (unidentified) → 88.119.167.239 (controls)"
         },
         {
-          "t": "2026-11-09T15:36:21.149Z",
+          "t": "2026-11-09T15:39:49.424Z",
           "m": "S. Murugan · Thread pinned: SafePay affiliate (unidentified) → 5.255.11.134 (controls)"
         },
         {
-          "t": "2026-11-09T15:36:21.681Z",
+          "t": "2026-11-09T15:39:49.940Z",
           "m": "S. Murugan · Thread pinned: SafePay affiliate (unidentified) → 37.10.71.188 (controls)"
         },
         {
-          "t": "2026-11-09T15:36:22.211Z",
+          "t": "2026-11-09T15:39:50.477Z",
           "m": "S. Murugan · Thread pinned: 88.119.167.239 → Vilnius, Lithuania — UAB Bacloud (AS61272) hosting soc.dll C2 (located at)"
         },
         {
-          "t": "2026-11-09T15:36:22.763Z",
+          "t": "2026-11-09T15:39:51.003Z",
           "m": "S. Murugan · Thread pinned: 167.235.225.149 → Falkenstein, Germany — Hetzner CLOUD-FSN1 hosting client login panels (located at)"
         },
         {
-          "t": "2026-11-09T15:36:23.312Z",
+          "t": "2026-11-09T15:39:51.522Z",
           "m": "S. Murugan · Thread pinned: 921df888aaabcd828a3723f4c9f5fe8b8379c6b7067d16b2ea10152300417eae → 88.119.167.239 (resolves to)"
         },
         {
-          "t": "2026-11-09T15:36:23.881Z",
+          "t": "2026-11-09T15:39:52.060Z",
           "m": "S. Murugan · Thread pinned: 327b8b61eb446cc4f710771e44484f62b804ae3d262b57a56575053e2df67917 → a0dc80a37eb7e2716c02a94adc8df9baedec192a77bde31669faed228d9ff526 (alias of)"
         },
         {
-          "t": "2026-11-09T15:36:24.440Z",
+          "t": "2026-11-09T15:39:52.610Z",
           "m": "S. Murugan · Thread pinned: T1190 · Exploit Public-Facing Application → CVE-2024-40711 (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:24.979Z",
+          "t": "2026-11-09T15:39:53.162Z",
           "m": "S. Murugan · Thread pinned: T1190 · Exploit Public-Facing Application → CVE-2024-40766 (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:25.518Z",
+          "t": "2026-11-09T15:39:53.720Z",
           "m": "S. Murugan · Thread pinned: SafePay affiliate (unidentified) → Initial access (suspected)"
         },
         {
-          "t": "2026-11-09T15:36:26.063Z",
+          "t": "2026-11-09T15:39:54.272Z",
           "m": "S. Murugan · Thread pinned: SafePay affiliate (unidentified) → 600+ victims — businesses & critical infrastructure (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:26.620Z",
+          "t": "2026-11-09T15:39:54.838Z",
           "m": "S. Murugan · Thread pinned: 600+ victims — businesses & critical infrastructure → Ransom demand — share of revenue, paid in crypto (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:27.176Z",
+          "t": "2026-11-09T15:39:55.375Z",
           "m": "S. Murugan · Thread pinned: T1486 · Data Encrypted for Impact → Encryption begins (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:27.737Z",
+          "t": "2026-11-09T15:39:55.932Z",
           "m": "S. Murugan · Thread pinned: Encryption: ChaCha20 stream cipher with  → T1486 · Data Encrypted for Impact (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:28.290Z",
+          "t": "2026-11-09T15:39:56.487Z",
           "m": "S. Murugan · Thread pinned: Tools repurposed by the actors → SafePay affiliate (unidentified) (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:28.849Z",
+          "t": "2026-11-09T15:39:57.034Z",
           "m": "S. Murugan · Thread pinned: Attack path — analyst diagram → SafePay affiliate (unidentified) (linked to)"
         },
         {
-          "t": "2026-11-09T15:36:29.403Z",
+          "t": "2026-11-09T15:39:57.602Z",
           "m": "S. Murugan · Thread pinned: #StopRansomware: SafePay Ransomware — joint advisory → Joint advisory AA26-293A published (linked to)"
         },
         {
-          "t": "2026-11-09T15:37:36.859Z",
+          "t": "2026-11-09T15:39:58.454Z",
+          "m": "S. Murugan · Thread pinned: CISA advisory page — capture 09 Nov 2026 → #StopRansomware: SafePay Ransomware — joint advisory (linked to)"
+        },
+        {
+          "t": "2026-11-09T15:39:59.199Z",
+          "m": "S. Murugan · Confidence medium — 921df888aaabcd828a3723f4c9f5fe8b8379c6b7067d16b2ea10152300417eae → 88.119.167.239"
+        },
+        {
+          "t": "2026-11-09T15:40:20.422Z",
           "m": "S. Murugan · Pinned indicator — CVE-2024-40711"
         },
         {
-          "t": "2026-11-09T15:37:42.273Z",
+          "t": "2026-11-09T15:40:25.916Z",
           "m": "S. Murugan · Stamped CONFIRMED — 88.119.167.239"
         },
         {
-          "t": "2026-11-09T15:37:42.850Z",
+          "t": "2026-11-09T15:40:26.382Z",
           "m": "S. Murugan · Task added: Block at the perimeter and search 12 months of proxy / firewall logs"
         },
         {
-          "t": "2026-11-09T15:37:42.902Z",
+          "t": "2026-11-09T15:40:26.430Z",
           "m": "S. Murugan · Task added: Ask Bacloud abuse desk for subscriber details (RFI)"
         },
         {
-          "t": "2026-11-09T15:37:44.762Z",
+          "t": "2026-11-09T15:40:28.271Z",
           "m": "S. Murugan · Actor profile dropped in: LockBit (4 techniques)"
         },
         {
-          "t": "2026-11-09T15:37:45.521Z",
+          "t": "2026-11-09T15:40:29.033Z",
           "m": "S. Murugan · Stamped FALSE LEAD — LockBit"
         },
         {
-          "t": "2026-11-09T15:37:46.343Z",
+          "t": "2026-11-09T15:40:29.855Z",
           "m": "S. Murugan · Merged \"T1190 · Exploit Public-Facing Application\" into \"T1190 · Exploit Public-Facing Application\""
         },
         {
-          "t": "2026-11-09T15:37:46.924Z",
+          "t": "2026-11-09T15:40:30.436Z",
           "m": "S. Murugan · Merged \"T1486 · Data Encrypted for Impact\" into \"T1486 · Data Encrypted for Impact\""
         },
         {
-          "t": "2026-11-09T15:37:47.556Z",
+          "t": "2026-11-09T15:40:31.065Z",
           "m": "S. Murugan · Thread pinned: SafePay affiliate (unidentified) → LockBit (linked to)"
         },
         {
-          "t": "2026-11-09T15:37:48.025Z",
+          "t": "2026-11-09T15:40:31.554Z",
           "m": "S. Murugan · Thread pinned: Hostnames seen in SafePay intrusions (CI → Tools repurposed by the actors (linked to)"
         },
         {
-          "t": "2026-11-09T15:37:57.845Z",
+          "t": "2026-11-09T15:40:41.396Z",
           "m": "S. Murugan · Snapshot saved: Triage complete"
         },
         {
-          "t": "2026-11-09T15:37:58.093Z",
+          "t": "2026-11-09T15:40:41.653Z",
           "m": "S. Murugan · Pinned note — Added after the snapshot: check whether "
         },
         {
-          "t": "2026-11-09T15:37:59.597Z",
+          "t": "2026-11-09T15:40:43.100Z",
           "m": "S. Murugan · Snapshot restored: Triage complete"
         },
         {
-          "t": "2026-11-09T15:38:02.937Z",
+          "t": "2026-11-09T15:40:46.388Z",
           "m": "S. Murugan · Judgement confidence → high"
         },
         {
-          "t": "2026-11-09T15:38:03.155Z",
+          "t": "2026-11-09T15:40:46.602Z",
           "m": "S. Murugan · Review state → published"
         },
         {
-          "t": "2026-11-09T15:38:04.277Z",
+          "t": "2026-11-09T15:40:47.753Z",
           "m": "S. Murugan · Request generated (rfi)"
         },
         {
-          "t": "2026-11-09T15:38:11.236Z",
+          "t": "2026-11-09T15:40:54.540Z",
           "m": "S. Murugan · Case brief opened"
         },
         {
-          "t": "2026-11-09T15:38:15.354Z",
+          "t": "2026-11-09T15:40:58.682Z",
           "m": "S. Murugan · One-pager opened"
         },
         {
-          "t": "2026-11-09T15:38:19.089Z",
-          "m": "S. Murugan · STIX bundle exported (89 objects)"
+          "t": "2026-11-09T15:41:02.421Z",
+          "m": "S. Murugan · STIX bundle exported (90 objects)"
         }
       ],
       "ach": {
-        "imw9fb2e2eest|imw9fb2e22sll": "C",
-        "imw9fb2e2eest|imw9fb2e2o60l": "C",
-        "imw9fb2e2qlsn|imw9fb2e22sll": "C",
-        "imw9fb2e2qlsn|imw9fb2e2o60l": "C",
-        "imw9fb2e2qlsn|imw9fb2e2lhvh": "I",
-        "imw9fb2e2xrk1|imw9fb2e22sll": "C",
-        "imw9fb2e2xrk1|imw9fb2e2o60l": "C",
-        "imw9fb2e2ckh1|imw9fb2e22sll": "C",
-        "imw9fb2e2ckh1|imw9fb2e2o60l": "C",
-        "imw9fb2e2ckh1|imw9fb2e2lhvh": "I",
-        "imw9fb2e2bx6a|imw9fb2e22sll": "C",
-        "imw9fb2e2bx6a|imw9fb2e2o60l": "C",
-        "imw9fb2e2vzvr|imw9fb2e22sll": "C",
-        "imw9fb2e2vzvr|imw9fb2e2o60l": "C",
-        "imw9fb2e2vzvr|imw9fb2e2lhvh": "I",
-        "imw9fb2e27h9a|imw9fb2e22sll": "C",
-        "imw9fb2e27h9a|imw9fb2e2o60l": "C",
-        "imw9fb2e2pccp|imw9fb2e22sll": "C",
-        "imw9fb2e2pccp|imw9fb2e2o60l": "C",
-        "imw9fb2e2pccp|imw9fb2e2lhvh": "I",
-        "imw9fb2e2rf50|imw9fb2e22sll": "C",
-        "imw9fb2e2rf50|imw9fb2e2o60l": "C",
-        "imw9fb41gemw4|imw9fb2e22sll": "C",
-        "imw9fb41gemw4|imw9fb2e2o60l": "C",
-        "imw9fb41gemw4|imw9fb2e2lhvh": "I",
-        "imw9fb41gxpzc|imw9fb2e22sll": "C",
-        "imw9fb41gxpzc|imw9fb2e2o60l": "C",
-        "imw9fb41gdj55|imw9fb2e22sll": "C",
-        "imw9fb41gdj55|imw9fb2e2o60l": "C",
-        "imw9fb41gdj55|imw9fb2e2lhvh": "I"
+        "imw9ffitrhrmi|imw9ffitrclx5": "C",
+        "imw9ffitrhrmi|imw9ffitrn8dd": "C",
+        "imw9ffitrzdz9|imw9ffitrclx5": "C",
+        "imw9ffitrzdz9|imw9ffitrn8dd": "C",
+        "imw9ffitrzdz9|imw9ffitruunm": "I",
+        "imw9ffitr1sax|imw9ffitrclx5": "C",
+        "imw9ffitr1sax|imw9ffitrn8dd": "C",
+        "imw9ffitrwd3a|imw9ffitrclx5": "C",
+        "imw9ffitrwd3a|imw9ffitrn8dd": "C",
+        "imw9ffitrwd3a|imw9ffitruunm": "I",
+        "imw9ffitromwd|imw9ffitrclx5": "C",
+        "imw9ffitromwd|imw9ffitrn8dd": "C",
+        "imw9ffitr1uq3|imw9ffitrclx5": "C",
+        "imw9ffitr1uq3|imw9ffitrn8dd": "C",
+        "imw9ffitr1uq3|imw9ffitruunm": "I",
+        "imw9ffitrrpfu|imw9ffitrclx5": "C",
+        "imw9ffitrrpfu|imw9ffitrn8dd": "C",
+        "imw9ffitrk5ma|imw9ffitrclx5": "C",
+        "imw9ffitrk5ma|imw9ffitrn8dd": "C",
+        "imw9ffitrk5ma|imw9ffitruunm": "I",
+        "imw9ffitrj2ht|imw9ffitrclx5": "C",
+        "imw9ffitrj2ht|imw9ffitrn8dd": "C",
+        "imw9ffki245u8|imw9ffitrclx5": "C",
+        "imw9ffki245u8|imw9ffitrn8dd": "C",
+        "imw9ffki245u8|imw9ffitruunm": "I",
+        "imw9ffki2dyw7|imw9ffitrclx5": "C",
+        "imw9ffki2dyw7|imw9ffitrn8dd": "C",
+        "imw9ffki24v82|imw9ffitrclx5": "C",
+        "imw9ffki24v82|imw9ffitrn8dd": "C",
+        "imw9ffki24v82|imw9ffitruunm": "I"
       },
       "snapshots": [
         {
-          "id": "imw9fds9hj8gp",
+          "id": "imw9fhagk08eh",
           "name": "Triage complete",
-          "t": "2026-11-09T15:37:57.845Z",
+          "t": "2026-11-09T15:40:41.396Z",
           "items": [
             {
-              "id": "imw9fb2e2eest",
+              "id": "imw9ffitrhrmi",
               "title": "Initial access",
               "body": "",
               "url": "",
@@ -2721,7 +2738,7 @@
               "num": 1
             },
             {
-              "id": "imw9fb2e2qlsn",
+              "id": "imw9ffitrzdz9",
               "title": "Encryption begins",
               "body": "",
               "url": "",
@@ -2752,7 +2769,7 @@
               "num": 2
             },
             {
-              "id": "imw9fb2e2xrk1",
+              "id": "imw9ffitr1sax",
               "title": "Exploit Public-Facing Application",
               "body": "",
               "url": "",
@@ -2785,7 +2802,7 @@
               "comments": []
             },
             {
-              "id": "imw9fb2e2ckh1",
+              "id": "imw9ffitrwd3a",
               "title": "Data Encrypted for Impact",
               "body": "",
               "url": "",
@@ -2818,7 +2835,7 @@
               "comments": []
             },
             {
-              "id": "imw9fb2e2bx6a",
+              "id": "imw9ffitromwd",
               "title": "Encryptor sample",
               "body": "",
               "url": "",
@@ -2849,7 +2866,7 @@
               "num": 5
             },
             {
-              "id": "imw9fb2e2vzvr",
+              "id": "imw9ffitr1uq3",
               "title": "Leak site post",
               "body": "",
               "url": "",
@@ -2880,7 +2897,7 @@
               "num": 6
             },
             {
-              "id": "imw9fb2e27h9a",
+              "id": "imw9ffitrrpfu",
               "title": "SafePay affiliate (unidentified)",
               "body": "No individual identified. Uses Mullvad VPN exits, phished account profiles and stolen or brute-forced VPN credentials. Lives off the land, then installs AnyDesk / TeamViewer to push the locker. A \"representative\" phones victims after encryption.",
               "url": "",
@@ -2911,11 +2928,11 @@
               "num": 7,
               "fileName": "operator-placeholder.png",
               "fileHash": "5ad1a959635bd9f324d9b11e27924ef6083205d0b4fa6a2b1b87e51cac179a64",
-              "addedAt": "2026-11-09T15:36:05.803Z",
+              "addedAt": "2026-11-09T15:39:33.911Z",
               "addedBy": "S. Murugan"
             },
             {
-              "id": "imw9fb2e2pccp",
+              "id": "imw9ffitrk5ma",
               "title": "600+ victims — businesses & critical infrastructure",
               "body": "",
               "url": "",
@@ -2946,7 +2963,7 @@
               "num": 8
             },
             {
-              "id": "imw9fb2e2rf50",
+              "id": "imw9ffitrj2ht",
               "title": "Tools repurposed by the actors",
               "body": "7-Zip · FileZilla · Mimikatz · PowerShell · PsExec · RClone · ScreenConnect · ShareFinder.ps1 · WinRAR · WinRM · AnyDesk · TeamViewer · Acronis Disk Director · SharpShares · NetExec · Backblaze b2.exe\n\nLegitimate on their own; the advisory warns not to attribute them as malicious without evidence.",
               "url": "",
@@ -2976,42 +2993,42 @@
               "type": "doc",
               "todo": [
                 {
-                  "id": "imw9fb2e2m5yz",
+                  "id": "imw9ffitrihkb",
                   "text": "Collect the ransom note and sample hash",
                   "owner": "",
                   "due": "",
                   "done": false,
-                  "at": "2026-11-09T15:35:51.002Z"
+                  "at": "2026-11-09T15:39:18.927Z"
                 },
                 {
-                  "id": "imw9fb2e21htz",
+                  "id": "imw9ffitrwu34",
                   "text": "Confirm the entry point from VPN / edge logs",
                   "owner": "",
                   "due": "",
                   "done": false,
-                  "at": "2026-11-09T15:35:51.002Z"
+                  "at": "2026-11-09T15:39:18.927Z"
                 },
                 {
-                  "id": "imw9fb2e29fu6",
+                  "id": "imw9ffitryvh5",
                   "text": "Inventory what was exfiltrated before encryption",
                   "owner": "",
                   "due": "",
                   "done": false,
-                  "at": "2026-11-09T15:35:51.002Z"
+                  "at": "2026-11-09T15:39:18.927Z"
                 },
                 {
-                  "id": "imw9fb2e2hgdt",
+                  "id": "imw9ffitrchw6",
                   "text": "Decide on negotiation posture and notify counsel",
                   "owner": "",
                   "due": "",
                   "done": false,
-                  "at": "2026-11-09T15:35:51.002Z"
+                  "at": "2026-11-09T15:39:18.927Z"
                 }
               ],
               "num": 9
             },
             {
-              "id": "imw9fb41gemw4",
+              "id": "imw9ffki245u8",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3042,7 +3059,7 @@
               "num": 10
             },
             {
-              "id": "imw9fb41gxpzc",
+              "id": "imw9ffki2dyw7",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3073,7 +3090,7 @@
               "num": 11
             },
             {
-              "id": "imw9fb41gdj55",
+              "id": "imw9ffki24v82",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3104,7 +3121,7 @@
               "num": 12
             },
             {
-              "id": "imw9fb41g5bnq",
+              "id": "imw9ffki2p55b",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3135,7 +3152,7 @@
               "num": 13
             },
             {
-              "id": "imw9fb41gyng7",
+              "id": "imw9ffki2bf6s",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3166,7 +3183,7 @@
               "num": 14
             },
             {
-              "id": "imw9fb41gez54",
+              "id": "imw9ffki2t4za",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3197,7 +3214,7 @@
               "num": 15
             },
             {
-              "id": "imw9fb41gqn8t",
+              "id": "imw9ffki2xnyb",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3228,7 +3245,7 @@
               "num": 16
             },
             {
-              "id": "imw9fb41g5uck",
+              "id": "imw9ffki3prf0",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3259,7 +3276,7 @@
               "num": 17
             },
             {
-              "id": "imw9fb41gk3ix",
+              "id": "imw9ffki3ylwy",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3290,7 +3307,7 @@
               "num": 18
             },
             {
-              "id": "imw9fb41gy3uk",
+              "id": "imw9ffki3xlps",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3321,7 +3338,7 @@
               "num": 19
             },
             {
-              "id": "imw9fb41g3qva",
+              "id": "imw9ffki3fqaf",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3352,7 +3369,7 @@
               "num": 20
             },
             {
-              "id": "imw9fb41gt573",
+              "id": "imw9ffki3ev1u",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3383,7 +3400,7 @@
               "num": 21
             },
             {
-              "id": "imw9fb41g91gd",
+              "id": "imw9ffki33bjb",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3414,7 +3431,7 @@
               "num": 22
             },
             {
-              "id": "imw9fb41gpmu9",
+              "id": "imw9ffki3zocj",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3445,7 +3462,7 @@
               "num": 23
             },
             {
-              "id": "imw9fb41g9537",
+              "id": "imw9ffki32lq8",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3476,7 +3493,7 @@
               "num": 24
             },
             {
-              "id": "imw9fb41h9li7",
+              "id": "imw9ffki3gtoa",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3507,7 +3524,7 @@
               "num": 25
             },
             {
-              "id": "imw9fb41hczg9",
+              "id": "imw9ffki3i5ii",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3538,7 +3555,7 @@
               "num": 26
             },
             {
-              "id": "imw9fb41hg0hm",
+              "id": "imw9ffki3sm5t",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3569,7 +3586,7 @@
               "num": 27
             },
             {
-              "id": "imw9fb41hb9rp",
+              "id": "imw9ffki34hey",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3600,33 +3617,33 @@
               "num": 28,
               "todo": [
                 {
-                  "id": "imw9fdgoys7t4",
+                  "id": "imw9fgyviyn7e",
                   "text": "Block at the perimeter and search 12 months of proxy / firewall logs",
                   "owner": "S. Murugan",
                   "due": "2026-11-01",
                   "done": false,
-                  "at": "2026-11-09T15:37:42.850Z"
+                  "at": "2026-11-09T15:40:26.382Z"
                 },
                 {
-                  "id": "imw9fdgqe9b4v",
+                  "id": "imw9fgywu8php",
                   "text": "Ask Bacloud abuse desk for subscriber details (RFI)",
                   "owner": "S. Murugan",
                   "due": "2026-11-14",
                   "done": false,
-                  "at": "2026-11-09T15:37:42.902Z"
+                  "at": "2026-11-09T15:40:26.430Z"
                 }
               ],
               "comments": [
                 {
-                  "id": "imw9fdgrbs8a5",
+                  "id": "imw9fgyxsp92x",
                   "text": "VirusTotal 14/92 on 09 Nov; last CISA sighting Aug 2026 — treat as stale-but-live until Bacloud answers.",
                   "by": "S. Murugan",
-                  "at": "2026-11-09T15:37:42.935Z"
+                  "at": "2026-11-09T15:40:26.464Z"
                 }
               ]
             },
             {
-              "id": "imw9fb41h9y79",
+              "id": "imw9ffki3t2lp",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3657,7 +3674,7 @@
               "num": 29
             },
             {
-              "id": "imw9fb4wwrpw1",
+              "id": "imw9ffldi1wjg",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3688,7 +3705,7 @@
               "num": 30
             },
             {
-              "id": "imw9fb4wwpeeh",
+              "id": "imw9ffldj4h8x",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3719,7 +3736,7 @@
               "num": 31
             },
             {
-              "id": "imw9fb4wwupoe",
+              "id": "imw9ffldjiizv",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3749,7 +3766,7 @@
               "y": 0
             },
             {
-              "id": "imw9fb4wwqvrs",
+              "id": "imw9ffldjk80w",
               "type": "indicator",
               "title": "",
               "body": "",
@@ -3779,7 +3796,7 @@
               "y": 0
             },
             {
-              "id": "imw9fb5x7phmm",
+              "id": "imw9ffmdukcfj",
               "type": "note",
               "title": "",
               "body": "Hostnames seen in SafePay intrusions (CISA AA26-293A): WIN-SBOE3CPNAL, WIN-3IUUOFVTQAR, WIN-DK18BI83M0S, WIN-I1HRRJHCEIV",
@@ -3806,11 +3823,11 @@
               "image": null,
               "pinned": true,
               "x": 600,
-              "y": 1320.0000000000002,
+              "y": 1320,
               "num": 32
             },
             {
-              "id": "imw9fb630nm7i",
+              "id": "imw9ffmjndsva",
               "type": "link",
               "title": "#StopRansomware: SafePay Ransomware — joint advisory",
               "body": "",
@@ -3836,12 +3853,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 40,
+              "x": 39.99999999999994,
               "y": 900,
               "num": 33
             },
             {
-              "id": "imw9fb69bwul8",
+              "id": "imw9ffmpxdf2y",
               "type": "ttp",
               "title": "External Remote Services",
               "body": "",
@@ -3868,11 +3885,11 @@
               "image": null,
               "pinned": true,
               "x": 2560,
-              "y": 40.00000000000003,
+              "y": 39.99999999999997,
               "num": 34
             },
             {
-              "id": "imw9fb6ik7ots",
+              "id": "imw9ffmz8a027",
               "type": "ttp",
               "title": "Brute Force",
               "body": "",
@@ -3898,12 +3915,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 2560,
+              "x": 2560.0000000000005,
               "y": 209.99999999999994,
               "num": 36
             },
             {
-              "id": "imw9fb6n2mgwn",
+              "id": "imw9ffn3v0w1w",
               "type": "ttp",
               "title": "Command and Scripting Interpreter",
               "body": "",
@@ -3929,12 +3946,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 2800,
-              "y": 210.00000000000003,
+              "x": 2800.0000000000005,
+              "y": 210.00000000000006,
               "num": 37
             },
             {
-              "id": "imw9fb6rlegw8",
+              "id": "imw9ffn8ngnmu",
               "type": "ttp",
               "title": "Account Manipulation",
               "body": "",
@@ -3960,12 +3977,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 2559.9999999999995,
-              "y": 380.00000000000006,
+              "x": 2560,
+              "y": 380,
               "num": 38
             },
             {
-              "id": "imw9fb6w0qicy",
+              "id": "imw9ffnd56rj6",
               "type": "ttp",
               "title": "Obfuscated Files or Information",
               "body": "",
@@ -3991,12 +4008,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 2800,
-              "y": 380.00000000000006,
+              "x": 2800.0000000000005,
+              "y": 380,
               "num": 39
             },
             {
-              "id": "imw9fb70gi38a",
+              "id": "imw9ffnhrhnvx",
               "type": "ttp",
               "title": "Indicator Removal",
               "body": "",
@@ -4022,12 +4039,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 2560,
+              "x": 2560.0000000000005,
               "y": 550,
               "num": 40
             },
             {
-              "id": "imw9fb750ft0c",
+              "id": "imw9ffnmosz2t",
               "type": "ttp",
               "title": "Remote Services",
               "body": "",
@@ -4058,7 +4075,7 @@
               "num": 41
             },
             {
-              "id": "imw9fb7a32lfz",
+              "id": "imw9ffnr88ou7",
               "type": "ttp",
               "title": "Exfiltration Over Web Service",
               "body": "",
@@ -4089,7 +4106,7 @@
               "num": 42
             },
             {
-              "id": "imw9fb7j4cezf",
+              "id": "imw9ffo0gz6fj",
               "type": "ttp",
               "title": "Service Stop",
               "body": "",
@@ -4116,11 +4133,11 @@
               "image": null,
               "pinned": true,
               "x": 2560,
-              "y": 890,
+              "y": 890.0000000000002,
               "num": 44
             },
             {
-              "id": "imw9fb7nqws04",
+              "id": "imw9ffo55f60c",
               "type": "ttp",
               "title": "Masquerading",
               "body": "",
@@ -4151,7 +4168,7 @@
               "num": 45
             },
             {
-              "id": "imw9fb7s84zmv",
+              "id": "imw9ffo9psfao",
               "type": "ttp",
               "title": "Ingress Tool Transfer",
               "body": "",
@@ -4182,7 +4199,7 @@
               "num": 46
             },
             {
-              "id": "imw9fb7wshowl",
+              "id": "imw9ffoee990q",
               "type": "event",
               "title": "SafePay first observed (per CISA)",
               "body": "",
@@ -4208,12 +4225,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 40.00000000000006,
-              "y": 40.00000000000003,
+              "x": 40,
+              "y": 40,
               "num": 47
             },
             {
-              "id": "imw9fb819fq8k",
+              "id": "imw9ffoj52qqa",
               "type": "event",
               "title": "Start of IOC observation window",
               "body": "",
@@ -4239,12 +4256,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 40,
-              "y": 250.00000000000003,
+              "x": 39.999999999999886,
+              "y": 250.00000000000006,
               "num": 48
             },
             {
-              "id": "imw9fb85txbgp",
+              "id": "imw9ffoo8y3nj",
               "type": "event",
               "title": "Last observed IOCs in FBI investigations",
               "body": "",
@@ -4270,12 +4287,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 40,
-              "y": 459.99999999999994,
+              "x": 39.999999999999886,
+              "y": 460,
               "num": 49
             },
             {
-              "id": "imw9fb8akqyzt",
+              "id": "imw9ffot59p8f",
               "type": "event",
               "title": "Joint advisory AA26-293A published",
               "body": "",
@@ -4301,12 +4318,12 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 39.999999999999886,
-              "y": 670,
+              "x": 39.99999999999994,
+              "y": 670.0000000000001,
               "num": 50
             },
             {
-              "id": "imw9fb8frvh2s",
+              "id": "imw9ffoycvp7n",
               "type": "tx",
               "title": "Ransom demand — share of revenue, paid in crypto",
               "body": "Ransom paid in cryptocurrency; no addresses or tx hashes are published in the advisory. Paste them here when a case yields them: the card then links to the block explorer.",
@@ -4337,7 +4354,7 @@
               "num": 51
             },
             {
-              "id": "imw9fb91xuz93",
+              "id": "imw9ffpkfp935",
               "type": "location",
               "title": "Vilnius, Lithuania — UAB Bacloud (AS61272) hosting soc.dll C2",
               "body": "RDAP: LT-BACLOUD, UAB Bacloud, AS61272. Hosts 88.119.167[.]239, the soc.dll command-and-control address in the advisory. VirusTotal: 14/92 vendors flag the IP.",
@@ -4368,11 +4385,11 @@
               "num": 52,
               "fileName": "map-lithuania-baltics.png",
               "fileHash": "51b94a85e3c9c695b4dc228fcb4c5f5ddfa1566baa8de4bac62cb2576a5d0dcc",
-              "addedAt": "2026-11-09T15:36:07.084Z",
+              "addedAt": "2026-11-09T15:39:35.136Z",
               "addedBy": "S. Murugan"
             },
             {
-              "id": "imw9fb9n85v9m",
+              "id": "imw9ffq66b4wp",
               "type": "location",
               "title": "Falkenstein, Germany — Hetzner CLOUD-FSN1 hosting client login panels",
               "body": "RDAP: CLOUD-FSN1 (Hetzner, DE). Hosts 167.235.225[.]149, listed as \"client login panels\".",
@@ -4403,11 +4420,11 @@
               "num": 53,
               "fileName": "map-falkenstein-de.png",
               "fileHash": "490952f124fa63925ea822fbbab6c9c2e23a499f57c77d4bc686150eb30e2a25",
-              "addedAt": "2026-11-09T15:36:08.278Z",
+              "addedAt": "2026-11-09T15:39:36.360Z",
               "addedBy": "S. Murugan"
             },
             {
-              "id": "imw9fba94ihs8",
+              "id": "imw9ffqtgxy2h",
               "type": "note",
               "title": "",
               "body": "Encryption: ChaCha20 stream cipher with RSA key exchange; full or partial by file type/size; extension .SafePay; binary deletes itself afterwards.",
@@ -4434,11 +4451,11 @@
               "image": null,
               "pinned": true,
               "x": 340,
-              "y": 1320.0000000000002,
+              "y": 1319.9999999999998,
               "num": 54
             },
             {
-              "id": "imw9fbaf0qceo",
+              "id": "imw9ffqzd3zvm",
               "type": "photo",
               "title": "CISA advisory page — capture 09 Nov 2026",
               "body": "",
@@ -4469,11 +4486,11 @@
               "num": 55,
               "fileName": "cisa-advisory-aa26-293a.png",
               "fileHash": "8ae3c3eb912f93c00626241fdcbed978ebc923802419bec0f5c088d9e2da6ea6",
-              "addedAt": "2026-11-09T15:36:02.206Z",
+              "addedAt": "2026-11-09T15:39:30.311Z",
               "addedBy": "S. Murugan"
             },
             {
-              "id": "imw9fbbue6tdo",
+              "id": "imw9ffsf6gdem",
               "type": "photo",
               "title": "Attack path — analyst diagram",
               "body": "",
@@ -4504,11 +4521,11 @@
               "num": 56,
               "fileName": "attack-path-diagram.png",
               "fileHash": "1fb770fb940508370186707097f033af9a636aaea06794ff3a6881e993d5bed7",
-              "addedAt": "2026-11-09T15:36:04.055Z",
+              "addedAt": "2026-11-09T15:39:32.168Z",
               "addedBy": "S. Murugan"
             },
             {
-              "id": "imw9fdc2ftl5w",
+              "id": "imw9fgu9uvxwa",
               "type": "indicator",
               "title": "",
               "body": "NVD: A deserialization of untrusted data vulnerability with a malicious payload can allow an unauthenticated remote code execution (RCE). | CVSS 9.8 CRITICAL | Published 2024-09-07 | IN CISA KEV since 2024-10-17 — actively exploited",
@@ -4534,8 +4551,8 @@
               "impact": "",
               "image": null,
               "pinned": true,
-              "x": 1400.9999999999998,
-              "y": 658.5000000000001,
+              "x": 1428.9999999999998,
+              "y": 659.4999999999999,
               "num": 57
             },
             {
@@ -4553,7 +4570,7 @@
               "txTo": "",
               "image": null,
               "pinned": true,
-              "id": "imw9fdi5ztmfg",
+              "id": "imw9fh0bwg1pn",
               "type": "person",
               "x": 60,
               "y": 1697,
@@ -4574,7 +4591,7 @@
               "txTo": "",
               "image": null,
               "pinned": true,
-              "id": "imw9fdi5zx1em",
+              "id": "imw9fh0bwucig",
               "type": "ttp",
               "x": 310,
               "y": 1697,
@@ -4595,7 +4612,7 @@
               "txTo": "",
               "image": null,
               "pinned": true,
-              "id": "imw9fdi5ztu6x",
+              "id": "imw9fh0bw2pgz",
               "type": "ttp",
               "x": 545,
               "y": 1697,
@@ -4616,7 +4633,7 @@
               "txTo": "",
               "image": null,
               "pinned": true,
-              "id": "imw9fdi5zt4d3",
+              "id": "imw9fh0bwsobl",
               "type": "ttp",
               "x": 310,
               "y": 1847,
@@ -4637,7 +4654,7 @@
               "txTo": "",
               "image": null,
               "pinned": true,
-              "id": "imw9fdi5ziz00",
+              "id": "imw9fh0bwch3q",
               "type": "ttp",
               "x": 545,
               "y": 1847,
@@ -4646,240 +4663,249 @@
           ],
           "threads": [
             {
-              "id": "imw9fbp84mmfp",
-              "from": "imw9fb2e27h9a",
-              "to": "imw9fb41hb9rp",
+              "id": "imw9fg5x09wqn",
+              "from": "imw9ffitrrpfu",
+              "to": "imw9ffki34hey",
               "rel": "controls",
               "conf": "high",
               "why": "",
               "num": 1
             },
             {
-              "id": "imw9fbpndvzc9",
-              "from": "imw9fb2e27h9a",
-              "to": "imw9fb41hg0hm",
+              "id": "imw9fg6ctca7r",
+              "from": "imw9ffitrrpfu",
+              "to": "imw9ffki3sm5t",
               "rel": "controls",
               "conf": "high",
               "why": "",
               "num": 2
             },
             {
-              "id": "imw9fbq263nqo",
-              "from": "imw9fb2e27h9a",
-              "to": "imw9fb41h9y79",
+              "id": "imw9fg6r5qru0",
+              "from": "imw9ffitrrpfu",
+              "to": "imw9ffki3t2lp",
               "rel": "controls",
               "conf": "high",
               "why": "",
               "num": 3
             },
             {
-              "id": "imw9fbqgwboc9",
-              "from": "imw9fb41hb9rp",
-              "to": "imw9fb91xuz93",
+              "id": "imw9fg762xpk1",
+              "from": "imw9ffki34hey",
+              "to": "imw9ffpkfp935",
               "rel": "located",
               "conf": "high",
               "why": "",
               "num": 4
             },
             {
-              "id": "imw9fbqw7i3d9",
-              "from": "imw9fb41hczg9",
-              "to": "imw9fb9n85v9m",
+              "id": "imw9fg7kotb50",
+              "from": "imw9ffki3i5ii",
+              "to": "imw9ffq66b4wp",
               "rel": "located",
               "conf": "high",
               "why": "",
               "num": 5
             },
             {
-              "id": "imw9fbrbhe1wh",
-              "from": "imw9fb41gez54",
-              "to": "imw9fb41hb9rp",
+              "id": "imw9fg7z3oj7i",
+              "from": "imw9ffki2t4za",
+              "to": "imw9ffki34hey",
               "rel": "resolves",
-              "conf": "high",
-              "why": "",
+              "conf": "medium",
+              "why": "CISA Table 2: 88.119.167[.]239 is the soc.dll command-and-control address; Table 5 gives soc.dll's SHA-256.",
               "num": 6
             },
             {
-              "id": "imw9fbrrannzj",
-              "from": "imw9fb41gk3ix",
-              "to": "imw9fb41gy3uk",
+              "id": "imw9fg8e1j9vn",
+              "from": "imw9ffki3ylwy",
+              "to": "imw9ffki3xlps",
               "rel": "alias",
               "conf": "high",
               "why": "",
               "num": 7
             },
             {
-              "id": "imw9fbs6s90wv",
-              "from": "imw9fb2e2xrk1",
-              "to": "imw9fb41g5bnq",
+              "id": "imw9fg8taa6cd",
+              "from": "imw9ffitr1sax",
+              "to": "imw9ffki2p55b",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 8
             },
             {
-              "id": "imw9fbsls8k4z",
-              "from": "imw9fb2e2xrk1",
-              "to": "imw9fb41gyng7",
+              "id": "imw9fg98n3sz6",
+              "from": "imw9ffitr1sax",
+              "to": "imw9ffki2bf6s",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 9
             },
             {
-              "id": "imw9fbt0r1x3g",
-              "from": "imw9fb2e27h9a",
-              "to": "imw9fb2e2eest",
+              "id": "imw9fg9o5xmhb",
+              "from": "imw9ffitrrpfu",
+              "to": "imw9ffitrhrmi",
               "rel": "suspected",
               "conf": "high",
               "why": "",
               "num": 10
             },
             {
-              "id": "imw9fbtfwulbw",
-              "from": "imw9fb2e27h9a",
-              "to": "imw9fb2e2pccp",
+              "id": "imw9fga3g4jd2",
+              "from": "imw9ffitrrpfu",
+              "to": "imw9ffitrk5ma",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 11
             },
             {
-              "id": "imw9fbtvdxgh7",
-              "from": "imw9fb2e2pccp",
-              "to": "imw9fb8frvh2s",
+              "id": "imw9fgaj6ht4q",
+              "from": "imw9ffitrk5ma",
+              "to": "imw9ffoycvp7n",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 12
             },
             {
-              "id": "imw9fbuaso70z",
-              "from": "imw9fb2e2ckh1",
-              "to": "imw9fb2e2qlsn",
+              "id": "imw9fgay32v51",
+              "from": "imw9ffitrwd3a",
+              "to": "imw9ffitrzdz9",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 13
             },
             {
-              "id": "imw9fbuqeh32e",
-              "from": "imw9fba94ihs8",
-              "to": "imw9fb2e2ckh1",
+              "id": "imw9fgbdkjy32",
+              "from": "imw9ffqtgxy2h",
+              "to": "imw9ffitrwd3a",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 14
             },
             {
-              "id": "imw9fbv5qa66q",
-              "from": "imw9fb2e2rf50",
-              "to": "imw9fb2e27h9a",
+              "id": "imw9fgbsz98vc",
+              "from": "imw9ffitrj2ht",
+              "to": "imw9ffitrrpfu",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 15
             },
             {
-              "id": "imw9fbvl9hywf",
-              "from": "imw9fbbue6tdo",
-              "to": "imw9fb2e27h9a",
+              "id": "imw9fgc874rvk",
+              "from": "imw9ffsf6gdem",
+              "to": "imw9ffitrrpfu",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 16
             },
             {
-              "id": "imw9fbw0oinae",
-              "from": "imw9fb630nm7i",
-              "to": "imw9fb8akqyzt",
+              "id": "imw9fgcnyngkq",
+              "from": "imw9ffmjndsva",
+              "to": "imw9ffot59p8f",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 17
             },
             {
-              "id": "imw9fdi5z6r8x",
-              "from": "imw9fdi5ztmfg",
-              "to": "imw9fdi5zx1em",
+              "id": "imw9fgdbndhg1",
+              "from": "imw9ffqzd3zvm",
+              "to": "imw9ffmjndsva",
               "rel": "linked",
-              "conf": "medium",
-              "why": "Typical of LockBit in public reporting; confirm against this case.",
+              "conf": "high",
+              "why": "",
               "num": 18
             },
             {
-              "id": "imw9fdi5zbtit",
-              "from": "imw9fdi5ztmfg",
-              "to": "imw9fdi5ztu6x",
+              "id": "imw9fh0bwq3dq",
+              "from": "imw9fh0bwg1pn",
+              "to": "imw9fh0bwucig",
               "rel": "linked",
               "conf": "medium",
               "why": "Typical of LockBit in public reporting; confirm against this case.",
               "num": 19
             },
             {
-              "id": "imw9fdi5zdscl",
-              "from": "imw9fdi5ztmfg",
-              "to": "imw9fdi5zt4d3",
+              "id": "imw9fh0bw0c3t",
+              "from": "imw9fh0bwg1pn",
+              "to": "imw9fh0bw2pgz",
               "rel": "linked",
               "conf": "medium",
               "why": "Typical of LockBit in public reporting; confirm against this case.",
               "num": 20
             },
             {
-              "id": "imw9fdi5z4nv3",
-              "from": "imw9fdi5ztmfg",
-              "to": "imw9fdi5ziz00",
+              "id": "imw9fh0bwxve1",
+              "from": "imw9fh0bwg1pn",
+              "to": "imw9fh0bwsobl",
               "rel": "linked",
               "conf": "medium",
               "why": "Typical of LockBit in public reporting; confirm against this case.",
               "num": 21
             },
             {
-              "id": "imw9fdkblooz0",
-              "from": "imw9fb2e27h9a",
-              "to": "imw9fdi5ztmfg",
+              "id": "imw9fh0bwnvoc",
+              "from": "imw9fh0bwg1pn",
+              "to": "imw9fh0bwch3q",
               "rel": "linked",
-              "conf": "high",
-              "why": "",
+              "conf": "medium",
+              "why": "Typical of LockBit in public reporting; confirm against this case.",
               "num": 22
             },
             {
-              "id": "imw9fdkolxd20",
-              "from": "imw9fb5x7phmm",
-              "to": "imw9fb2e2rf50",
+              "id": "imw9fh2hjahou",
+              "from": "imw9ffitrrpfu",
+              "to": "imw9fh0bwg1pn",
               "rel": "linked",
               "conf": "high",
               "why": "",
               "num": 23
+            },
+            {
+              "id": "imw9fh2v4qxuq",
+              "from": "imw9ffmdukcfj",
+              "to": "imw9ffitrj2ht",
+              "rel": "linked",
+              "conf": "high",
+              "why": "",
+              "num": 24
             }
           ],
           "groups": [
             {
-              "id": "imw9fbn162jwy",
+              "id": "imw9fg3ri64tj",
               "title": "Infrastructure · C2, exfil, panels (9 IPs)",
-              "x": 610,
+              "x": 610.0000000000001,
               "y": -10,
               "w": 800,
               "h": 1060
             },
             {
-              "id": "imw9fbnir1494",
+              "id": "imw9fg494vph3",
               "title": "Malware & exploited CVEs",
-              "x": 1409.9999999999998,
+              "x": 1410,
               "y": -10,
               "w": 1070,
               "h": 800
             },
             {
-              "id": "imw9fbo0cmqbm",
+              "id": "imw9fg4qo85a8",
               "title": "Playbook · ATT&CK techniques",
-              "x": 2529.9999999999995,
+              "x": 2530,
               "y": -10,
               "w": 520,
               "h": 1480
             },
             {
-              "id": "imw9fdi5zao58",
+              "id": "imw9fh0bw5oea",
               "title": "LockBit",
               "x": 40,
               "y": 1653,
@@ -4897,12 +4923,12 @@
       "review": "published",
       "signoff": {
         "by": "S. Murugan",
-        "at": "2026-11-09T15:38:03.155Z"
+        "at": "2026-11-09T15:40:46.602Z"
       },
       "reports": [
         {
-          "id": "imw9fe2lgw1lt",
-          "t": "2026-11-09T15:38:11.236Z",
+          "id": "imw9fhklocuyq",
+          "t": "2026-11-09T15:40:54.540Z",
           "mode": "full",
           "fp": {
             "judgement": "We assess with high confidence that SafePay is a financially motivated ransomware operation that enters through stolen or brute-forced VPN credentials and known edge-device CVEs, stages data with RClone / FileZilla / b2 to 5.255.11[.]134 and 37.10.71[.]188, destroys backups and encrypts with a ChaCha20 / RSA locker (.SafePay). Infrastructure in the advisory is hosted at Bacloud (LT) and Hetzner (DE).",
@@ -4954,15 +4980,15 @@
               "T1486"
             ],
             "items": 60,
-            "threads": 23,
+            "threads": 24,
             "tasksOpen": 6,
             "review": "published",
             "tlp": "red"
           }
         },
         {
-          "id": "imw9fe5rt625k",
-          "t": "2026-11-09T15:38:15.353Z",
+          "id": "imw9fhnsq4k75",
+          "t": "2026-11-09T15:40:58.682Z",
           "mode": "exec",
           "fp": {
             "judgement": "We assess with high confidence that SafePay is a financially motivated ransomware operation that enters through stolen or brute-forced VPN credentials and known edge-device CVEs, stages data with RClone / FileZilla / b2 to 5.255.11[.]134 and 37.10.71[.]188, destroys backups and encrypts with a ChaCha20 / RSA locker (.SafePay). Infrastructure in the advisory is hosted at Bacloud (LT) and Hetzner (DE).",
@@ -5014,7 +5040,7 @@
               "T1486"
             ],
             "items": 60,
-            "threads": 23,
+            "threads": 24,
             "tasksOpen": 6,
             "review": "published",
             "tlp": "red"
