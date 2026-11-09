@@ -1,0 +1,6 @@
+/* GENERATED: style-hover / style-focus rules from design/CaseFolder.dc.html */
+.scf0:focus{outline:none !important}
+.scf1:hover{background:#fff !important}
+.scf2:hover{border-color:{{ f.T.textMuted }} !important;color:#fff !important}
+.scf3:hover{border-color:{{ f.T.accent }} !important;color:{{ f.T.accent }} !important}
+.scf4:hover{border-color:{{ f.T.textMuted }} !important}

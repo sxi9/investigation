@@ -1,0 +1,28 @@
+// Cyber Investigation Board — synthesised foley (no audio files). window.CIBFoley.play('paper'|'flip'|'pin'|'thread'|'drawer'|'close'|'stamp'|'click'|'crumple'|'latch'|'type'|'open')
+(function () {
+  let ac = null, bus = null, enabled = true;
+  function ctx() { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; if (!ac) { ac = new AC(); bus = ac.createGain(); bus.gain.value = .32; const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6800; const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 60; const comp = ac.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4; const d1 = ac.createDelay(), d2 = ac.createDelay(); d1.delayTime.value = .023; d2.delayTime.value = .041; const f1 = ac.createGain(), f2 = ac.createGain(); f1.gain.value = .28; f2.gain.value = .22; const wet = ac.createGain(); wet.gain.value = .16; const wlp = ac.createBiquadFilter(); wlp.type = 'lowpass'; wlp.frequency.value = 2800; bus.connect(lp).connect(hp).connect(comp).connect(ac.destination); hp.connect(d1); d1.connect(f1).connect(d1); d1.connect(wlp); hp.connect(d2); d2.connect(f2).connect(d2); d2.connect(wlp); wlp.connect(wet).connect(comp); } if (ac.state === 'suspended') ac.resume().catch(() => {}); return ac; }
+  function noise(dur, env, lpF, hpF, gain, sweep) { const t0 = ac.currentTime, n = Math.floor(ac.sampleRate * dur), buf = ac.createBuffer(1, n, ac.sampleRate), d = buf.getChannelData(0); let last = 0; for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; last = last * .6 + w * .4; d[i] = last * env(i / n); } const s = ac.createBufferSource(); s.buffer = buf; const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(lpF, t0); if (sweep) lp.frequency.exponentialRampToValueAtTime(sweep, t0 + dur); const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = hpF; const g = ac.createGain(); g.gain.value = gain; s.connect(lp).connect(hp).connect(g).connect(bus); s.start(t0); }
+  function tone(freq, dur, type, gain, endFreq, attack) { const t0 = ac.currentTime, o = ac.createOscillator(); o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t0); o.frequency.exponentialRampToValueAtTime(Math.max(25, endFreq || freq * .6), t0 + dur); const g = ac.createGain(); g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(gain, t0 + (attack || .006)); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur); o.connect(g).connect(bus); o.start(t0); o.stop(t0 + dur + .02); }
+  function pluck(freq, dur, gain) { const t0 = ac.currentTime, n = Math.floor(ac.sampleRate * dur), buf = ac.createBuffer(1, n, ac.sampleRate), d = buf.getChannelData(0), p = Math.round(ac.sampleRate / freq), ring = new Float32Array(p); for (let i = 0; i < p; i++) ring[i] = Math.random() * 2 - 1; let k = 0; for (let i = 0; i < n; i++) { const nx = (k + 1) % p; ring[k] = (ring[k] + ring[nx]) * .5 * .996; d[i] = ring[k] * Math.pow(1 - i / n, 1.4); k = nx; } const s = ac.createBufferSource(); s.buffer = buf; const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200; const g = ac.createGain(); g.gain.value = gain; s.connect(lp).connect(g).connect(bus); s.start(t0); }
+  const bell = p => Math.sin(Math.PI * p), fade = p => Math.pow(1 - p, 2.2), swell = p => p < .25 ? p / .25 : Math.pow(1 - (p - .25) / .75, 1.6);
+  const K = {
+    paper: () => { noise(.26, p => bell(p) * (1 + .35 * Math.sin(p * 47)), 4200, 650, .2, 2600); },
+    flip: () => { noise(.13, swell, 2200, 900, .16, 7000); setTimeout(() => noise(.22, p => bell(p) * .8, 3600, 500, .14), 70); },
+    open: () => { noise(.34, p => swell(p) * (1 + .25 * Math.sin(p * 31)), 3800, 500, .18, 2200); tone(160, .22, 'sine', .07, 110, .02); },
+    pin: () => { noise(.035, fade, 5200, 1800, .16); tone(1700, .03, 'sine', .07, 900); setTimeout(() => tone(170, .11, 'sine', .14, 95), 12); },
+    thread: () => { pluck(329.6, .34, .11); setTimeout(() => pluck(392, .3, .07), 60); },
+    drawer: () => { noise(.46, p => p < .72 ? .35 + .65 * swell(p / .72) : 0, 900, 90, .22, 600); tone(58, .4, 'triangle', .09, 48, .05); setTimeout(() => { tone(78, .16, 'sine', .12, 50); noise(.07, fade, 1400, 120, .12); }, 400); },
+    close: () => { noise(.16, fade, 1600, 220, .18); tone(96, .17, 'sine', .14, 55); },
+    stamp: () => { tone(120, .11, 'sine', .22, 70); noise(.07, fade, 1500, 200, .18); setTimeout(() => noise(.09, fade, 900, 150, .08), 60); },
+    click: () => { noise(.016, fade, 5000, 1500, .09); tone(2100, .014, 'sine', .04, 1500); },
+    crumple: () => { noise(.42, p => bell(p) * (1 + .9 * Math.abs(Math.sin(p * 83)) * Math.random()), 5200, 900, .18, 3000); },
+    latch: () => { tone(523, .09, 'sine', .08, 523); setTimeout(() => tone(784, .16, 'sine', .07, 784), 90); noise(.04, fade, 4000, 1200, .06); },
+    type: () => { noise(.022, fade, 6500, 1800, .14); tone(1900, .012, 'sine', .035, 1100); },
+    hover: () => { noise(.12, bell, 2600, 800, .05, 1600); },
+  };
+  const F = { play(kind) { if (!enabled || !K[kind]) return; try { if (!ctx()) return; K[kind](); } catch (e) {} }, enable(v) { enabled = !!v; }, enabled() { return enabled; } };
+  document.addEventListener('click', e => { const t = e.target && e.target.closest ? e.target.closest('button, [role="button"], a[href], select, summary') : null; if (!t || t.hasAttribute('data-nosound')) return; F.play('click'); }, true);
+  document.addEventListener('change', e => { const t = e.target; if (t && (t.tagName === 'SELECT' || t.type === 'checkbox' || t.type === 'radio')) F.play('pin'); }, true);
+  window.CIBFoley = F;
+})();

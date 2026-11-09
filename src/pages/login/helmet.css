@@ -1,0 +1,10 @@
+/* GENERATED: <helmet> styles from design/Login.dc.html */
+body{margin:0;background:#0b0b0c;color:#e8e4da;font-family:'Archivo Narrow',system-ui,sans-serif;-webkit-font-smoothing:antialiased;--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' sc-camel-base-frequency='.85' sc-camel-num-octaves='2' sc-camel-stitch-tiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>")}
+*{box-sizing:border-box}
+a{color:#e8e4da}a:hover{color:#fff}
+input,button,select{font-family:inherit}
+::selection{background:#ff2a3c;color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid #ff2a3c;outline-offset:2px}
+@keyframes lampPulse{0%,100%{opacity:.82}50%{opacity:1}}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) rotate(-1.5deg)}to{opacity:1;transform:rotate(-1.5deg)}}
+@keyframes shake{0%,100%{transform:rotate(-1.5deg) translateX(0)}25%{transform:rotate(-1.5deg) translateX(-6px)}75%{transform:rotate(-1.5deg) translateX(6px)}}

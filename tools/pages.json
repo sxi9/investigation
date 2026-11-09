@@ -1,0 +1,9 @@
+{
+  "pages": [
+    { "name": "login",  "file": "design/Login.dc.html",               "entry": "index.html", "title": "Sign in · Investigation Board" },
+    { "name": "desk",   "file": "design/Case Files.dc.html",          "entry": "desk.html",  "title": "Case files · Investigation Board", "imports": { "CaseFolder": "folder" } },
+    { "name": "folder", "file": "design/CaseFolder.dc.html",          "component": true },
+    { "name": "board",  "file": "design/Investigation Board.dc.html", "entry": "board.html", "title": "Investigation Board" }
+  ],
+  "routes": { "Login.dc.html": "/", "Case Files.dc.html": "/desk.html", "Investigation Board.dc.html": "/board.html" }
+}

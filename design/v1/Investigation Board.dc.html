@@ -1,10 +1,980 @@
-// Logic for the Investigation Board, carried over from the design file
-// (design/Investigation Board.dc.html) with the runtime base class swapped for
-// the small shim in ./dc.js. Behaviour is unchanged.
-/* eslint-disable */
-import React from 'react';
-import { DCLogic } from './dc.js';
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Archivo+Narrow:wght@400;500;600;700&family=Reenie+Beanie&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0a0a0b;overflow:hidden;font-family:'Archivo Narrow',system-ui,sans-serif;color:#e8e4da;-webkit-font-smoothing:antialiased;--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>")}
+*{box-sizing:border-box}
+a{color:#e8e4da}a:hover{color:#fff}
+input,textarea,select,button{font-family:inherit}
+::selection{background:#ff2a3c;color:#fff}
+@keyframes flow{to{stroke-dashoffset:-60}}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+[data-kind="card"]:focus-visible{outline:3px solid #ff2a3c !important;outline-offset:4px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #ff2a3c;outline-offset:1px}
+input[type=range]{accent-color:#ff2a3c}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#2a2a2e;border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+<div data-screen-label="Board" style="position:fixed; inset:0; display:flex; flex-direction:column; background:#0a0a0b; color:#e8e4da; font-family:'Archivo Narrow',system-ui,sans-serif">
 
+<sc-if value="{{ chrome }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:46px; flex:none; display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; padding:6px 12px; background:#0e0e10; border-bottom:1px solid #232326">
+  <div style="font:11px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#8d877b">CASE</div>
+  <select value="{{ activeId }}" onChange="{{ onSwitchCase }}" style="height:30px; max-width:200px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark">
+    <sc-for list="{{ caseOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+  </select>
+  <input value="{{ caseTitle }}" onChange="{{ onCaseTitle }}" placeholder="Case title" spellcheck="false" style="height:30px; flex:1 1 160px; min-width:120px; max-width:260px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#f3f1ea; font:15px 'Special Elite',monospace; letter-spacing:.04em" style-focus="border-color:#ff2a3c; outline:none">
+  <select value="{{ tlp }}" onChange="{{ setTlp }}" title="Traffic Light Protocol marking for this case — printed on every export" style="height:30px; padding:0 6px; border:1px solid {{ tlpColor }}; background:#0c0c0e; color:{{ tlpColor }}; font:11px 'IBM Plex Mono',monospace; letter-spacing:.06em; color-scheme:dark; flex:none"><sc-for list="{{ tlps }}" as="tl" hint-placeholder-count="0"><option value="{{ tl.id }}">{{ tl.label }}</option></sc-for></select>
+  <select value="{{ review }}" onChange="{{ setReview }}" title="Review state of the case" style="height:30px; padding:0 6px; border:1px solid #2c2c31; background:#0c0c0e; color:{{ reviewColor }}; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; color-scheme:dark; flex:none"><option value="draft">Draft</option><option value="in review">In review</option><option value="published">Published</option></select>
+  <input value="{{ analyst }}" onChange="{{ onAnalyst }}" placeholder="Analyst" spellcheck="false" title="Your name — stamped on log entries, custody records and sign-off" style="height:30px; width:110px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'Archivo Narrow',sans-serif; flex:none" style-focus="border-color:#ff2a3c; outline:none">
+  <button onClick="{{ openLock }}" title="{{ lockTitle }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:28px; color:{{ lockColor }}" style-hover="background:#222226; color:#fff">{{ lockLabel }}</button>
+  <button onClick="{{ newCase }}" title="New case from a template or blank" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">New case</button>
+  <button onClick="{{ deleteCase }}" title="Delete this case" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#ff2a3c; border-color:#5a2a2e">Delete</button>
+  <div style="flex:1"></div>
+  <input data-quick="1" value="{{ quick }}" onChange="{{ onQuick }}" onKeyDown="{{ onQuickKey }}" placeholder="/ quick add — d domain · i ip · h hash · u url · e date title · n note · p person · t T1566 · c cluster" spellcheck="false" title="Type a command and press Enter. With no command the value is auto-detected." style="height:30px; flex:2 1 260px; min-width:160px; max-width:460px; padding:0 10px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace" style-focus="border-color:#ff2a3c; outline:none">
+  <div style="position:relative; flex:1 1 140px; min-width:110px; max-width:220px">
+    <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="Search all cases…" spellcheck="false" aria-label="Search" style="height:30px; width:100%; padding:0 10px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif" style-focus="border-color:#ff2a3c; outline:none">
+    <sc-if value="{{ hasXSearch }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute; left:0; top:34px; width:340px; max-width:80vw; z-index:40; background:#111113; border:1px solid #2c2c31; box-shadow:0 14px 30px rgba(0,0,0,.7); padding:6px">
+        <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; padding:4px 6px">IN OTHER CASES · {{ xsearchCount }}</div>
+        <sc-for list="{{ xsearch }}" as="xs" hint-placeholder-count="0"><div onClick="{{ xs.onOpen }}" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; border-color:transparent; cursor:pointer" style-hover="background:#1d1d21"><span style="flex:none; font:10px 'IBM Plex Mono',monospace; color:#ff2a3c">{{ xs.caseNum }}</span><span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ xs.label }}</span><span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase">{{ xs.type }}</span></div></sc-for>
+      </div>
+    </sc-if>
+  </div>
+  <button onClick="{{ openOsint }}" title="OSINT workbench (O): one selector in, every lookup out" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; border-color:#ff2a3c; color:#ff2a3c; background:transparent" style-hover="background:#ff2a3c; color:#fff">OSINT</button>
+  <button onClick="{{ openAch }}" title="Analysis of competing hypotheses: score every exhibit against each hypothesis" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">ACH</button>
+  <button onClick="{{ openReq }}" title="Generate a takedown request or RFI from selected indicators" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Requests</button>
+  <button onClick="{{ togglePresent }}" title="Presentation mode (P): hides the panels, arrow keys walk the exhibits" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Present</button>
+  <button onClick="{{ exportBrief }}" title="Open a printable case brief (save it as PDF)" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Case brief</button>
+  <button onClick="{{ exportOnePager }}" title="Executive one-pager: judgement, confidence, what happened, next actions" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">One-pager</button>
+  <button onClick="{{ exportStix }}" title="Download the case as a STIX 2.1 bundle for MISP / OpenCTI / a TIP" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">STIX</button>
+  <button onClick="{{ exportPng }}" title="Download the board as a PNG" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Export image</button>
+  <button onClick="{{ exportJson }}" title="Download this case as a JSON file" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Export case</button>
+  <button onClick="{{ importJson }}" title="Import a case JSON, a STIX 2.1 bundle, or a CSV / text list of indicators" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Import</button>
+  <input type="file" accept="application/json,.json,.csv,.txt,text/csv,text/plain" data-file="import" onChange="{{ onImportFile }}" style="display:none">
+  <input type="file" accept="image/*" data-file="image" onChange="{{ onImageFile }}" style="display:none">
+</div>
+
+<div style="min-height:40px; flex:none; display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; padding:6px 12px; background:#111113; border-bottom:1px solid #232326">
+  <button onClick="{{ toolMove }}" title="Move tool (V)" style="height:26px; padding:0 10px; border:1px solid {{ moveBorder }}; background:{{ moveBg }}; color:{{ moveFg }}; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Move</button>
+  <button onClick="{{ toolConnect }}" title="Connect tool (C): click one card, then another" style="height:26px; padding:0 10px; border:1px solid {{ connBorder }}; background:{{ connBg }}; color:{{ connFg }}; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Connect</button>
+  <button onClick="{{ toggleReveal }}" title="Reveal (R): dim everything except the selection and its threads" style="height:26px; padding:0 10px; border:1px solid {{ revBorder }}; background:{{ revBg }}; color:{{ revFg }}; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Reveal</button>
+  <button onClick="{{ toggleTimeline }}" title="Timeline view (T): lays the cards out by date" style="height:26px; padding:0 10px; border:1px solid {{ tlBorder }}; background:{{ tlBg }}; color:{{ tlFg }}; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Timeline</button>
+  <button onClick="{{ toggleKillchain }}" title="Kill-chain lanes (K): techniques by ATT&amp;CK tactic, evidence beneath each" style="height:26px; padding:0 10px; border:1px solid {{ kcBorder }}; background:{{ kcBg }}; color:{{ kcFg }}; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Kill chain</button>
+  <button onClick="{{ addGroup }}" title="Add a cluster: a labelled region whose cards move together" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">+ Cluster</button>
+  <div style="width:1px; height:20px; background:#2a2a2e; margin:0 4px"></div>
+  <div style="font:11px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#8d877b">THREAD</div>
+  <sc-for list="{{ spools }}" as="sp" hint-placeholder-count="6">
+    <button onClick="{{ sp.onPick }}" title="{{ sp.label }}" style="display:flex; align-items:center; gap:6px; height:26px; padding:0 8px; border:1px solid {{ sp.border }}; background:{{ sp.bg }}; color:#d8d3c7; cursor:pointer; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap"><span style="width:10px; height:10px; border-radius:50%; background:{{ sp.color }}; box-shadow:0 0 0 2px rgba(0,0,0,.45)"></span>{{ sp.label }}</button>
+  </sc-for>
+  <div style="flex:1"></div>
+  <div style="flex:0 1 auto; min-width:0; font:11px 'Archivo Narrow',sans-serif; color:#8d877b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hint }}</div>
+  <div style="width:1px; height:20px; background:#2a2a2e; margin:0 4px"></div>
+  <button onClick="{{ zoomOut }}" title="Zoom out" style="width:26px; height:26px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:14px 'IBM Plex Mono',monospace; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">−</button>
+  <div style="font:11px 'IBM Plex Mono',monospace; color:#8d877b; min-width:38px; text-align:center">{{ zoomLabel }}</div>
+  <button onClick="{{ zoomIn }}" title="Zoom in" style="width:26px; height:26px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:14px 'IBM Plex Mono',monospace; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">+</button>
+  <button onClick="{{ fitBtn }}" title="Fit the board (F)" style="height:26px; padding:0 8px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Fit</button>
+  <div style="width:1px; height:20px; background:#2a2a2e; margin:0 4px"></div>
+  <button onClick="{{ toggleInbox }}" title="Show or hide the evidence inbox" style="height:26px; padding:0 8px; border:1px solid #2c2c31; background:{{ inboxBg }}; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Inbox</button>
+  <button onClick="{{ toggleRight }}" title="Show or hide the side panel" style="height:26px; padding:0 8px; border:1px solid #2c2c31; background:{{ rightBg }}; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">Panel</button>
+</div>
+</sc-if>
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+<div style="flex:none; display:flex; align-items:center; gap:6px; padding:8px 10px; background:#0e0e10; border-bottom:1px solid #232326">
+  <select value="{{ activeId }}" onChange="{{ onSwitchCase }}" aria-label="Case" style="flex:1; min-width:0; height:34px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><sc-for list="{{ caseOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+  <button onClick="{{ toggleList }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:34px" style-hover="background:#222226; color:#fff">{{ listLabel }}</button>
+  <button onClick="{{ toggleRight }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:34px; background:{{ rightBg }}" style-hover="background:#222226; color:#fff">{{ panelLabel }}</button>
+</div>
+</sc-if>
+
+<div style="flex:1; min-height:0; display:flex">
+
+<sc-if value="{{ showInboxUI }}" hint-placeholder-val="{{ true }}">
+<aside style="width:250px; flex:none; border-right:1px solid #232326; background:#111113; display:flex; flex-direction:column; min-height:0">
+  <div style="display:flex; align-items:baseline; justify-content:space-between; padding:12px 14px 6px">
+    <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">EVIDENCE INBOX</div>
+    <div style="font:11px 'IBM Plex Mono',monospace; color:#8d877b">{{ inboxCount }}</div>
+  </div>
+  <div style="padding:4px 14px 10px">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px"><div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b">ADD</div><div style="display:flex; gap:4px"><button onClick="{{ openActors }}" title="Drop in a known threat group with its usual techniques" style="height:22px; padding:0 8px; border:1px solid #2c2c31; background:transparent; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#222226; color:#fff">Actors</button><button onClick="{{ openExtract }}" title="Paste a report and pull out every indicator" style="height:22px; padding:0 8px; border:1px solid #5a2a2e; background:transparent; color:#ff2a3c; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#ff2a3c; color:#fff">Extract IOCs</button></div></div>
+    <div style="display:flex; flex-wrap:wrap; gap:4px">
+      <sc-for list="{{ addTypes }}" as="at" hint-placeholder-count="8">
+        <button onClick="{{ at.onAdd }}" style="height:24px; padding:0 8px; border:1px dashed #3a3a40; background:transparent; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="border-color:#ff2a3c; color:#fff; border-style:solid">+ {{ at.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="padding:0 14px 10px; border-bottom:1px solid #1f1f23">
+    <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; margin-bottom:6px">SHOW ON BOARD</div>
+    <div style="display:flex; flex-wrap:wrap; gap:4px">
+      <sc-for list="{{ typeChips }}" as="tc" hint-placeholder-count="8">
+        <button onClick="{{ tc.onToggle }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:{{ tc.bg }}; color:{{ tc.color }}; text-decoration:{{ tc.deco }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none">{{ tc.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="flex:1; overflow:auto; padding:8px 10px; display:flex; flex-direction:column; gap:6px">
+    <sc-for list="{{ inbox }}" as="it" hint-placeholder-count="0">
+      <div draggable="true" onDragStart="{{ it.onDragStart }}" onClick="{{ it.onSelect }}" title="Drag onto the board, or click to edit" style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:{{ it.bg }}; border:1px solid #232326; cursor:grab" style-hover="border-color:#3a3a40">
+        <div style="flex:none; writing-mode:vertical-rl; transform:rotate(180deg); font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; text-transform:uppercase">{{ it.typeLabel }}</div>
+        <div style="flex:1; min-width:0">
+          <div style="font:13px/1.2 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ it.label }}</div>
+          <div style="font:11px/1.3 'IBM Plex Mono',monospace; color:#8d877b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px">{{ it.sub }}</div>
+        </div>
+        <button onClick="{{ it.onPin }}" title="Pin to the board" style="flex:none; height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#ff2a3c; border-color:#ff2a3c; color:#fff">Pin</button>
+      </div>
+    </sc-for>
+    <sc-if value="{{ inboxEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:18px 8px; font:12px/1.5 'Archivo Narrow',sans-serif; color:#5f5a52; text-align:center">Inbox is empty. Add evidence above, paste a screenshot, or drop files on the board.</div>
+    </sc-if>
+  </div>
+</aside>
+</sc-if>
+
+<div data-board="1" onPointerDown="{{ boardDown }}" onDragOver="{{ allowDrop }}" onDrop="{{ boardDrop }}" style="flex:1; min-width:0; position:relative; overflow:hidden; background:#101012; touch-action:none; user-select:none; cursor:default">
+  <div style="position:absolute; inset:0; background:radial-gradient(120% 90% at 50% 0%, #1c1c20 0%, #101012 55%, #070708 100%)"></div>
+  <div style="position:absolute; inset:0; opacity:.09; background-image:var(--grain); mix-blend-mode:overlay; pointer-events:none"></div>
+  <sc-if value="{{ lightSpot }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(70% 60% at 50% -10%, rgba(255,244,214,.15) 0%, rgba(255,244,214,0) 60%), radial-gradient(130% 110% at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.7) 100%)"></div>
+  </sc-if>
+  <sc-if value="{{ lightLamp }}" hint-placeholder-val="{{ false }}">
+    <div data-lamp="1" style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(520px 520px at 50% 40%, rgba(255,232,180,.17) 0%, rgba(255,232,180,.05) 35%, rgba(0,0,0,0) 62%), radial-gradient(140% 120% at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,.78) 100%)"></div>
+  </sc-if>
+  <sc-if value="{{ lightHarsh }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(135deg, rgba(255,240,205,.2) 0%, rgba(255,240,205,0) 35%, rgba(0,0,0,.75) 100%)"></div>
+  </sc-if>
+
+  <div style="position:absolute; left:0; top:0; width:0; height:0; transform-origin:0 0; transform:{{ worldTransform }}; filter:{{ worldFilter }}">
+
+    <sc-if value="{{ showGroups }}" hint-placeholder-val="{{ true }}">
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="0">
+        <div style="position:absolute; left:{{ g.x }}px; top:{{ g.y }}px; width:{{ g.w }}px; height:{{ g.h }}px; border:1px dashed {{ g.border }}; background:rgba(243,241,234,.035); pointer-events:none; border-radius:2px">
+          <div data-ui="1" onPointerDown="{{ g.onDown }}" title="Drag to move the cluster with its cards · click to rename" style="position:absolute; left:-1px; top:-30px; display:flex; align-items:center; gap:8px; height:28px; padding:0 10px; background:{{ g.tabBg }}; color:#1b1a17; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.18em; text-transform:uppercase; pointer-events:auto; cursor:grab; box-shadow:0 3px 6px rgba(0,0,0,.6); white-space:nowrap">{{ g.title }}<span style="font:10px 'IBM Plex Mono',monospace; color:#6d675c">{{ g.count }}</span></div>
+          <div data-ui="1" onPointerDown="{{ g.onResize }}" title="Resize" style="position:absolute; right:-7px; bottom:-7px; width:14px; height:14px; background:#f3f1ea; pointer-events:auto; cursor:nwse-resize; box-shadow:0 2px 4px rgba(0,0,0,.6)"></div>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isTimeline }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ tlAxis }}" as="ax" hint-placeholder-count="0">
+        <div style="position:absolute; left:{{ ax.x }}px; top:30px; height:{{ ax.h }}px; width:{{ ax.w }}px; border-left:1px solid rgba(243,241,234,.18); pointer-events:none"></div>
+        <div style="position:absolute; left:{{ ax.x }}px; top:0; transform:translateX(-50%); padding:3px 8px; background:#f3f1ea; color:#1b1a17; font:11px 'IBM Plex Mono',monospace; letter-spacing:.08em; white-space:nowrap; pointer-events:none; box-shadow:0 2px 4px rgba(0,0,0,.6)">{{ ax.label }}</div>
+      </sc-for>
+      <sc-if value="{{ tlShelf }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; left:40px; top:{{ tlShelfY }}px; width:{{ tlWidth }}px; border-top:1px dashed rgba(243,241,234,.25); pointer-events:none"></div>
+        <div style="position:absolute; left:40px; top:{{ tlShelfY }}px; transform:translateY(-100%); padding:2px 0 4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#8d877b; pointer-events:none">{{ tlShelfLabel }}</div>
+      </sc-if>
+    </sc-if>
+
+    <sc-for list="{{ cards }}" as="c" hint-placeholder-count="0">
+      <div data-card="{{ c.id }}" data-kind="card" tabIndex="0" role="button" aria-label="{{ c.aria }}" onKeyDown="{{ c.onKey }}" onFocus="{{ c.onEnter }}" onBlur="{{ c.onLeave }}" onPointerDown="{{ c.onDown }}" onPointerEnter="{{ c.onEnter }}" onPointerLeave="{{ c.onLeave }}" onDragOver="{{ allowDrop }}" onDrop="{{ c.onDrop }}" style="position:absolute; pointer-events:{{ c.pe }}; left:{{ c.x }}px; top:{{ c.y }}px; width:{{ c.w }}px; transform-origin:50% 10px; transform:rotate({{ c.rot }}deg); transition:transform .18s ease, box-shadow .18s ease; background:{{ c.bg }}; color:#1b1a17; box-shadow:{{ c.shadow }}; opacity:{{ c.opacity }}; outline:{{ c.outline }}; outline-offset:3px; cursor:grab; border-radius:1px" style-hover="transform:rotate(0deg) scale(1.035); box-shadow:0 22px 36px rgba(0,0,0,.8), 0 3px 6px rgba(0,0,0,.6); z-index:5">
+        <div style="position:absolute; left:8px; top:5px; display:flex; align-items:center; gap:6px; font:10px 'IBM Plex Mono',monospace; letter-spacing:.08em; color:#9a2b2b; z-index:1">
+          <sc-if value="{{ c.hasNum }}" hint-placeholder-val="{{ false }}"><span>№ {{ c.numText }}</span></sc-if>
+          <sc-if value="{{ c.hasGrade }}" hint-placeholder-val="{{ false }}"><span title="Source reliability · information credibility" style="color:#1b1a17; background:rgba(0,0,0,.09); padding:0 4px; font-size:9px">{{ c.grade }}</span></sc-if>
+          <sc-if value="{{ c.hasTlp }}" hint-placeholder-val="{{ false }}"><span title="{{ c.tlpTitle }}" style="width:8px; height:8px; border-radius:50%; background:{{ c.tlpColor }}; box-shadow:0 0 0 1px rgba(0,0,0,.35)"></span></sc-if>
+          <sc-if value="{{ c.stale }}" hint-placeholder-val="{{ false }}"><span title="Not seen within the staleness window" style="color:#b4222a; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.16em">STALE</span></sc-if>
+        </div>
+        <div style="position:absolute; right:8px; top:6px; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.16em; color:#a39d90; text-transform:uppercase">{{ c.typeLabel }}</div>
+        <sc-if value="{{ c.ring }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:{{ c.ringX }}px; bottom:{{ c.ringY }}px; width:74px; height:74px; border-radius:50%; border:4px solid rgba(110,62,18,.16); box-shadow:inset 0 0 0 2px rgba(110,62,18,.05), 0 0 0 1px rgba(110,62,18,.06); mix-blend-mode:multiply; pointer-events:none; z-index:1; -webkit-mask:conic-gradient(from 20deg, #000 0 70%, transparent 72% 78%, #000 80%); mask:conic-gradient(from 20deg, #000 0 70%, transparent 72% 78%, #000 80%)"></div></sc-if>
+        <sc-if value="{{ c.hasStamp }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; right:10px; bottom:8px; z-index:1; transform:rotate(-12deg); padding:2px 7px; border:2px double {{ c.stampColor }}; color:{{ c.stampColor }}; font:12px 'Special Elite',monospace; letter-spacing:.22em; text-transform:uppercase; opacity:.85; mix-blend-mode:multiply; pointer-events:none; white-space:nowrap">{{ c.stampText }}</div>
+        </sc-if>
+
+        <sc-if value="{{ c.isPhoto }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 10px 8px">
+            <sc-if value="{{ c.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ c.image }}" draggable="false" alt="" style="display:block; width:100%; height:150px; object-fit:cover; filter:contrast(1.05) saturate(.85)"></sc-if>
+            <sc-if value="{{ c.noImage }}" hint-placeholder-val="{{ false }}"><div onClick="{{ c.onPick }}" title="Add a photo" style="height:150px; display:flex; align-items:center; justify-content:center; text-align:center; background:repeating-linear-gradient(135deg, #d9d6cd 0 6px, #e6e3da 6px 12px); color:#5d584f; font:11px/1.5 'IBM Plex Mono',monospace; letter-spacing:.04em; cursor:pointer">drop · paste · click<br>to add a photo</div></sc-if>
+            <div style="margin-top:12px; font:21px/1.1 'Reenie Beanie',cursive; color:#2a2622; text-align:center; padding:0 4px">{{ c.title }}</div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:4px; white-space:pre-wrap; text-align:center">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isNote }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 14px 14px; min-height:120px; font:22px/23px 'Reenie Beanie',cursive; color:#2a2622; white-space:pre-wrap; background:repeating-linear-gradient(transparent 0 22px, rgba(60,40,20,.13) 22px 23px) content-box">{{ c.noteText }}</div>
+        </sc-if>
+
+        <sc-if value="{{ c.isTx }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px"><span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#9a2b2b; text-transform:uppercase">{{ c.chainLabel }}</span><span style="font:10px 'IBM Plex Mono',monospace; color:#6d675c">{{ c.dateLabel }}</span></div>
+            <div style="font:20px/1.1 'Special Elite',monospace; color:#1b1a17; margin-top:4px; overflow-wrap:anywhere">{{ c.amount }}</div>
+            <div style="margin-top:8px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:3px 8px; font:10px/1.35 'IBM Plex Mono',monospace; color:#3a362f">
+              <span style="color:#9a2b2b">FROM</span><span style="overflow-wrap:anywhere">{{ c.txFrom }}</span>
+              <span style="color:#9a2b2b">TO</span><span style="overflow-wrap:anywhere">{{ c.txTo }}</span>
+            </div>
+            <sc-if value="{{ c.hasHash }}" hint-placeholder-val="{{ false }}"><div style="margin-top:6px; font:9px 'IBM Plex Mono',monospace; color:#6d675c; overflow-wrap:anywhere"><span style="border-bottom:2px solid #2fc4b2">{{ c.hashShort }}</span></div></sc-if>
+            <div style="font:12px/1.25 'Special Elite',monospace; color:#1b1a17; margin-top:6px">{{ c.title }}</div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:3px; white-space:pre-wrap">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isLink }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px; display:flex; gap:10px">
+            <div style="flex:none; width:34px; height:34px; background:#1b1a17; color:#f3f1ea; display:flex; align-items:center; justify-content:center; font:16px 'Special Elite',monospace">{{ c.initial }}</div>
+            <div style="min-width:0; flex:1">
+              <div style="font:14px/1.2 'Special Elite',monospace; color:#1b1a17">{{ c.title }}</div>
+              <div style="font:10px/1.35 'IBM Plex Mono',monospace; color:#1f4e8c; word-break:break-all; margin-top:3px">{{ c.url }}</div>
+              <sc-if value="{{ c.hasHref }}" hint-placeholder-val="{{ false }}"><a href="{{ c.href }}" target="_blank" rel="noopener" onPointerDown="{{ stop }}" style="display:inline-block; margin-top:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; color:#1b1a17">OPEN ↗</a></sc-if>
+              <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:4px; white-space:pre-wrap">{{ c.body }}</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isPerson }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px; display:flex; gap:10px">
+            <sc-if value="{{ c.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ c.image }}" draggable="false" alt="" style="flex:none; width:64px; height:64px; object-fit:cover; filter:grayscale(.35) contrast(1.1)"></sc-if>
+            <sc-if value="{{ c.noImage }}" hint-placeholder-val="{{ false }}"><div onClick="{{ c.onPick }}" title="Add a photo" style="flex:none; width:64px; height:64px; display:flex; align-items:center; justify-content:center; background:repeating-linear-gradient(135deg, #d9d6cd 0 5px, #e6e3da 5px 10px); color:#5d584f; font:9px 'IBM Plex Mono',monospace; letter-spacing:.1em; cursor:pointer">PHOTO</div></sc-if>
+            <div style="min-width:0; flex:1">
+              <div style="font:15px/1.2 'Special Elite',monospace; color:#1b1a17">{{ c.title }}</div>
+              <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:4px; white-space:pre-wrap">{{ c.body }}</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isIndicator }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px">
+            <div style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#9a2b2b; text-transform:uppercase">{{ c.kindLabel }}</div>
+            <div style="margin-top:3px"><span style="font:13px/1.5 'IBM Plex Mono',monospace; color:#1b1a17; word-break:break-all; border-bottom:2px solid #ff2a3c; box-decoration-break:clone">{{ c.valueText }}</span></div>
+            <div style="font:12px/1.25 'Special Elite',monospace; color:#1b1a17; margin-top:6px">{{ c.title }}</div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:3px; white-space:pre-wrap">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isDoc }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px">
+            <div style="font:14px/1.2 'Special Elite',monospace; color:#1b1a17">{{ c.title }}</div>
+            <div style="margin-top:6px; font:11px/18px 'IBM Plex Mono',monospace; color:#3a362f; max-height:108px; overflow:hidden; white-space:pre-wrap; background-image:repeating-linear-gradient(transparent 0 17px, rgba(0,0,0,.09) 17px 18px)">{{ c.body }}</div>
+            <div style="margin-top:6px; font:10px 'IBM Plex Mono',monospace; color:#9a2b2b; letter-spacing:.06em">{{ c.dateLabel }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isEvent }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px; border-left:6px solid #b4222a">
+            <div style="font:18px/1 'Special Elite',monospace; color:#1b1a17; letter-spacing:.02em">{{ c.dateLabel }}</div>
+            <div style="font:14px/1.25 'Archivo Narrow',sans-serif; font-weight:600; color:#1b1a17; margin-top:6px">{{ c.title }}</div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:3px; white-space:pre-wrap">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isLocation }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 10px 10px">
+            <sc-if value="{{ c.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ c.image }}" draggable="false" alt="" style="display:block; width:100%; height:90px; object-fit:cover; filter:grayscale(.5)"></sc-if>
+            <sc-if value="{{ c.noImage }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ c.onPick }}" title="Add a map image" style="height:90px; position:relative; cursor:pointer; background-color:#d9d6cd; background-image:repeating-linear-gradient(0deg, transparent 0 14px, rgba(0,0,0,.09) 14px 15px), repeating-linear-gradient(90deg, transparent 0 14px, rgba(0,0,0,.09) 14px 15px)">
+                <div style="position:absolute; left:50%; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:#ff2a3c; box-shadow:0 0 0 4px rgba(255,42,60,.25)"></div>
+                <div style="position:absolute; right:6px; bottom:4px; font:9px 'IBM Plex Mono',monospace; color:#5d584f; letter-spacing:.08em">MAP · click to add</div>
+              </div>
+            </sc-if>
+            <div style="margin-top:8px; font:14px/1.2 'Special Elite',monospace; color:#1b1a17">{{ c.title }}</div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:2px; white-space:pre-wrap">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isTtp }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+              <span style="font:15px 'IBM Plex Mono',monospace; background:#1b1a17; color:#f3f1ea; padding:2px 7px">{{ c.value }}</span>
+              <span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#9a2b2b; text-transform:uppercase">{{ c.kindLabel }}</span>
+            </div>
+            <div style="font:14px/1.2 'Special Elite',monospace; color:#1b1a17; margin-top:8px">{{ c.title }}</div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:3px; white-space:pre-wrap">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.isTarget }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px 12px 12px">
+            <div style="font:15px/1.2 'Special Elite',monospace; color:#1b1a17">{{ c.title }}</div>
+            <div style="margin-top:6px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:3px 8px; font:10px/1.35 'IBM Plex Mono',monospace; color:#3a362f">
+              <span style="color:#9a2b2b">SECTOR</span><span>{{ c.sector }}</span>
+              <span style="color:#9a2b2b">REGION</span><span>{{ c.region }}</span>
+              <span style="color:#9a2b2b">IMPACT</span><span style="overflow-wrap:anywhere">{{ c.impact }}</span>
+            </div>
+            <div style="font:11px/1.35 'IBM Plex Mono',monospace; color:#6d675c; margin-top:6px; white-space:pre-wrap">{{ c.body }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.hasTags }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-wrap:wrap; gap:4px; padding:0 12px 10px">
+            <sc-for list="{{ c.tags }}" as="tg" hint-placeholder-count="0"><span style="font:9px/14px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#9a2b2b; border:1px solid #c7777a; padding:0 4px; transform:rotate(-1.5deg)">{{ tg }}</span></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ c.hasFoot }}" hint-placeholder-val="{{ false }}"><div style="padding:0 12px 8px; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.14em; color:#8d877b; text-transform:uppercase">{{ c.foot }}</div></sc-if>
+      </div>
+    </sc-for>
+
+    <svg style="position:absolute; left:0; top:0; width:10px; height:10px; overflow:visible; pointer-events:none">
+      <sc-for list="{{ threads }}" as="t" hint-placeholder-count="0">
+        <g style="opacity:{{ t.opacity }}">
+          <path d="{{ t.d }}" style="fill:none; stroke:rgba(0,0,0,.55); stroke-width:{{ t.shadowWidth }}px; stroke-linecap:round; transform:translate(3px, 6px)"></path>
+          <path d="{{ t.d }}" style="fill:none; stroke:{{ t.color }}; stroke-width:{{ t.width }}px; stroke-dasharray:{{ t.dash }}; stroke-linecap:round; filter:{{ t.glow }}"></path>
+          <sc-if value="{{ t.fiber }}" hint-placeholder-val="{{ false }}"><path d="{{ t.d }}" style="fill:none; stroke:rgba(255,255,255,.35); stroke-width:1px; stroke-dasharray:3 7; stroke-linecap:round"></path></sc-if>
+          <path d="{{ t.d }}" onClick="{{ t.onClick }}" style="fill:none; stroke:rgba(0,0,0,0); stroke-width:12px; pointer-events:stroke; cursor:pointer"></path>
+        </g>
+      </sc-for>
+      <sc-if value="{{ isLinking }}" hint-placeholder-val="{{ false }}">
+        <line x1="{{ linkX1 }}" y1="{{ linkY1 }}" x2="{{ linkX2 }}" y2="{{ linkY2 }}" style="stroke:{{ linkColor }}; stroke-width:2px; stroke-dasharray:6 5; stroke-linecap:round; opacity:.9"></line>
+      </sc-if>
+    </svg>
+    {{ flowLayer }}
+
+    <sc-for list="{{ threads }}" as="t" hint-placeholder-count="0">
+      <sc-if value="{{ t.showChip }}" hint-placeholder-val="{{ false }}">
+        <div data-ui="1" onClick="{{ t.onClick }}" title="Click to edit this thread" style="position:absolute; left:{{ t.mx }}px; top:{{ t.my }}px; transform:translate(-50%,-50%) rotate({{ t.angle }}deg); display:flex; align-items:center; gap:6px; background:{{ t.chipBg }}; color:#1b1a17; font:10px/1 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; padding:4px 7px; border-left:3px solid {{ t.color }}; box-shadow:{{ t.chipShadow }}; cursor:pointer; opacity:{{ t.opacity }}; outline:{{ t.outline }}; outline-offset:2px; white-space:nowrap">
+          <sc-if value="{{ t.showNum }}" hint-placeholder-val="{{ false }}"><span style="font:10px 'IBM Plex Mono',monospace; letter-spacing:.04em; color:#6d675c">{{ t.numText }}</span></sc-if>
+          <sc-if value="{{ t.showLabel }}" hint-placeholder-val="{{ false }}"><span>{{ t.label }}</span></sc-if>
+        </div>
+      </sc-if>
+    </sc-for>
+
+    <sc-for list="{{ cards }}" as="c" hint-placeholder-count="0">
+      <div data-card="{{ c.id }}" data-kind="pin" onPointerDown="{{ c.onPinDown }}" title="Drag onto another card to connect" style="position:absolute; left:{{ c.px }}px; top:{{ c.py }}px; width:26px; height:26px; margin:-13px 0 0 -13px; cursor:crosshair; opacity:{{ c.opacity }}; z-index:7">
+        <div style="position:absolute; left:11px; top:13px; width:5px; height:13px; background:rgba(0,0,0,.5); filter:blur(1.5px); transform:skewX(-25deg)"></div>
+        <div style="position:absolute; left:5px; top:5px; width:16px; height:16px; border-radius:50%; background:{{ c.pinGrad }}; box-shadow:0 2px 3px rgba(0,0,0,.7), inset 0 -2px 3px rgba(0,0,0,.35)"></div>
+      </div>
+    </sc-for>
+
+  </div>
+
+    <sc-if value="{{ hasHover }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute; left:{{ hover.x }}px; top:{{ hover.y }}px; width:{{ hover.w }}px; max-height:{{ hover.maxH }}px; overflow:hidden; z-index:8; pointer-events:none; animation:rise .16s ease-out; background:rgba(14,14,16,.94); color:#e8e4da; border:1px solid #2c2c31; border-top:2px solid #ff2a3c; box-shadow:0 14px 30px rgba(0,0,0,.75); padding:10px 12px 11px; backdrop-filter:blur(4px)">
+        <sc-if value="{{ hover.hasImage }}" hint-placeholder-val="{{ false }}"><img src="{{ hover.image }}" alt="" draggable="false" style="display:block; width:100%; max-height:300px; object-fit:contain; background:#000; margin:-2px 0 10px; border:1px solid #2c2c31"></sc-if>
+        <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px">
+          <span style="font:11px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:#ff2a3c">{{ hover.numText }}</span>
+          <span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; text-transform:uppercase">{{ hover.typeLabel }}</span>
+        </div>
+        <div style="font:14px/1.25 'Special Elite',monospace; color:#f3f1ea; margin-top:4px; overflow-wrap:anywhere">{{ hover.title }}</div>
+        <sc-if value="{{ hover.hasMeta }}" hint-placeholder-val="{{ false }}"><div style="font:10px 'IBM Plex Mono',monospace; color:#8d877b; margin-top:3px; overflow-wrap:anywhere">{{ hover.meta }}</div></sc-if>
+        <div style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; text-transform:uppercase; margin-top:9px; padding-top:7px; border-top:1px solid #2c2c31">{{ hover.linkHead }}</div>
+        <div style="display:flex; flex-direction:column; gap:3px; margin-top:4px">
+          <sc-for list="{{ hover.links }}" as="hl" hint-placeholder-count="0">
+            <div style="display:flex; align-items:center; gap:6px; font:11px 'Archivo Narrow',sans-serif; color:#d8d3c7; min-width:0">
+              <span style="flex:none; width:7px; height:7px; border-radius:50%; background:{{ hl.color }}"></span>
+              <span style="flex:none; font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ hl.numText }}</span>
+              <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ hl.other }}</span>
+              <span style="flex:none; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase">{{ hl.rel }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+  <sc-if value="{{ boardEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none">
+      <div style="max-width:360px; padding:24px; background:#f3f1ea; color:#1b1a17; transform:rotate(-1.5deg); box-shadow:0 10px 20px rgba(0,0,0,.7); font:15px/1.5 'Special Elite',monospace; text-align:center">Nothing on the board yet.<br>Drag evidence in from the inbox, paste a screenshot, or drop a file here.</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasTlpBanner }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:12px; top:10px; padding:3px 8px; background:{{ tlpColor }}; color:{{ tlpInk }}; font:10px 'IBM Plex Mono',monospace; letter-spacing:.12em; pointer-events:none">{{ tlpLabel }}</div></sc-if>
+  <sc-if value="{{ present }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; left:16px; top:14px; display:flex; align-items:baseline; gap:10px; pointer-events:none">
+      <span style="font:11px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#ff2a3c">{{ caseNumber }}</span>
+      <span style="font:16px 'Special Elite',monospace; color:#f3f1ea">{{ caseTitle }}</span>
+    </div>
+    <div style="position:absolute; left:50%; bottom:16px; transform:translateX(-50%); display:flex; align-items:center; gap:14px; padding:8px 14px; background:rgba(14,14,16,.9); border:1px solid #2c2c31; pointer-events:none; white-space:nowrap">
+      <span style="font:12px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:#f3f1ea">{{ presentLabel }}</span>
+      <span style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.16em; color:#8d877b; text-transform:uppercase">← → walk the exhibits · Esc to exit</span>
+    </div>
+  </sc-if>
+  <div style="position:absolute; left:12px; bottom:10px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#5f5a52; pointer-events:none; text-transform:uppercase">V move · C connect · T timeline · R reveal · P present · F fit · / quick add · Del remove · Ctrl+Z undo</div>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; left:50%; bottom:34px; transform:translateX(-50%); background:#f3f1ea; color:#1b1a17; padding:8px 14px; font:12px 'Special Elite',monospace; box-shadow:0 6px 14px rgba(0,0,0,.7); pointer-events:none; white-space:nowrap">{{ toast }}</div>
+  </sc-if>
+</div>
+
+<sc-if value="{{ showRightUI }}" hint-placeholder-val="{{ true }}">
+<aside style="width:{{ asideW }}; position:{{ asidePos }}; inset:{{ asideInset }}; z-index:30; flex:none; border-left:1px solid #232326; background:#111113; display:flex; flex-direction:column; min-height:0">
+  <div style="display:flex; flex:none; border-bottom:1px solid #232326">
+    <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
+      <button onClick="{{ tb.onClick }}" style="flex:1; height:38px; border:none; border-bottom:2px solid {{ tb.border }}; background:{{ tb.bg }}; color:{{ tb.color }}; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; padding:0 2px">{{ tb.label }}</button>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ tabInspector }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; overflow:auto; min-height:0">
+
+      <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px; display:flex; flex-direction:column; gap:10px">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <span style="display:flex; align-items:baseline; gap:8px"><span style="font:11px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#ff2a3c">{{ sel.typeLabel }}</span><span style="font:10px 'IBM Plex Mono',monospace; color:#d8d3c7">{{ sel.numText }}</span></span>
+            <span style="font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ sel.pinLabel }}</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:4px">
+            <sc-for list="{{ stampOpts }}" as="so" hint-placeholder-count="4"><button onClick="{{ so.onPick }}" style="flex:1 1 40%; height:26px; border:1px solid {{ so.border }}; background:{{ so.bg }}; color:{{ so.color }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap">{{ so.label }}</button></sc-for>
+          </div>
+          <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TITLE</span><input value="{{ sel.title }}" onChange="{{ setTitle }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          <sc-if value="{{ sel.isIndicator }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>INDICATOR TYPE</span><select value="{{ sel.kind }}" onChange="{{ setKind }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><option value="domain">Domain</option><option value="ip">IP address</option><option value="url">URL</option><option value="hash">File hash</option><option value="handle">Handle</option><option value="email">Email</option><option value="wallet">Wallet</option><option value="cve">CVE</option><option value="phone">Phone</option></select></label>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>VALUE</span><input value="{{ sel.value }}" onChange="{{ setValue }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          </sc-if>
+          <sc-if value="{{ sel.isTx }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+              <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>CHAIN</span><select value="{{ sel.chain }}" onChange="{{ setChain }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><option value="">—</option><sc-for list="{{ chains }}" as="ch" hint-placeholder-count="0"><option value="{{ ch }}">{{ ch }}</option></sc-for></select></label>
+              <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>AMOUNT</span><input value="{{ sel.amount }}" onChange="{{ setAmount }}" placeholder="17,260 ETH" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+            </div>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>FROM · ADDRESS OR LABEL</span><input value="{{ sel.txFrom }}" onChange="{{ setTxFrom }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TO · ADDRESS OR LABEL</span><input value="{{ sel.txTo }}" onChange="{{ setTxTo }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TX HASH</span><input value="{{ sel.value }}" onChange="{{ setValue }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          </sc-if>
+          <sc-if value="{{ sel.isLink }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>URL</span><input value="{{ sel.url }}" onChange="{{ setUrl }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          </sc-if>
+          <sc-if value="{{ sel.isTtp }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>ATT&amp;CK TECHNIQUE</span><input list="attack-catalog" value="{{ sel.value }}" onChange="{{ setTechnique }}" placeholder="T1566 — Phishing" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+            <datalist id="attack-catalog"><sc-for list="{{ attackCatalog }}" as="a" hint-placeholder-count="0"><option value="{{ a.label }}"></option></sc-for></datalist>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TACTIC</span><select value="{{ sel.kind }}" onChange="{{ setKind }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><option value="">—</option><sc-for list="{{ tactics }}" as="ta" hint-placeholder-count="0"><option value="{{ ta }}">{{ ta }}</option></sc-for></select></label>
+          </sc-if>
+          <sc-if value="{{ hasPivots }}" hint-placeholder-val="{{ false }}">
+            <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">PIVOT · LOOK UP</div>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center">
+              <sc-if value="{{ sel.isIndicator }}" hint-placeholder-val="{{ false }}"><button onClick="{{ selToOsint }}" style="height:24px; padding:0 8px; border:1px solid #5a2a2e; background:transparent; color:#ff2a3c; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#ff2a3c; color:#fff">OSINT</button></sc-if>
+              <sc-if value="{{ sel.isIndicator }}" hint-placeholder-val="{{ false }}"><button onClick="{{ copySelValue }}" style="height:24px; padding:0 8px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#222226; color:#fff">Copy {{ copyLabel }}</button></sc-if>
+              <sc-for list="{{ pivots }}" as="pv" hint-placeholder-count="0"><a href="{{ pv.href }}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; height:24px; padding:0 8px; border:1px solid #2c2c31; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; text-decoration:none; white-space:nowrap" style-hover="border-color:#ff2a3c; color:#fff">{{ pv.label }} ↗</a></sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex; align-items:center; gap:8px">
+            <button onClick="{{ analyse }}" title="Ask Claude to assess this card against the rest of the board" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; border-color:#5a2a2e; color:#ff2a3c; background:transparent" style-hover="background:#ff2a3c; color:#fff">{{ aiLabel }}</button>
+            <span style="font:11px 'Archivo Narrow',sans-serif; color:#8d877b; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ aiNote }}</span>
+          </div>
+          <sc-if value="{{ hasAi }}" hint-placeholder-val="{{ false }}">
+            <div style="border:1px solid #2c2c31; border-top:2px solid #ff2a3c; background:#0c0c0e; padding:10px; display:flex; flex-direction:column; gap:8px">
+              <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">CLAUDE · ASSESSMENT</div>
+              <div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#e8e4da; white-space:pre-wrap">{{ ai.summary }}</div>
+              <sc-if value="{{ ai.hasStamp }}" hint-placeholder-val="{{ false }}"><div><button onClick="{{ ai.applyStamp }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Stamp {{ ai.stampLabel }}</button></div></sc-if>
+              <sc-if value="{{ ai.hasThreads }}" hint-placeholder-val="{{ false }}">
+                <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">SUGGESTED THREADS</div>
+                <sc-for list="{{ ai.threads }}" as="st" hint-placeholder-count="0">
+                  <div style="display:flex; flex-direction:column; gap:4px; padding:6px 8px; border:1px dashed #3a3a40">
+                    <div style="display:flex; align-items:center; gap:6px"><span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase; white-space:nowrap">{{ st.rel }}</span><span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ st.other }}</span><button onClick="{{ st.onPin }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">{{ st.btn }}</button></div>
+                    <div style="font:11px/1.4 'IBM Plex Mono',monospace; color:#8d877b">{{ st.why }}</div>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ ai.hasSteps }}" hint-placeholder-val="{{ false }}">
+                <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">NEXT STEPS</div>
+                <sc-for list="{{ ai.steps }}" as="ns" hint-placeholder-count="0"><div style="font:12px/1.45 'Archivo Narrow',sans-serif; color:#d8d3c7; padding-left:10px; text-indent:-10px">· {{ ns }}</div></sc-for>
+              </sc-if>
+              <div style="display:flex; gap:6px"><button onClick="{{ ai.toNotes }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Append to notes</button><button onClick="{{ ai.dismiss }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; background:transparent; color:#8d877b" style-hover="color:#fff">Dismiss</button></div>
+            </div>
+          </sc-if>
+          <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>{{ sel.bodyLabel }}</span><textarea value="{{ sel.body }}" onChange="{{ setBody }}" rows="5" spellcheck="false" style="padding:8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px/1.45 'Archivo Narrow',sans-serif; width:100%; resize:vertical" style-focus="border-color:#ff2a3c; outline:none"></textarea></label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>DATE</span><input type="date" value="{{ sel.date }}" onChange="{{ setDate }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; color-scheme:dark" style-focus="border-color:#ff2a3c; outline:none"></label>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TAGS</span><input value="{{ sel.tags }}" onChange="{{ setTags }}" placeholder="actor, infra" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          </div>
+          <sc-if value="{{ sel.isTarget }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+              <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>SECTOR</span><input value="{{ sel.sector }}" onChange="{{ setSector }}" placeholder="Finance · crypto" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+              <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>REGION</span><input value="{{ sel.region }}" onChange="{{ setRegion }}" placeholder="Global" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+            </div>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>WHAT WAS TAKEN / IMPACT</span><input value="{{ sel.impact }}" onChange="{{ setImpact }}" placeholder="$6.3B in assets across ten chains" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          </sc-if>
+          <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; padding-top:4px; border-top:1px solid #1f1f23">SOURCE &amp; RELIABILITY</div>
+          <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>SOURCE · WHO SAID SO</span><input value="{{ sel.source }}" onChange="{{ setSource }}" placeholder="URL, feed, report or analyst" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px">
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>COLLECTED</span><input type="date" value="{{ sel.collected }}" onChange="{{ setCollected }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; color-scheme:dark" style-focus="border-color:#ff2a3c; outline:none"></label>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>SOURCE</span><select value="{{ sel.srcGrade }}" onChange="{{ setSrcGrade }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark; width:100%"><option value="">—</option><sc-for list="{{ srcGrades }}" as="gr" hint-placeholder-count="0"><option value="{{ gr.id }}">{{ gr.label }}</option></sc-for></select></label>
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>INFO</span><select value="{{ sel.infoGrade }}" onChange="{{ setInfoGrade }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark; width:100%"><option value="">—</option><sc-for list="{{ infoGrades }}" as="gr" hint-placeholder-count="0"><option value="{{ gr.id }}">{{ gr.label }}</option></sc-for></select></label>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+            <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>HANDLING</span><select value="{{ sel.tlp }}" onChange="{{ setItemTlp }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark; width:100%"><option value="">Case default</option><sc-for list="{{ tlps }}" as="tl" hint-placeholder-count="0"><option value="{{ tl.id }}">{{ tl.label }}</option></sc-for></select></label>
+            <sc-if value="{{ sel.isIndicator }}" hint-placeholder-val="{{ false }}"><label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>LAST SEEN</span><input type="date" value="{{ sel.lastSeen }}" onChange="{{ setLastSeen }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; color-scheme:dark" style-focus="border-color:#ff2a3c; outline:none"></label></sc-if>
+          </div>
+          <sc-if value="{{ sel.isIndicator }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:end">
+              <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>FIRST SEEN</span><input type="date" value="{{ sel.firstSeen }}" onChange="{{ setFirstSeen }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; color-scheme:dark" style-focus="border-color:#ff2a3c; outline:none"></label>
+              <div style="font:11px/1.4 'Archivo Narrow',sans-serif; color:{{ sel.ageColor }}; padding-bottom:6px">{{ sel.ageText }}</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ sel.hasCustody }}" hint-placeholder-val="{{ false }}">
+            <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">CHAIN OF CUSTODY</div>
+            <div style="font:11px/1.5 'IBM Plex Mono',monospace; color:#d8d3c7; border:1px solid #232326; padding:6px 8px; overflow-wrap:anywhere">{{ sel.custody }}</div>
+          </sc-if>
+          <sc-if value="{{ hasXCase }}" hint-placeholder-val="{{ false }}">
+            <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">ALSO APPEARS IN</div>
+            <div style="display:flex; flex-direction:column; gap:4px"><sc-for list="{{ xcase }}" as="xc" hint-placeholder-count="0"><div onClick="{{ xc.onOpen }}" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; cursor:pointer" style-hover="border-color:#3a3a40"><span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ xc.label }}</span><span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase">open ↗</span></div></sc-for></div>
+          </sc-if>
+          <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; padding-top:4px; border-top:1px solid #1f1f23">TASKS · {{ taskCount }}</div>
+          <div style="display:flex; flex-direction:column; gap:4px">
+            <sc-for list="{{ tasks }}" as="tk" hint-placeholder-count="0">
+              <div style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; opacity:{{ tk.opacity }}">
+                <input type="checkbox" checked="{{ tk.done }}" onChange="{{ tk.onToggle }}" style="accent-color:#ff2a3c; margin:0">
+                <span style="flex:1; min-width:0; font:12px/1.3 'Archivo Narrow',sans-serif; color:#f3f1ea; text-decoration:{{ tk.deco }}; overflow-wrap:anywhere">{{ tk.text }}</span>
+                <span style="flex:none; font:10px 'IBM Plex Mono',monospace; color:{{ tk.dueColor }}; white-space:nowrap">{{ tk.meta }}</span>
+                <button onClick="{{ tk.onRemove }}" style="flex:none; width:20px; height:20px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:12px 'IBM Plex Mono',monospace; cursor:pointer" style-hover="color:#ff2a3c">×</button>
+              </div>
+            </sc-for>
+            <div style="display:flex; gap:4px">
+              <input value="{{ taskText }}" onChange="{{ onTaskText }}" onKeyDown="{{ onTaskKey }}" placeholder="Open question or to-do… Enter to add" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; flex:1; min-width:0; height:28px" style-focus="border-color:#ff2a3c; outline:none">
+              <input type="date" value="{{ taskDue }}" onChange="{{ onTaskDue }}" title="Due" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; width:120px; height:28px; color-scheme:dark; flex:none" style-focus="border-color:#ff2a3c; outline:none">
+            </div>
+          </div>
+          <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; padding-top:4px; border-top:1px solid #1f1f23">COMMENTS · {{ commentCount }}</div>
+          <div style="display:flex; flex-direction:column; gap:4px">
+            <sc-for list="{{ comments }}" as="cm" hint-placeholder-count="0">
+              <div style="padding:6px 8px; border:1px solid #232326; display:flex; flex-direction:column; gap:3px">
+                <div style="display:flex; gap:8px; font:10px 'IBM Plex Mono',monospace; color:#8d877b"><span style="color:#d8d3c7">{{ cm.by }}</span><span>{{ cm.when }}</span><span style="flex:1"></span><button onClick="{{ cm.onRemove }}" style="border:none; background:transparent; color:#8d877b; cursor:pointer; font:12px 'IBM Plex Mono',monospace; padding:0" style-hover="color:#ff2a3c">×</button></div>
+                <div style="font:12px/1.45 'Archivo Narrow',sans-serif; color:#e8e4da; white-space:pre-wrap">{{ cm.text }}</div>
+              </div>
+            </sc-for>
+            <textarea value="{{ commentText }}" onChange="{{ onCommentText }}" onKeyDown="{{ onCommentKey }}" rows="2" placeholder="Comment… Ctrl+Enter to post" spellcheck="false" style="padding:8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px/1.5 'IBM Plex Mono',monospace; resize:vertical; width:100%" style-focus="border-color:#ff2a3c; outline:none"></textarea>
+          </div>
+          <sc-if value="{{ sel.canImage }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; gap:6px">
+              <button onClick="{{ pickSelImage }}" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Upload image</button>
+              <sc-if value="{{ sel.hasImage }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearSelImage }}" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#fff">Remove</button></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasMergeTargets }}" hint-placeholder-val="{{ false }}">
+            <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b; padding-top:4px; border-top:1px solid #1f1f23">MERGE · SAME ENTITY, DIFFERENT CARD</div>
+            <div style="display:flex; gap:6px">
+              <select value="{{ mergeTo }}" onChange="{{ onMergeTo }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark; width:100%; flex:1; min-width:0"><option value="">Merge this card into…</option><sc-for list="{{ mergeTargets }}" as="mt" hint-placeholder-count="0"><option value="{{ mt.id }}">{{ mt.label }}</option></sc-for></select>
+              <button onClick="{{ doMerge }}" style="height:30px; padding:0 12px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Merge</button>
+            </div>
+            <div style="font:11px/1.45 'Archivo Narrow',sans-serif; color:#8d877b">Keeps the target, appends this card's aliases, notes, tags and tasks, re-points every thread, then removes this card. Undo with Ctrl+Z.</div>
+          </sc-if>
+          <div style="display:flex; gap:6px; padding-top:4px">
+            <button onClick="{{ togglePinSel }}" style="flex:1; height:30px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer" style-hover="background:#ff4553">{{ sel.pinAction }}</button>
+            <button onClick="{{ deleteSel }}" style="height:30px; padding:0 10px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#ff2a3c; border-color:#5a2a2e">Delete</button>
+          </div>
+        </div>
+        <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23">CONNECTED · {{ selLinkCount }}</div>
+        <div style="display:flex; flex-direction:column; gap:4px; padding:0 10px 14px">
+          <sc-for list="{{ selLinks }}" as="l" hint-placeholder-count="0">
+            <div onClick="{{ l.onSelect }}" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; cursor:pointer" style-hover="border-color:#3a3a40">
+              <span style="flex:none; width:8px; height:8px; border-radius:50%; background:{{ l.color }}"></span>
+              <span style="flex:none; font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ l.numText }}</span>
+              <span style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase; white-space:nowrap">{{ l.relLabel }}</span>
+              <span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ l.other }}</span>
+              <button onClick="{{ l.onRemove }}" title="Cut this thread" style="flex:none; width:22px; height:22px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:14px 'IBM Plex Mono',monospace; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#ff2a3c; border-color:#5a2a2e">×</button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasSelThread }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px; display:flex; flex-direction:column; gap:10px">
+          <span style="display:flex; align-items:baseline; gap:8px"><span style="font:11px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#ff2a3c">THREAD</span><span style="font:10px 'IBM Plex Mono',monospace; color:#d8d3c7">{{ selT.numText }}</span></span>
+          <div style="display:flex; align-items:center; gap:8px; font:13px 'Special Elite',monospace; color:#f3f1ea">
+            <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ selT.a }}</span>
+            <span style="color:#8d877b">→</span>
+            <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right">{{ selT.b }}</span>
+          </div>
+          <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>RELATION</span><select value="{{ selT.rel }}" onChange="{{ setThreadRel }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><sc-for list="{{ rels }}" as="r" hint-placeholder-count="0"><option value="{{ r.id }}">{{ r.label }}</option></sc-for></select></label>
+          <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b"><span>EVIDENCE FOR THIS LINK</span><textarea value="{{ selT.why }}" onChange="{{ setThreadWhy }}" rows="3" placeholder="Why these two are connected — the brief prints it" spellcheck="false" style="padding:8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px/1.5 'IBM Plex Mono',monospace; resize:vertical; width:100%" style-focus="border-color:#ff2a3c; outline:none"></textarea></label>
+          <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">CONFIDENCE</div>
+          <div style="display:flex; gap:4px">
+            <sc-for list="{{ confOpts }}" as="co" hint-placeholder-count="3"><button onClick="{{ co.onPick }}" style="flex:1; height:26px; border:1px solid {{ co.border }}; background:{{ co.bg }}; color:{{ co.color }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap">{{ co.label }}</button></sc-for>
+          </div>
+          <div style="display:flex; gap:6px">
+            <button onClick="{{ swapThread }}" style="flex:1; height:28px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer" style-hover="background:#222226; color:#fff">Swap direction</button>
+            <button onClick="{{ deleteThread }}" style="height:28px; padding:0 10px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#ff2a3c; border-color:#5a2a2e">Cut</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasSelGroup }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:14px; display:flex; flex-direction:column; gap:10px">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <span style="font:11px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#ff2a3c">CLUSTER</span>
+            <span style="font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ selG.count }}</span>
+          </div>
+          <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b"><span>NAME</span><input value="{{ selG.title }}" onChange="{{ setGroupTitle }}" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+          <div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">Cards inside the region move with it. Drag the name tab to move, the corner to resize.</div>
+          <div style="display:flex; flex-direction:column; gap:4px">
+            <sc-for list="{{ selG.members }}" as="gm" hint-placeholder-count="0"><div onClick="{{ gm.onFocus }}" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; cursor:pointer" style-hover="border-color:#3a3a40"><span style="font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ gm.numText }}</span><span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ gm.label }}</span></div></sc-for>
+          </div>
+          <button onClick="{{ deleteGroup }}" style="height:30px; padding:0 10px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer" style-hover="color:#ff2a3c; border-color:#5a2a2e">Remove cluster (cards stay)</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ noSel }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:18px 14px; display:flex; flex-direction:column; gap:14px">
+          <div style="font:13px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">Select a card or a thread to edit it.</div>
+          <div style="font:12px 'IBM Plex Mono',monospace; color:#d8d3c7">{{ stats }}</div>
+          <div style="font:12px/1.7 'Archivo Narrow',sans-serif; color:#8d877b">
+            <div style="color:#e8e4da; letter-spacing:.18em; font-size:10px; margin-bottom:4px">CONNECTING THREADS</div>
+            <div>Drag a pin onto another card.</div>
+            <div>Or press C, click one card, then another.</div>
+            <div>Or pick both cards in the Threads tab.</div>
+            <div>Suggestions appear there when cards share an indicator or tag.</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tabThreads }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1; overflow:auto; min-height:0">
+      <div style="padding:14px; display:flex; flex-direction:column; gap:8px">
+        <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b">NEW THREAD</div>
+        <select value="{{ newFrom }}" onChange="{{ onNewFrom }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><option value="">From…</option><sc-for list="{{ pinnedOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+        <select value="{{ newTo }}" onChange="{{ onNewTo }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><option value="">To…</option><sc-for list="{{ pinnedOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+        <div style="display:flex; gap:6px">
+          <select value="{{ newRel }}" onChange="{{ onNewRel }}" style="flex:1; height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark"><sc-for list="{{ rels }}" as="r" hint-placeholder-count="0"><option value="{{ r.id }}">{{ r.label }}</option></sc-for></select>
+          <button onClick="{{ addNewThread }}" style="height:30px; padding:0 12px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#ff4553">Pin thread</button>
+        </div>
+      </div>
+      <sc-if value="{{ showSuggest }}" hint-placeholder-val="{{ true }}">
+        <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23">SUGGESTED · {{ suggestionCount }}</div>
+        <div style="display:flex; flex-direction:column; gap:6px; padding:0 10px 10px">
+          <sc-for list="{{ suggestions }}" as="sg" hint-placeholder-count="0">
+            <div style="padding:8px 10px; border:1px dashed #3a3a40; display:flex; flex-direction:column; gap:6px">
+              <div style="font:12px/1.3 'Special Elite',monospace; color:#f3f1ea">{{ sg.a }} <span style="color:#8d877b">↔</span> {{ sg.b }}</div>
+              <div style="font:11px 'IBM Plex Mono',monospace; color:#8d877b; word-break:break-all">shares {{ sg.reason }}</div>
+              <div style="display:flex; gap:6px">
+                <button onClick="{{ sg.onAccept }}" style="display:flex; align-items:center; gap:6px; height:24px; padding:0 8px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff"><span style="width:8px; height:8px; border-radius:50%; background:{{ sg.color }}"></span>Pin as {{ sg.relLabel }}</button>
+                <button onClick="{{ sg.onDismiss }}" style="height:24px; padding:0 8px; border:1px solid transparent; background:transparent; color:#8d877b; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#fff">Dismiss</button>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noSuggestions }}" hint-placeholder-val="{{ false }}"><div style="padding:6px 4px; font:12px/1.5 'Archivo Narrow',sans-serif; color:#5f5a52">No unlinked cards share an indicator or tag right now.</div></sc-if>
+        </div>
+      </sc-if>
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23">ALL THREADS · {{ threadCount }}</div>
+      <div style="display:flex; flex-direction:column; gap:4px; padding:0 10px 14px">
+        <sc-for list="{{ threadRows }}" as="tr" hint-placeholder-count="0">
+          <div onClick="{{ tr.onSelect }}" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid {{ tr.border }}; cursor:pointer" style-hover="border-color:#3a3a40">
+            <span style="flex:none; width:8px; height:8px; border-radius:50%; background:{{ tr.color }}"></span>
+            <span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ tr.a }}</span>
+            <span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase; white-space:nowrap">{{ tr.relLabel }}</span>
+            <span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right">{{ tr.b }}</span>
+            <button onClick="{{ tr.onRemove }}" title="Cut this thread" style="flex:none; width:22px; height:22px; border:1px solid #2c2c31; background:transparent; color:#8d877b; font:14px 'IBM Plex Mono',monospace; cursor:pointer; white-space:nowrap; flex:none" style-hover="color:#ff2a3c; border-color:#5a2a2e">×</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tabAudit }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1; overflow:auto; min-height:0; padding:4px 0 14px">
+      <div style="padding:10px 14px 4px; font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">Gaps the brief would expose. Click a row to jump to it.</div>
+      <sc-for list="{{ audit }}" as="ag" hint-placeholder-count="0">
+        <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23; display:flex; justify-content:space-between"><span>{{ ag.head }}</span><span style="font:10px 'IBM Plex Mono',monospace; color:{{ ag.countColor }}">{{ ag.count }}</span></div>
+        <div style="display:flex; flex-direction:column; gap:4px; padding:0 10px 6px">
+          <sc-for list="{{ ag.rows }}" as="ar" hint-placeholder-count="0">
+            <div onClick="{{ ar.onFocus }}" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; cursor:pointer" style-hover="border-color:#3a3a40">
+              <span style="flex:none; font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ ar.numText }}</span>
+              <span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ar.label }}</span>
+              <span style="flex:none; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase">{{ ar.sub }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ ag.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:2px 4px 4px; font:11px 'Archivo Narrow',sans-serif; color:#3fae63; letter-spacing:.08em">CLEAR</div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tabLog }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1; overflow:auto; min-height:0; padding:0 0 14px">
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:12px 14px 6px">SNAPSHOTS · {{ snapCount }}</div>
+      <div style="display:flex; gap:6px; padding:0 10px 8px">
+        <input value="{{ snapName }}" onChange="{{ onSnapName }}" onKeyDown="{{ onSnapKey }}" placeholder="Name this state…" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; flex:1; min-width:0" style-focus="border-color:#ff2a3c; outline:none">
+        <button onClick="{{ saveSnapshot }}" style="height:30px; padding:0 10px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#ff4553">Save</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:4px; padding:0 10px 8px">
+        <sc-for list="{{ snapshots }}" as="sn" hint-placeholder-count="0">
+          <div style="border:1px solid {{ sn.border }}; padding:6px 8px; display:flex; flex-direction:column; gap:6px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span style="flex:1; min-width:0; font:12px 'Special Elite',monospace; color:#f3f1ea; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ sn.name }}</span>
+              <span style="flex:none; font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ sn.when }}</span>
+            </div>
+            <div style="display:flex; gap:4px">
+              <button onClick="{{ sn.onDiff }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">{{ sn.diffLabel }}</button>
+              <button onClick="{{ sn.onRestore }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Restore</button>
+              <button onClick="{{ sn.onRemove }}" title="Delete snapshot" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; background:transparent; color:#8d877b" style-hover="color:#ff2a3c; border-color:#5a2a2e">×</button>
+            </div>
+            <sc-if value="{{ sn.showDiff }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:3px; font:11px/1.4 'IBM Plex Mono',monospace; color:#d8d3c7; border-top:1px solid #232326; padding-top:6px">
+                <div style="color:#8d877b">{{ sn.diffSummary }}</div>
+                <sc-for list="{{ sn.diffRows }}" as="dr" hint-placeholder-count="0"><div style="color:{{ dr.color }}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ dr.text }}</div></sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noSnapshots }}" hint-placeholder-val="{{ false }}"><div style="padding:2px 4px; font:12px/1.5 'Archivo Narrow',sans-serif; color:#5f5a52">Save a state before a big change, then diff or restore it later.</div></sc-if>
+      </div>
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23">PLAYBACK · HOW THE BOARD BUILT UP</div>
+      <div style="padding:0 10px 8px; display:flex; flex-direction:column; gap:6px">
+        <div style="display:flex; align-items:center; gap:8px">
+          <button onClick="{{ playToggle }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:26px" style-hover="background:#222226; color:#fff">{{ playLabel }}</button>
+          <input type="range" min="0" max="{{ playMax }}" value="{{ playIdx }}" onChange="{{ onPlayIdx }}" aria-label="Playback position" style="flex:1; min-width:0">
+          <span style="font:10px 'IBM Plex Mono',monospace; color:#8d877b; white-space:nowrap">{{ playPos }}</span>
+          <sc-if value="{{ playOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ playStop }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; background:transparent; color:#8d877b" style-hover="color:#ff2a3c">Exit</button></sc-if>
+        </div>
+        <div style="font:11px/1.4 'Archivo Narrow',sans-serif; color:#8d877b">{{ playHint }}</div>
+      </div>
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23">REPORT VERSIONS · {{ reportCount }}</div>
+      <div style="display:flex; flex-direction:column; gap:4px; padding:0 10px 8px">
+        <sc-for list="{{ reports }}" as="rp" hint-placeholder-count="0">
+          <div style="border:1px solid #232326; padding:6px 8px; display:flex; flex-direction:column; gap:5px">
+            <div style="display:flex; align-items:center; gap:8px"><span style="font:12px 'Special Elite',monospace; color:#f3f1ea">{{ rp.name }}</span><span style="flex:1"></span><span style="font:10px 'IBM Plex Mono',monospace; color:#8d877b">{{ rp.when }}</span><button onClick="{{ rp.onDiff }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">{{ rp.diffLabel }}</button></div>
+            <sc-if value="{{ rp.showDiff }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:3px; font:11px/1.4 'IBM Plex Mono',monospace; border-top:1px solid #232326; padding-top:5px"><sc-for list="{{ rp.diffRows }}" as="dr" hint-placeholder-count="0"><div style="color:{{ dr.color }}; overflow-wrap:anywhere">{{ dr.text }}</div></sc-for></div></sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noReports }}" hint-placeholder-val="{{ false }}"><div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#5f5a52">Each brief or one-pager you open is fingerprinted here, so you can see what changed between versions.</div></sc-if>
+      </div>
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:10px 14px 6px; border-top:1px solid #1f1f23; display:flex; justify-content:space-between; align-items:center"><span>CASE LOG · {{ logCount }}</span><button onClick="{{ clearLog }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; background:transparent; color:#8d877b" style-hover="color:#ff2a3c; border-color:#5a2a2e">Clear</button></div>
+      <div style="display:flex; flex-direction:column; padding:0 10px">
+        <sc-for list="{{ logRows }}" as="lr" hint-placeholder-count="0">
+          <div style="display:flex; gap:10px; padding:5px 4px; border-bottom:1px solid #1a1a1e; font:11px/1.4 'IBM Plex Mono',monospace"><span style="flex:none; color:#8d877b">{{ lr.when }}</span><span style="flex:1; min-width:0; color:#d8d3c7; overflow-wrap:anywhere">{{ lr.text }}</span></div>
+        </sc-for>
+        <sc-if value="{{ noLog }}" hint-placeholder-val="{{ false }}"><div style="padding:6px 4px; font:12px/1.5 'Archivo Narrow',sans-serif; color:#5f5a52">Every pin, thread, stamp and cut is recorded here and printed in the brief.</div></sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tabNotes }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1; min-height:0; display:flex; flex-direction:column; overflow:auto">
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:12px 14px 6px">KEY JUDGEMENT</div>
+      <div style="padding:0 10px; display:flex; flex-direction:column; gap:6px">
+        <textarea value="{{ judgement.text }}" onChange="{{ setJudgeText }}" rows="3" placeholder="We assess that…" spellcheck="false" style="padding:8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px/1.5 'IBM Plex Mono',monospace; resize:vertical; width:100%; font:13px/1.5 'Special Elite',monospace" style-focus="border-color:#ff2a3c; outline:none"></textarea>
+        <div style="display:flex; gap:4px"><sc-for list="{{ confLevels }}" as="cl" hint-placeholder-count="3"><button onClick="{{ cl.onPick }}" style="flex:1; height:26px; border:1px solid {{ cl.border }}; background:{{ cl.bg }}; color:{{ cl.color }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap">{{ cl.label }}</button></sc-for></div>
+        <textarea value="{{ judgement.dissent }}" onChange="{{ setJudgeDissent }}" rows="2" placeholder="Dissent / alternative view and what would change the call" spellcheck="false" style="padding:8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px/1.5 'IBM Plex Mono',monospace; resize:vertical; width:100%" style-focus="border-color:#ff2a3c; outline:none"></textarea>
+        <div style="font:11px 'IBM Plex Mono',monospace; color:#8d877b">{{ signoffText }}</div>
+      </div>
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:#8d877b; padding:12px 14px 6px">CASE NOTES · autosaved</div>
+      <textarea value="{{ notes }}" onChange="{{ onNotes }}" placeholder="Working theory, leads, to-dos…" spellcheck="false" style="flex:1; min-height:200px; margin:0 10px 10px; padding:14px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px/1.65 'Special Elite',monospace; resize:none" style-focus="border-color:#ff2a3c; outline:none"></textarea>
+    </div>
+  </sc-if>
+</aside>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ chrome }}" hint-placeholder-val="{{ true }}">
+<div style="height:72px; flex:none; border-top:1px solid #232326; background:#0e0e10; display:flex; align-items:stretch">
+  <div style="flex:none; width:70px; display:flex; align-items:center; justify-content:center; border-right:1px solid #232326; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#8d877b; writing-mode:vertical-rl; transform:rotate(180deg)">TIMELINE</div>
+  <div style="flex:1; min-width:0; overflow-x:auto; overflow-y:hidden; position:relative; display:flex; align-items:center; gap:28px; padding:0 24px">
+    <div style="position:absolute; left:24px; right:24px; top:50%; height:1px; background:#2a2a2e"></div>
+    <sc-for list="{{ timeline }}" as="ev" hint-placeholder-count="0">
+      <button onClick="{{ ev.onFocus }}" title="Jump to this card" style="position:relative; flex:none; display:flex; flex-direction:column; align-items:center; gap:4px; padding:0; border:none; background:transparent; color:#e8e4da; cursor:pointer; opacity:{{ ev.opacity }}; white-space:nowrap; flex:none">
+        <span style="font:10px 'IBM Plex Mono',monospace; color:{{ ev.dateColor }}; letter-spacing:.06em">{{ ev.dateLabel }}</span>
+        <span style="width:10px; height:10px; border-radius:50%; background:{{ ev.color }}; box-shadow:0 0 0 3px #0e0e10, 0 0 0 4px {{ ev.ring }}"></span>
+        <span style="font:11px 'Special Elite',monospace; color:#d8d3c7; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ ev.title }}</span>
+      </button>
+    </sc-for>
+    <sc-if value="{{ timelineEmpty }}" hint-placeholder-val="{{ false }}"><div style="position:relative; font:12px 'Archivo Narrow',sans-serif; color:#5f5a52; background:#0e0e10; padding:0 8px">Give a card a date and it appears here.</div></sc-if>
+  </div>
+</div>
+</sc-if>
+
+
+<sc-if value="{{ tplOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeTpl }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(760px, 92vw); max-height:86vh; display:flex; flex-direction:column; background:#111113; border:1px solid #2c2c31; box-shadow:0 30px 60px rgba(0,0,0,.8)">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #232326">
+      <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">NEW CASE</div>
+      <button onClick="{{ closeTpl }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Close</button>
+    </div>
+    <div style="padding:12px 16px 16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; overflow:auto; min-height:0">
+      <sc-for list="{{ templates }}" as="tp" hint-placeholder-count="0">
+        <button onClick="{{ tp.onPick }}" style="text-align:left; padding:12px; border:1px solid #232326; background:#141416; color:#e8e4da; cursor:pointer; display:flex; flex-direction:column; gap:6px; font-family:inherit" style-hover="border-color:#ff2a3c; background:#1a1a1e">
+          <span style="font:15px 'Special Elite',monospace; color:#f3f1ea">{{ tp.name }}</span>
+          <span style="font:12px/1.45 'Archivo Narrow',sans-serif; color:#8d877b">{{ tp.blurb }}</span>
+          <span style="font:10px 'IBM Plex Mono',monospace; color:#ff2a3c">{{ tp.meta }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ lockOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeLock }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(460px, 92vw); display:flex; flex-direction:column; gap:10px; background:#111113; border:1px solid #2c2c31; box-shadow:0 30px 60px rgba(0,0,0,.8); padding:16px">
+    <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">ENCRYPTION AT REST</div>
+    <div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">{{ lockBlurb }}</div>
+    <input type="password" value="{{ lockPass }}" onChange="{{ onLockPass }}" onKeyDown="{{ onLockKey }}" placeholder="Passphrase" autocomplete="new-password" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; height:34px" style-focus="border-color:#ff2a3c; outline:none">
+    <div style="display:flex; gap:6px">
+      <button onClick="{{ lockSet }}" style="height:30px; padding:0 14px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#ff4553">{{ lockSetLabel }}</button>
+      <sc-if value="{{ lockHas }}" hint-placeholder-val="{{ false }}"><button onClick="{{ lockClear }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:30px" style-hover="background:#222226; color:#fff">Remove passphrase</button></sc-if>
+      <span style="flex:1"></span>
+      <button onClick="{{ closeLock }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:30px; background:transparent; color:#8d877b" style-hover="color:#fff">Cancel</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed; inset:0; z-index:60; background:#0a0a0b; display:flex; align-items:center; justify-content:center">
+  <div style="width:min(420px, 92vw); display:flex; flex-direction:column; gap:12px; background:#111113; border:1px solid #2c2c31; border-top:2px solid #ff2a3c; padding:22px">
+    <div style="font:22px 'Special Elite',monospace; color:#f3f1ea">Case files are locked.</div>
+    <div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">The saved cases are encrypted in this browser. Enter the passphrase to open them.</div>
+    <input type="password" value="{{ lockPass }}" onChange="{{ onLockPass }}" onKeyDown="{{ onUnlockKey }}" placeholder="Passphrase" autocomplete="current-password" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; height:36px" style-focus="border-color:#ff2a3c; outline:none">
+    <sc-if value="{{ lockErr }}" hint-placeholder-val="{{ false }}"><div style="font:11px 'IBM Plex Mono',monospace; color:#ff2a3c">{{ lockErrText }}</div></sc-if>
+    <div style="display:flex; gap:6px; align-items:center">
+      <button onClick="{{ unlock }}" style="height:34px; padding:0 16px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer" style-hover="background:#ff4553">Unlock</button>
+      <span style="flex:1"></span>
+      <button onClick="{{ lockWipe }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:30px; background:transparent; color:#8d877b" style-hover="color:#ff2a3c">Forgot it — wipe and start over</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ osintOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeOsint }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.66); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(1100px, 95vw); height:min(820px, 90vh); display:flex; flex-direction:column; background:#111113; border:1px solid #2c2c31; border-top:2px solid #ff2a3c; box-shadow:0 30px 60px rgba(0,0,0,.8)">
+    <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #232326; flex-wrap:wrap">
+      <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da; flex:none">OSINT WORKBENCH</div>
+      <input data-osint="1" value="{{ osint.q }}" onChange="{{ onOsintQ }}" onKeyDown="{{ onOsintKey }}" placeholder="domain · IP · URL · email · @handle · hash · wallet · CVE · phone · a person or company name" spellcheck="false" style="flex:1 1 320px; min-width:200px; height:34px; padding:0 10px; border:1px solid #2c2c31; background:#0c0c0e; color:#f3f1ea; font:13px 'IBM Plex Mono',monospace" style-focus="border-color:#ff2a3c; outline:none">
+      <div style="display:flex; gap:4px; flex-wrap:wrap"><sc-for list="{{ osintTypes }}" as="ot" hint-placeholder-count="0"><button onClick="{{ ot.onPick }}" style="height:26px; padding:0 8px; border:1px solid {{ ot.border }}; background:{{ ot.bg }}; color:{{ ot.color }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap">{{ ot.label }}</button></sc-for></div>
+      <button onClick="{{ runOsint }}" style="height:34px; padding:0 16px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#ff4553">Run</button>
+      <button onClick="{{ closeOsint }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Close</button>
+    </div>
+    <sc-if value="{{ osintIdle }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:28px 24px; display:flex; flex-direction:column; gap:12px; overflow:auto">
+        <div style="font:18px/1.4 'Special Elite',monospace; color:#f3f1ea; max-width:640px">One selector in. Live DNS, RDAP, geolocation, archives, code and chain lookups come back here; everything else opens prefilled in a new tab. Pin the result as a card when it earns a place on the board.</div>
+        <div style="font:12px/1.6 'Archivo Narrow',sans-serif; color:#8d877b; max-width:640px">The type is detected from what you type. Live lookups use public endpoints that allow browser access; anything a service blocks falls back to a one-click launcher. Nothing is stored outside this browser.</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px"><sc-for list="{{ osintExamples }}" as="ox" hint-placeholder-count="0"><button onClick="{{ ox.onPick }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:26px" style-hover="background:#222226; color:#fff">{{ ox.label }}</button></sc-for></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ osintRan }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; gap:10px; padding:8px 16px; border-bottom:1px solid #232326; flex-wrap:wrap">
+        <span style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#ff2a3c; text-transform:uppercase">{{ osint.typeLabel }}</span>
+        <span style="font:13px 'IBM Plex Mono',monospace; color:#f3f1ea; overflow-wrap:anywhere">{{ osint.value }}</span>
+        <span style="flex:1"></span>
+        <span style="font:11px 'Archivo Narrow',sans-serif; color:#8d877b">{{ osintStatus }}</span>
+        <button onClick="{{ osintPin }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; border-color:#ff2a3c; color:#ff2a3c; background:transparent" style-hover="background:#ff2a3c; color:#fff">{{ osintPinLabel }}</button>
+        <button onClick="{{ osintCopy }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Copy findings</button>
+      </div>
+      <div style="flex:1; min-height:0; overflow:auto; padding:14px 16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:14px; align-items:start">
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">LIVE LOOKUPS · {{ osintLiveCount }}</div>
+          <sc-for list="{{ osintLive }}" as="lk" hint-placeholder-count="0">
+            <div style="border:1px solid #232326; border-left:3px solid {{ lk.accent }}; padding:8px 10px; display:flex; flex-direction:column; gap:4px">
+              <div style="display:flex; align-items:center; gap:8px"><span style="font:12px 'Special Elite',monospace; color:#f3f1ea">{{ lk.label }}</span><span style="flex:1"></span><span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.14em; color:{{ lk.accent }}; text-transform:uppercase">{{ lk.status }}</span><sc-if value="{{ lk.hasHref }}" hint-placeholder-val="{{ false }}"><a href="{{ lk.href }}" target="_blank" rel="noopener" style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.14em; color:#d8d3c7; text-transform:uppercase; text-decoration:none" style-hover="color:#fff">open ↗</a></sc-if></div>
+              <sc-for list="{{ lk.lines }}" as="ln" hint-placeholder-count="0"><div style="font:11px/1.45 'IBM Plex Mono',monospace; color:#d8d3c7; overflow-wrap:anywhere">{{ ln }}</div></sc-for>
+            </div>
+          </sc-for>
+          <sc-if value="{{ osintNoLive }}" hint-placeholder-val="{{ false }}"><div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#5f5a52">No browser-reachable lookups for this type; use the launchers.</div></sc-if>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <sc-for list="{{ osintLaunchers }}" as="lg" hint-placeholder-count="0">
+            <div style="display:flex; flex-direction:column; gap:6px">
+              <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">{{ lg.head }}</div>
+              <div style="display:flex; flex-wrap:wrap; gap:4px"><sc-for list="{{ lg.links }}" as="ll" hint-placeholder-count="0"><a href="{{ ll.href }}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; height:26px; padding:0 9px; border:1px solid #2c2c31; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; text-decoration:none; white-space:nowrap" style-hover="border-color:#ff2a3c; color:#fff">{{ ll.label }} ↗</a></sc-for></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ achOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeAch }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(1040px, 94vw); max-height:88vh; display:flex; flex-direction:column; background:#111113; border:1px solid #2c2c31; box-shadow:0 30px 60px rgba(0,0,0,.8)">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #232326; gap:10px">
+      <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">COMPETING HYPOTHESES</div>
+      <div style="flex:1"></div>
+      <input value="{{ hypText }}" onChange="{{ onHypText }}" onKeyDown="{{ onHypKey }}" placeholder="New hypothesis… Enter to add" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%; width:320px" style-focus="border-color:#ff2a3c; outline:none">
+      <button onClick="{{ closeAch }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Close</button>
+    </div>
+    <div style="padding:8px 16px 0; font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">Click a cell to cycle: consistent · inconsistent · neutral. The hypothesis with the fewest inconsistencies survives; the one you favour is not the test.</div>
+    <div style="overflow:auto; min-height:0; padding:10px 16px 16px">
+      <sc-if value="{{ noHyps }}" hint-placeholder-val="{{ false }}"><div style="font:13px 'Special Elite',monospace; color:#f3f1ea; padding:20px 0">Add two or more hypotheses to start.</div></sc-if>
+      <sc-if value="{{ hasHyps }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; grid-template-columns:minmax(220px, 1.4fr) repeat({{ hypCount }}, minmax(120px, 1fr)); gap:1px; background:#232326; border:1px solid #232326">
+          <div style="background:#111113; padding:8px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">EVIDENCE</div>
+          <sc-for list="{{ hyps }}" as="hy" hint-placeholder-count="0"><div style="background:#111113; padding:8px; display:flex; flex-direction:column; gap:4px"><div style="font:12px/1.3 'Special Elite',monospace; color:#f3f1ea">{{ hy.text }}</div><div style="display:flex; justify-content:space-between; align-items:center"><span style="font:10px 'IBM Plex Mono',monospace; color:{{ hy.scoreColor }}">{{ hy.score }}</span><button onClick="{{ hy.onRemove }}" style="border:none; background:transparent; color:#8d877b; cursor:pointer; font:12px 'IBM Plex Mono',monospace; padding:0" style-hover="color:#ff2a3c">×</button></div></div></sc-for>
+          <sc-for list="{{ achRows }}" as="ar" hint-placeholder-count="0">
+            <div style="background:#111113; padding:6px 8px; display:flex; gap:8px; align-items:center; min-width:0"><span style="font:10px 'IBM Plex Mono',monospace; color:#8d877b; flex:none">{{ ar.numText }}</span><span style="font:12px 'Special Elite',monospace; color:#e8e4da; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0">{{ ar.label }}</span></div>
+            <sc-for list="{{ ar.cells }}" as="ce" hint-placeholder-count="0"><button onClick="{{ ce.onCycle }}" style="background:{{ ce.bg }}; border:none; color:{{ ce.color }}; font:12px 'IBM Plex Mono',monospace; letter-spacing:.1em; cursor:pointer; min-height:34px" style-hover="filter:brightness(1.25)">{{ ce.label }}</button></sc-for>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ reqOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeReq }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(720px, 92vw); max-height:88vh; display:flex; flex-direction:column; background:#111113; border:1px solid #2c2c31; box-shadow:0 30px 60px rgba(0,0,0,.8)">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #232326">
+      <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">REQUEST GENERATOR</div>
+      <button onClick="{{ closeReq }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Close</button>
+    </div>
+    <div style="padding:14px 16px; display:flex; flex-direction:column; gap:10px; overflow:auto; min-height:0">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+        <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TYPE</span><select value="{{ req.kind }}" onChange="{{ onReqKind }}" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:13px 'Archivo Narrow',sans-serif; color-scheme:dark; width:100%"><option value="takedown">Takedown request</option><option value="rfi">Request for information</option><option value="block">Blocking request (SOC)</option></select></label>
+        <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b"><span>TO</span><input value="{{ req.to }}" onChange="{{ onReqTo }}" placeholder="Registrar abuse desk, hosting provider, partner CERT…" spellcheck="false" style="height:30px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px 'IBM Plex Mono',monospace; width:100%" style-focus="border-color:#ff2a3c; outline:none"></label>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center"><div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#8d877b">INDICATORS TO INCLUDE · {{ reqCount }}</div><div style="display:flex; gap:4px"><button onClick="{{ reqAll }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">All</button><button onClick="{{ reqNone }}" style="height:22px; padding:0 7px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">None</button></div></div>
+      <div style="display:flex; flex-direction:column; gap:4px">
+        <sc-for list="{{ reqRows }}" as="rr" hint-placeholder-count="0">
+          <label style="display:flex; align-items:center; gap:8px; padding:6px 8px; border:1px solid #232326; cursor:pointer"><input type="checkbox" checked="{{ rr.checked }}" onChange="{{ rr.onToggle }}" style="accent-color:#ff2a3c; margin:0"><span style="width:70px; flex:none; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.16em; color:#ff2a3c; text-transform:uppercase">{{ rr.kind }}</span><span style="flex:1; min-width:0; font:12px 'IBM Plex Mono',monospace; color:#f3f1ea; overflow-wrap:anywhere">{{ rr.value }}</span><span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase; white-space:nowrap">{{ rr.status }}</span></label>
+        </sc-for>
+        <sc-if value="{{ noReqRows }}" hint-placeholder-val="{{ false }}"><div style="font:12px 'Archivo Narrow',sans-serif; color:#5f5a52">No indicators on this case yet.</div></sc-if>
+      </div>
+      <div style="display:flex; gap:6px"><button onClick="{{ reqOpenLetter }}" style="height:30px; padding:0 14px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#ff4553">Open letter</button><button onClick="{{ reqCopy }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; height:30px" style-hover="background:#222226; color:#fff">Copy text</button></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ actorsOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeActors }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(760px, 92vw); max-height:86vh; display:flex; flex-direction:column; background:#111113; border:1px solid #2c2c31; box-shadow:0 30px 60px rgba(0,0,0,.8)">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #232326">
+      <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">ACTOR LIBRARY</div>
+      <button onClick="{{ closeActors }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Close</button>
+    </div>
+    <div style="padding:10px 16px 0; font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">Public profiles with their usual ATT&amp;CK techniques. Drop one in and it lands as a cluster: the actor, its techniques and threads marked medium confidence until you confirm them against this case.</div>
+    <div style="padding:10px 16px 16px; display:flex; flex-direction:column; gap:6px; overflow:auto; min-height:0">
+      <sc-for list="{{ actors }}" as="ac" hint-placeholder-count="0">
+        <div style="display:flex; gap:12px; align-items:flex-start; padding:10px 12px; border:1px solid #232326" style-hover="border-color:#3a3a40">
+          <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+            <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap"><span style="font:14px 'Special Elite',monospace; color:#f3f1ea">{{ ac.name }}</span><span style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; color:#ff2a3c; text-transform:uppercase">{{ ac.origin }}</span><span style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; color:#8d877b; text-transform:uppercase">{{ ac.motive }}</span></div>
+            <div style="font:11px 'IBM Plex Mono',monospace; color:#8d877b">aka {{ ac.aliases }}</div>
+            <div style="font:12px/1.45 'Archivo Narrow',sans-serif; color:#d8d3c7">{{ ac.summary }}</div>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:2px"><sc-for list="{{ ac.techniques }}" as="tq" hint-placeholder-count="0"><span style="font:10px 'IBM Plex Mono',monospace; color:#e6d5ff; background:#2e1a66; padding:1px 6px">{{ tq }}</span></sc-for></div>
+          </div>
+          <button onClick="{{ ac.onDrop }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none; border-color:#ff2a3c; background:#ff2a3c; color:#fff" style-hover="background:#ff4553">Drop in</button>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{ extractOpen }}" hint-placeholder-val="{{ false }}">
+<div onPointerDown="{{ closeExtract }}" style="position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center">
+  <div onPointerDown="{{ stop }}" style="width:min(720px, 92vw); max-height:86vh; display:flex; flex-direction:column; background:#111113; border:1px solid #2c2c31; box-shadow:0 30px 60px rgba(0,0,0,.8)">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #232326">
+      <div style="font:12px 'Archivo Narrow',sans-serif; letter-spacing:.22em; color:#e8e4da">EXTRACT INDICATORS</div>
+      <button onClick="{{ closeExtract }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Close</button>
+    </div>
+    <div style="padding:14px 16px; display:flex; flex-direction:column; gap:10px; overflow:auto; min-height:0">
+      <div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#8d877b">Paste a report, mail headers, a log excerpt or a feed entry. Domains, IPs, URLs, emails, hashes, CVEs, wallets and handles are pulled out, defanged or not.</div>
+      <textarea value="{{ extractText }}" onChange="{{ onExtractText }}" rows="7" placeholder="e.g. The lure at hxxps://harb0r-cu-login[.]com/auth resolved to 203.0.113.42; payload sha256 9f2c…; see CVE-2026-1234" spellcheck="false" style="padding:10px; border:1px solid #2c2c31; background:#0c0c0e; color:#e8e4da; font:12px/1.5 'IBM Plex Mono',monospace; resize:vertical; width:100%" style-focus="border-color:#ff2a3c; outline:none"></textarea>
+      <div style="display:flex; gap:8px; align-items:center">
+        <button onClick="{{ runExtract }}" style="height:30px; padding:0 14px; border:1px solid #ff2a3c; background:#ff2a3c; color:#fff; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#ff4553">Extract</button>
+        <div style="font:11px 'IBM Plex Mono',monospace; color:#8d877b">{{ extractSummary }}</div>
+      </div>
+      <sc-if value="{{ hasExtract }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:4px">
+          <sc-for list="{{ extractRows }}" as="r" hint-placeholder-count="0">
+            <label style="display:flex; align-items:center; gap:10px; padding:6px 8px; border:1px solid #232326; opacity:{{ r.opacity }}; cursor:pointer">
+              <input type="checkbox" checked="{{ r.checked }}" disabled="{{ r.known }}" onChange="{{ r.onToggle }}" style="accent-color:#ff2a3c; margin:0">
+              <span style="width:70px; flex:none; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.16em; color:#ff2a3c; text-transform:uppercase">{{ r.kindLabel }}</span>
+              <span style="flex:1; min-width:0; font:12px 'IBM Plex Mono',monospace; color:#f3f1ea; word-break:break-all">{{ r.display }}</span>
+              <span style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; color:#8d877b; text-transform:uppercase; white-space:nowrap">{{ r.note }}</span>
+            </label>
+          </sc-for>
+        </div>
+        <div style="display:flex; gap:6px">
+          <button onClick="{{ addExtractInbox }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Add selected to inbox</button>
+          <button onClick="{{ addExtractBoard }}" style="height:26px; padding:0 10px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; white-space:nowrap; flex:none" style-hover="background:#222226; color:#fff">Pin selected to board</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;paper&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;classic&quot;,&quot;options&quot;:[&quot;classic&quot;,&quot;white&quot;,&quot;aged&quot;],&quot;tsType&quot;:&quot;'classic' | 'white' | 'aged'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;pins&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;red&quot;,&quot;options&quot;:[&quot;red&quot;,&quot;brass&quot;,&quot;by type&quot;],&quot;tsType&quot;:&quot;'red' | 'brass' | 'by type'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;thread&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;taut&quot;,&quot;options&quot;:[&quot;taut&quot;,&quot;slack&quot;,&quot;yarn&quot;],&quot;tsType&quot;:&quot;'taut' | 'slack' | 'yarn'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;lighting&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;spotlight&quot;,&quot;options&quot;:[&quot;spotlight&quot;,&quot;lamp&quot;,&quot;flat&quot;,&quot;harsh&quot;],&quot;tsType&quot;:&quot;'spotlight' | 'lamp' | 'flat' | 'harsh'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;mood&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;noir&quot;,&quot;options&quot;:[&quot;noir&quot;,&quot;cold case&quot;],&quot;tsType&quot;:&quot;'noir' | 'cold case'&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;coffeeRings&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;threadFlow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;numbers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;threadLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;defang&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;staleDays&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:30,&quot;min&quot;:1,&quot;max&quot;:365,&quot;unit&quot;:&quot;days&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;autoSuggest&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;defaultTool&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;move&quot;,&quot;options&quot;:[&quot;move&quot;,&quot;connect&quot;],&quot;tsType&quot;:&quot;'move' | 'connect'&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;snapToGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
 class Component extends DCLogic {
   static K = (() => {
     const RED = '#ff2a3c';
@@ -193,7 +1163,7 @@ class Component extends DCLogic {
   initState(savedIn) {
     let saved = savedIn || null, lockedPayload = null;
     if (!savedIn) { try { const raw = localStorage.getItem(Component.K.KEY); if (raw) { const d = JSON.parse(raw); if (d && d.enc === 1 && d.data) lockedPayload = d; else if (d && Array.isArray(d.cases) && d.cases.length) saved = d; } } catch (e) {} }
-    if (lockedPayload) { this.lockedPayload = lockedPayload; this.seeded = ['c2']; return { tool: 'move', rel: 'linked', tab: 'inspector', showInbox: false, showRight: false, analyst: '', cases: [{ id: 'locked', number: 'LOCKED', title: 'Enter the passphrase', notes: '', items: [], threads: [], dismissed: [] }], activeId: 'locked', view: { x: 0, y: 0, z: 1 }, sel: null, selThread: null, pending: null, linking: null, search: '', hidden: {}, hover: null, reveal: false, mode: 'board', present: false, presentIdx: 0, selGroup: null, quick: '', snapName: '', diffId: null, actorsOpen: false, ai: { busy: false, forId: null, res: null, err: '' }, achOpen: false, hypText: '', reqOpen: false, req: { kind: 'takedown', to: '', sel: {} }, taskText: '', taskDue: '', commentText: '', osintOpen: false, osint: { q: '', type: '', value: '', ran: false, live: [], pinnedId: null }, extract: { open: false, text: '', rows: [] }, tplOpen: false, mergeTo: '', play: { on: false, idx: 0 }, diffReport: null, lockOpen: false, lockPass: '', locked: true, lockErr: '', mobile: false, toast: '', newFrom: '', newTo: '', newRel: 'linked' }; }
+    if (lockedPayload) { this.lockedPayload = lockedPayload; this.seeded = ['c2']; return { tool: 'move', rel: 'linked', tab: 'inspector', showInbox: false, showRight: false, analyst: '', cases: [{ id: 'locked', number: 'LOCKED', title: 'Enter the passphrase', notes: '', items: [], threads: [], dismissed: [] }], activeId: 'locked', view: { x: 0, y: 0, z: 1 }, sel: null, selThread: null, pending: null, linking: null, search: '', hidden: {}, hover: null, reveal: false, mode: 'board', present: false, presentIdx: 0, selGroup: null, quick: '', snapName: '', diffId: null, actorsOpen: false, ai: { busy: false, forId: null, res: null, err: '' }, achOpen: false, hypText: '', reqOpen: false, req: { kind: 'takedown', to: '', sel: {} }, taskText: '', taskDue: '', commentText: '', osintOpen: false, osint: { q: '', type: '', value: '', ran: false, live: [], pinnedId: null }, tplOpen: false, mergeTo: '', play: { on: false, idx: 0 }, diffReport: null, lockOpen: false, lockPass: '', locked: true, lockErr: '', mobile: false, toast: '' }; }
     let cases = this.migrate(saved ? saved.cases : [Component.sample()]);
     let activeId = saved && cases.some(c => c.id === saved.activeId) ? saved.activeId : cases[0].id;
     const seeded = (saved && saved.seeded) || []; this.seeded = seeded;
@@ -957,6 +1927,7 @@ class Component extends DCLogic {
     if (!items.length) return this.toast('Nothing pinned to export');
     const byId = Object.fromEntries(items.map(i => [i.id, i]));
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    (cs.groups || []).forEach(g => { ctx.save(); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(243,241,234,.38)'; ctx.lineWidth = 1; ctx.strokeRect(g.x, g.y, g.w, g.h); ctx.fillStyle = 'rgba(243,241,234,.035)'; ctx.fillRect(g.x, g.y, g.w, g.h); ctx.setLineDash([]); ctx.font = "12px 'Archivo Narrow', sans-serif"; const tw2 = ctx.measureText(String(g.title || '').toUpperCase()).width + 20; ctx.fillStyle = '#f3f1ea'; ctx.fillRect(g.x, g.y - 28, tw2, 26); ctx.fillStyle = '#1b1a17'; ctx.fillText(String(g.title || '').toUpperCase(), g.x + 10, g.y - 10); ctx.restore(); });
     items.forEach(i => { const w = K.TYPES[i.type].w, h = this.h(i.id); x0 = Math.min(x0, i.x - 24); y0 = Math.min(y0, i.y - 24); x1 = Math.max(x1, i.x + w + 24); y1 = Math.max(y1, i.y + h + 24); });
     const M = 70, HEAD = 70, W = x1 - x0 + M * 2, H = y1 - y0 + M * 2 + HEAD, S = Math.min(2, 6000 / Math.max(W, H));
     const cv = document.createElement('canvas'); cv.width = Math.round(W * S); cv.height = Math.round(H * S);
@@ -969,7 +1940,6 @@ class Component extends DCLogic {
     const imgs = {};
     await Promise.all(items.filter(i => i.image).map(i => new Promise(res => { const im = new Image(); im.onload = () => { imgs[i.id] = im; res(); }; im.onerror = res; im.src = i.image; })));
     ctx.translate(M - x0, M + HEAD - y0);
-    (cs.groups || []).forEach(g => { ctx.save(); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(243,241,234,.38)'; ctx.lineWidth = 1; ctx.strokeRect(g.x, g.y, g.w, g.h); ctx.fillStyle = 'rgba(243,241,234,.035)'; ctx.fillRect(g.x, g.y, g.w, g.h); ctx.setLineDash([]); ctx.font = "12px 'Archivo Narrow', sans-serif"; const tw2 = ctx.measureText(String(g.title || '').toUpperCase()).width + 20; ctx.fillStyle = '#f3f1ea'; ctx.fillRect(g.x, g.y - 28, tw2, 26); ctx.fillStyle = '#1b1a17'; ctx.fillText(String(g.title || '').toUpperCase(), g.x + 10, g.y - 10); ctx.restore(); });
     const cover = (im, x, y, w, h) => { const k = Math.max(w / im.width, h / im.height), sw = w / k, sh = h / k; ctx.drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, x, y, w, h); };
     items.forEach(i => {
       const w = K.TYPES[i.type].w, h = this.h(i.id), p = this.pin(i);
@@ -1467,5 +2437,6 @@ class Component extends DCLogic {
     };
   }
 }
-
-export default Component;
+</script>
+</body>
+</html>

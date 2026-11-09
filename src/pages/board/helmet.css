@@ -1,4 +1,4 @@
-/* GENERATED: <helmet> styles from the design file. */
+/* GENERATED: <helmet> styles from design/Investigation Board.dc.html */
 body{margin:0;background:#0a0a0b;overflow:hidden;font-family:'Archivo Narrow',system-ui,sans-serif;color:#e8e4da;-webkit-font-smoothing:antialiased;--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' sc-camel-base-frequency='.85' sc-camel-num-octaves='2' sc-camel-stitch-tiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>")}
 *{box-sizing:border-box}
 a{color:#e8e4da}a:hover{color:#fff}
@@ -6,7 +6,12 @@ input,textarea,select,button{font-family:inherit}
 ::selection{background:#ff2a3c;color:#fff}
 @keyframes flow{to{stroke-dashoffset:-60}}
 @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes flutter{0%,100%{translate:0 0;rotate:0deg}30%{translate:1.5px -3px;rotate:.5deg}65%{translate:-1px 2px;rotate:-.4deg}}
+@keyframes rain{to{background-position:0 1200px}}
 [data-kind="card"]:focus-visible{outline:3px solid #ff2a3c !important;outline-offset:4px}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #ff2a3c;outline-offset:1px}
 input[type=range]{accent-color:#ff2a3c}
+@keyframes lampPulse{0%,100%{opacity:.82}50%{opacity:1}}
+@keyframes folderIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes stampIn{from{opacity:0;transform:rotate(-12deg) scale(1.6)}to{opacity:.9;transform:rotate(-12deg) scale(1)}}
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#2a2a2e;border-radius:4px}::-webkit-scrollbar-track{background:transparent}

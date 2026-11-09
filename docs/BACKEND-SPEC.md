@@ -194,3 +194,44 @@ fine for enrichment if the team prefers the security-tooling ecosystem.
 5. Watcher worker and alert fan-out.
 6. Seed script that loads the two sample cases from the front end (Component.sample / sample2).
 7. A test that round-trips: Export case JSON -> POST /import -> GET -> deep-equal (ignoring ids).
+
+
+10. ACCOUNTS, ROLES AND PUBLIC ACCESS (prototype shipped in auth.js)
+---------------------------------------------------------------------
+The browser build now has Login.dc.html + auth.js: accounts in localStorage
+("cyber-investigation-board.users.v1"), PBKDF2-SHA256 hashes, 12 h sessions
+with 15 min idle lock, a sign-in audit, and an admin panel on the desk.
+Replace it with OIDC, but keep the contract:
+  roles      admin (everything + users), analyst (edit assigned cases),
+             reviewer (read, comment, move files through review), viewer (read)
+  scope      user.cases = "all" | [caseId]; TLP:RED / AMBER+STRICT also need user.tlpRed
+  public     case.public = true lets a guest (no account) read it, only when
+             case.tlp is unset, CLEAR or GREEN; guests are viewers everywhere
+  checks     canSee(user, case), canEdit, canReview, canCreate, isAdmin —
+             the server must enforce the same four on every request and WS event
+  flows      first run creates the admin; admins add users with a temporary
+             password and mustChange = true; password reset = same
+  audit      every sign-in, failure, expiry, role or scope change, reset, removal
+
+
+11. MEDIA, LIVE SOURCES, MAPS, ANALYSIS (prototype shipped in the board)
+------------------------------------------------------------------------
+New card types: video (file in IndexedDB "cib-media", or embed URL: YouTube,
+Vimeo, X, TikTok, Telegram, direct mp4/m3u8), audio (in-browser recording,
+waveform peaks, transcript), pdf (page bookmarks), email (.eml parsed: from, to,
+Received path IPs, links, attachments → Extract to cards), code/log (IOC
+highlighting), feed (rss, threatfox, urlhaus, kev, nvd, reddit, mastodon,
+bluesky, telegram, ransomware.live), monitor (URL polled every N min: status,
+title, content hash → change events), vehicle / object / statement records.
+Server replaces: blob storage (S3 + hashes), feed/monitor/wallet polling with a
+scheduler and webhooks, geocoding and IP geolocation with keyed providers,
+translation / stance / entity extraction via the LLM gateway, the hand-over
+zip (same layout: case.json, brief.html, board.jpg, media/, MANIFEST.txt with
+SHA-256 per file), and notifications (mentions, overdue, feed, monitor,
+wallet, review) pushed over WebSocket. Threads now carry note, style
+(solid/dashed/dotted), arrow (to/from/both), width, wp {x,y} mid-pin and
+case.customRels [{id,label,color}]. Suspect matrix lives in case.mmo
+{"<personId>|means|motive|opp|alibi": "Y|N|?"}; person.role marks suspects.
+Integrations still server-side: MISP/OpenCTI/TheHive sync, Jira per task,
+SIEM deep links (templates stored client-side under settings.v1), browser
+extension (the bookmarklet shows the #drop= contract the extension should use).

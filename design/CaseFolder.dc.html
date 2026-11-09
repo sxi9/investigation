@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div data-folder="{{ f.id }}" draggable="true" onDragStart="{{ f.onDrag }}" onDragEnd="{{ f.onDragEnd }}" onPointerEnter="{{ f.onEnter }}" onPointerLeave="{{ f.onLeave }}" style="display:flex; flex-direction:column; gap:10px; opacity:{{ f.opacity }}; transition:opacity .3s ease">
+  <div style="display:flex; flex-direction:column; gap:10px; animation:folderIn .5s ease-out both; animation-delay:{{ f.delay }}ms">
+  <div onClick="{{ f.onOpen }}" role="button" tabIndex="0" onKeyDown="{{ f.onKey }}" aria-label="Open {{ f.number }} {{ f.title }}" title="Open this case" style="position:relative; height:230px; perspective:1100px; cursor:pointer; transition:transform .35s ease; transform:{{ f.lift }}; outline:none">
+    <div style="position:absolute; left:0; top:22px; right:0; bottom:0; background:linear-gradient(180deg, {{ f.T.tab }} 0%, {{ f.T.folderB }} 100%); border-radius:3px 3px 2px 2px; box-shadow:{{ f.shadow }}; transition:box-shadow .35s ease"></div>
+    <sc-if value="{{ f.hasColor }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; right:-4px; top:60px; width:10px; height:54px; background:{{ f.color }}; border-radius:0 3px 3px 0; box-shadow:2px 2px 4px rgba(0,0,0,.5)"></div></sc-if>
+    <div style="position:absolute; left:14px; top:0; height:30px; padding:0 14px; background:{{ f.T.tab }}; border-radius:4px 4px 0 0; display:flex; align-items:center; gap:10px; font:11px 'IBM Plex Mono',monospace; letter-spacing:.14em; color:{{ f.T.inkMuted }}; box-shadow:0 -2px 3px rgba(0,0,0,.25)">{{ f.number }}</div>
+    <div style="position:absolute; right:8px; top:26px; display:flex; gap:4px; z-index:2; flex-wrap:wrap; justify-content:flex-end; max-width:60%">
+      <sc-if value="{{ f.isPublic }}" hint-placeholder-val="{{ false }}"><span style="padding:2px 6px; background:#3fae63; color:#fff; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 2px 4px rgba(0,0,0,.5)">public</span></sc-if>
+      <sc-for list="{{ f.badges }}" as="bd" hint-placeholder-count="0"><span style="padding:2px 6px; background:{{ bd.color }}; color:#fff; font:9px 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; box-shadow:0 2px 4px rgba(0,0,0,.5)">{{ bd.label }}</span></sc-for>
+    </div>
+    <div style="position:absolute; left:18px; right:18px; top:36px; bottom:14px; transform:{{ f.papers }}; transition:transform .4s ease">
+      <sc-if value="{{ f.hasThumb }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; left:6px; right:6px; top:8px; bottom:0; background:{{ f.T.input }}; box-shadow:0 2px 6px rgba(0,0,0,.45); border:1px solid {{ f.T.border }}; overflow:hidden">
+          <svg viewBox="{{ f.thumb.vb }}" preserveAspectRatio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%">
+            <sc-for list="{{ f.thumb.lines }}" as="tl" hint-placeholder-count="0"><line x1="{{ tl.x1 }}" y1="{{ tl.y1 }}" x2="{{ tl.x2 }}" y2="{{ tl.y2 }}" style="stroke:{{ f.T.accent }}; stroke-width:6; stroke-linecap:round; opacity:.9"></line></sc-for>
+            <sc-for list="{{ f.thumb.rects }}" as="rc" hint-placeholder-count="0"><rect x="{{ rc.x }}" y="{{ rc.y }}" width="{{ rc.w }}" height="{{ rc.h }}" style="fill:{{ f.T.paper }}; stroke:{{ rc.fill }}; stroke-width:14"></rect></sc-for>
+          </svg>
+        </div>
+      </sc-if>
+      <sc-if value="{{ f.noThumb }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ f.sheets }}" as="sh" hint-placeholder-count="0">
+          <div style="position:absolute; left:{{ sh.x }}px; right:{{ sh.r }}px; top:{{ sh.y }}px; bottom:0; background:{{ f.T.paper }}; box-shadow:0 2px 6px rgba(0,0,0,.35); transform:rotate({{ sh.rot }}deg); padding:10px 12px; overflow:hidden; display:flex; flex-direction:column; gap:3px">
+            <div style="font:9px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:{{ f.T.accent }}; text-transform:uppercase">{{ sh.type }}</div>
+            <div style="font:13px/1.2 'Special Elite',monospace; color:{{ f.T.ink }}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ sh.label }}</div>
+            <div style="margin-top:6px; height:46px; background-image:repeating-linear-gradient(transparent 0 11px, rgba(0,0,0,.1) 11px 12px)"></div>
+          </div>
+        </sc-for>
+      </sc-if>
+    </div>
+    <div style="position:absolute; left:0; top:22px; right:0; bottom:0; transform-origin:{{ f.origin }}; transform:{{ f.cover }}; opacity:{{ f.frontOp }}; transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .2s ease .15s; background:linear-gradient(135deg, {{ f.T.folderA }} 0%, {{ f.T.folderB }} 60%, {{ f.T.folderB }} 100%); border-radius:2px 4px 4px 2px; box-shadow:{{ f.coverShadow }}; padding:16px 16px 12px; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden">
+      <div style="position:absolute; left:0; top:0; bottom:0; width:10px; background:linear-gradient(90deg, rgba(0,0,0,.18), rgba(0,0,0,0))"></div>
+      <div style="position:absolute; right:14px; top:0; width:52px; height:{{ f.tlpH }}px; background:{{ f.tlpColor }}; display:flex; align-items:flex-end; justify-content:center; padding-bottom:3px; font:8px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:{{ f.tlpInk }}">{{ f.tlpLabel }}</div>
+      <div style="display:flex; flex-direction:column; gap:5px; padding-right:70px">
+        <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:{{ f.T.inkMuted }}">CASE FILE</div>
+        <div style="font:19px/1.15 'Special Elite',monospace; color:{{ f.T.ink }}; overflow-wrap:anywhere">{{ f.title }}</div>
+        <div style="font:10px 'IBM Plex Mono',monospace; color:{{ f.T.inkMuted }}">{{ f.meta }}</div>
+        <sc-if value="{{ f.hasTags }}" hint-placeholder-val="{{ false }}"><div style="font:10px 'IBM Plex Mono',monospace; color:{{ f.T.accent }}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">#{{ f.tags }}</div></sc-if>
+      </div>
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:8px">
+        <div style="display:flex; flex-direction:column; gap:4px; min-width:0">
+          <div style="display:flex; align-items:flex-end; gap:1px; height:18px"><sc-for list="{{ f.spark }}" as="sp" hint-placeholder-count="0"><span style="width:4px; height:{{ sp.h }}px; background:{{ sp.bg }}"></span></sc-for></div>
+          <div style="font:10px/1.4 'IBM Plex Mono',monospace; color:{{ f.T.inkMuted }}">{{ f.counts }}<br>{{ f.last }}</div>
+        </div>
+        <div style="padding:3px 8px; border:3px double {{ f.stampColor }}; color:{{ f.stampColor }}; font:12px 'Special Elite',monospace; letter-spacing:.2em; text-transform:uppercase; transform:rotate(-12deg); opacity:.9; mix-blend-mode:multiply; white-space:nowrap; animation:stampIn .5s ease-out both">{{ f.stamp }}</div>
+      </div>
+    </div>
+    <div style="position:absolute; left:0; top:22px; right:0; bottom:0; transform-origin:50% 50%; transform:{{ f.back }}; opacity:{{ f.backOp }}; pointer-events:none; transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .2s ease .15s; background:linear-gradient(135deg, {{ f.T.folderA }} 0%, {{ f.T.folderB }} 100%); border-radius:4px 2px 2px 4px; box-shadow:2px 2px 6px rgba(0,0,0,.35); padding:14px 16px; display:flex; flex-direction:column; gap:8px; overflow:hidden">
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:{{ f.T.inkMuted }}">KEY JUDGEMENT · {{ f.confidence }}</div>
+      <div style="font:13px/1.35 'Special Elite',monospace; color:{{ f.T.ink }}; overflow:hidden; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical">{{ f.judgement }}</div>
+      <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.2em; color:{{ f.T.inkMuted }}; margin-top:auto">OPEN TASKS</div>
+      <div style="display:flex; flex-direction:column; gap:2px">
+        <sc-for list="{{ f.tasks }}" as="tk" hint-placeholder-count="0"><div style="display:flex; gap:6px; font:11px/1.3 'IBM Plex Mono',monospace; color:{{ f.T.ink }}"><span style="color:{{ tk.color }}">{{ tk.due }}</span><span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ tk.text }}</span></div></sc-for>
+        <sc-if value="{{ f.noTasks }}" hint-placeholder-val="{{ false }}"><div style="font:11px 'IBM Plex Mono',monospace; color:{{ f.T.inkMuted }}">none</div></sc-if>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center">
+    <sc-if value="{{ f.renaming }}" hint-placeholder-val="{{ false }}"><input value="{{ f.title }}" onChange="{{ f.onTitle }}" onKeyDown="{{ f.onTitleKey }}" onBlur="{{ f.onTitleDone }}" spellcheck="false" aria-label="Case title" style="flex:1 1 140px; min-width:0; height:26px; padding:0 8px; border:1px solid {{ f.T.accent }}; background:{{ f.T.input }}; color:{{ f.T.paper }}; font:13px 'Special Elite',monospace" style-focus="outline:none"></sc-if>
+    <sc-if value="{{ f.tagging }}" hint-placeholder-val="{{ false }}"><input value="{{ f.tags }}" onChange="{{ f.onTags }}" onKeyDown="{{ f.onTagsKey }}" onBlur="{{ f.onTagsDone }}" placeholder="urgent, client, region…" spellcheck="false" aria-label="Case tags" style="flex:1 1 140px; min-width:0; height:26px; padding:0 8px; border:1px solid {{ f.T.accent }}; background:{{ f.T.input }}; color:{{ f.T.paper }}; font:12px 'IBM Plex Mono',monospace" style-focus="outline:none"></sc-if>
+    <sc-if value="{{ f.notRenaming }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ f.onOpen }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.paper }}; background:{{ f.T.paper }}; color:{{ f.T.ink }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="background:#fff">Open</button>
+      <button onClick="{{ f.onFlip }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">{{ f.flipLabel }}</button>
+      <sc-if value="{{ f.canEdit }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ f.onDesk }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">{{ f.deskLabel }}</button>
+      <button onClick="{{ f.onRename }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">Rename</button>
+      <button onClick="{{ f.onTag }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">Tags</button>
+      <button onClick="{{ f.onDup }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">Duplicate</button>
+      <button onClick="{{ f.onExport }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">Export</button>
+      <button onClick="{{ f.onArchive }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}; color:#fff">{{ f.archLabel }}</button>
+      <button onClick="{{ f.onDelete }}" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.textMuted }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.accent }}; color:{{ f.T.accent }}">Delete</button>
+      <button onClick="{{ f.onPublic }}" title="Guests can read public files without signing in (TLP:CLEAR or GREEN only)" style="height:24px; padding:0 8px; border:1px solid {{ f.T.border }}; background:transparent; color:{{ f.T.text2 }}; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; white-space:nowrap" style-hover="border-color:{{ f.T.textMuted }}">{{ f.publicLabel }}</button>
+      <span style="display:flex; gap:4px; align-items:center; margin-left:auto"><sc-for list="{{ f.colors }}" as="cl" hint-placeholder-count="0"><button onClick="{{ cl.onPick }}" aria-label="Colour tab" style="width:14px; height:14px; border-radius:50%; border:1px solid {{ cl.border }}; background:{{ cl.col }}; box-shadow:{{ cl.ring }}; cursor:pointer; padding:0"></button></sc-for></span>
+      </sc-if>
+    </sc-if>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:320,&quot;height&quot;:290},&quot;f&quot;:{&quot;editor&quot;:null,&quot;default&quot;:null,&quot;tsType&quot;:&quot;FolderVals&quot;}}"></script>
+</body>
+</html>

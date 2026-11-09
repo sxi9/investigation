@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Archivo+Narrow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./auth.js"></script>
+<script src="./foley.js"></script>
+<style>
+body{margin:0;background:#0b0b0c;color:#e8e4da;font-family:'Archivo Narrow',system-ui,sans-serif;-webkit-font-smoothing:antialiased;--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>")}
+*{box-sizing:border-box}
+a{color:#e8e4da}a:hover{color:#fff}
+input,button,select{font-family:inherit}
+::selection{background:#ff2a3c;color:#fff}
+button:focus-visible,input:focus-visible{outline:2px solid #ff2a3c;outline-offset:2px}
+@keyframes lampPulse{0%,100%{opacity:.82}50%{opacity:1}}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) rotate(-1.5deg)}to{opacity:1;transform:rotate(-1.5deg)}}
+@keyframes shake{0%,100%{transform:rotate(-1.5deg) translateX(0)}25%{transform:rotate(-1.5deg) translateX(-6px)}75%{transform:rotate(-1.5deg) translateX(6px)}}
+</style>
+</helmet>
+<div data-screen-label="Sign in" style="position:fixed; inset:0; overflow:auto; background:{{ deskBg }}; display:flex; align-items:center; justify-content:center; padding:24px; transition:background .5s ease">
+  <div style="position:fixed; inset:0; pointer-events:none; background:{{ lampGrad }}; animation:lampPulse 6s ease-in-out infinite"></div>
+  <div style="position:fixed; left:12px; top:12px; display:flex; gap:2px; align-items:center; z-index:2">
+    <button onClick="{{ navBack }}" title="Back" style="height:28px; min-width:28px; padding:0 8px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:13px 'IBM Plex Mono',monospace; cursor:pointer" style-hover="background:#222226; color:#fff">◀</button>
+    <button onClick="{{ navFwd }}" title="Forward" style="height:28px; min-width:28px; padding:0 8px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:13px 'IBM Plex Mono',monospace; cursor:pointer" style-hover="background:#222226; color:#fff">▶</button>
+    <button onClick="{{ navReload }}" title="Reload" style="height:28px; min-width:28px; padding:0 8px; border:1px solid #2c2c31; background:#17171a; color:#d8d3c7; font:13px 'IBM Plex Mono',monospace; cursor:pointer" style-hover="background:#222226; color:#fff">⟳</button>
+    <select value="{{ theme }}" onChange="{{ onTheme }}" title="Theme — shared with the desk and the board" style="height:28px; margin-left:6px; padding:0 8px; border:1px solid #2c2c31; background:#0c0c0e; color:#d8d3c7; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.14em; text-transform:uppercase; color-scheme:dark"><sc-for list="{{ themes }}" as="th" hint-placeholder-count="0"><option value="{{ th.id }}">{{ th.label }}</option></sc-for></select>
+  </div>
+  <div style="position:fixed; inset:0; pointer-events:none; opacity:.08; background-image:var(--grain); mix-blend-mode:overlay"></div>
+  <div style="position:relative; width:min(420px, 100%); background:#f3f1ea; color:#1b1a17; padding:28px 28px 24px; box-shadow:0 30px 60px rgba(0,0,0,.8); transform:rotate(-1.5deg); animation:{{ cardAnim }}">
+    <div style="position:absolute; left:50%; top:-12px; width:16px; height:16px; margin-left:-8px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ff9ba1 0%, #ff2a3c 45%, #6b0a10 100%); box-shadow:0 3px 4px rgba(0,0,0,.6)"></div>
+    <div style="font:10px 'Archivo Narrow',sans-serif; letter-spacing:.3em; color:#9a2b2b">CYBER INVESTIGATION BOARD</div>
+    <div style="font:30px/1.1 'Special Elite',monospace; margin-top:6px">{{ title }}</div>
+    <div style="font:12px/1.5 'Archivo Narrow',sans-serif; color:#6d675c; margin-top:6px">{{ blurb }}</div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:18px">
+      <sc-if value="{{ askName }}" hint-placeholder-val="{{ true }}">
+        <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#6d675c"><span>NAME</span><input data-first="1" value="{{ name }}" onChange="{{ onName }}" onKeyDown="{{ onKey }}" autocomplete="username" spellcheck="false" style="height:36px; padding:0 10px; border:1px solid #c9c4b6; background:#fff; color:#1b1a17; font:14px 'Special Elite',monospace" style-focus="border-color:#ff2a3c; outline:none"></label>
+      </sc-if>
+      <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#6d675c"><span>{{ passLabel }}</span><input type="password" value="{{ pass }}" onChange="{{ onPass }}" onKeyDown="{{ onKey }}" autocomplete="{{ passAuto }}" style="height:36px; padding:0 10px; border:1px solid #c9c4b6; background:#fff; color:#1b1a17; font:14px 'IBM Plex Mono',monospace" style-focus="border-color:#ff2a3c; outline:none"></label>
+      <sc-if value="{{ askConfirm }}" hint-placeholder-val="{{ false }}">
+        <label style="display:flex; flex-direction:column; gap:4px; font:10px 'Archivo Narrow',sans-serif; letter-spacing:.18em; color:#6d675c"><span>CONFIRM PASSWORD</span><input type="password" value="{{ pass2 }}" onChange="{{ onPass2 }}" onKeyDown="{{ onKey }}" autocomplete="new-password" style="height:36px; padding:0 10px; border:1px solid #c9c4b6; background:#fff; color:#1b1a17; font:14px 'IBM Plex Mono',monospace" style-focus="border-color:#ff2a3c; outline:none"></label>
+      </sc-if>
+      <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}"><div style="font:12px 'IBM Plex Mono',monospace; color:#b4222a">{{ error }}</div></sc-if>
+      <button onClick="{{ submit }}" style="height:40px; margin-top:4px; border:1px solid #1b1a17; background:#1b1a17; color:#f3f1ea; font:12px 'Archivo Narrow',sans-serif; letter-spacing:.2em; text-transform:uppercase; cursor:pointer" style-hover="background:#ff2a3c; border-color:#ff2a3c">{{ submitLabel }}</button>
+    </div>
+    <sc-if value="{{ hasPublic }}" hint-placeholder-val="{{ false }}"><button onClick="{{ guest }}" style="width:100%; height:34px; margin-top:10px; border:1px dashed #9a9488; background:transparent; color:#5a5650; font:11px 'Archivo Narrow',sans-serif; letter-spacing:.18em; text-transform:uppercase; cursor:pointer" style-hover="border-color:#1b1a17; color:#1b1a17">Continue as a guest · public files only</button></sc-if>
+    <div style="margin-top:16px; font:11px/1.5 'IBM Plex Mono',monospace; color:#8d877b">{{ foot }}</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;deskFile&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Case Files.dc.html&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Navigation&quot;}}">
+class Component extends DCLogic {
+  static T = { noir: ['Noir', '#0b0b0c', '255,236,190'], cold: ['Cold case', '#0e0d0b', '220,200,160'], midnight: ['Midnight', '#070b16', '170,200,255'], warroom: ['War room', '#0a1410', '220,255,200'], redroom: ['Red room', '#160608', '255,200,200'], daylight: ['Daylight', '#d9d2c3', '255,255,255'], mono: ['Mono', '#000000', '255,255,255'], terminal: ['Terminal', '#030604', '120,255,160'], amber: ['Amber CRT', '#060402', '255,190,80'], blueprint: ['Blueprint', '#0b1d3a', '120,200,255'], bureau: ['Bureau 1972', '#2b2118', '255,220,160'], arctic: ['Arctic', '#e8edf2', '255,255,255'] };
+  static DESK = 'cyber-investigation-board.desk.v1';
+  readTheme() { try { const d = JSON.parse(localStorage.getItem(Component.DESK) || '{}'); return Component.T[d.theme] ? d.theme : 'noir'; } catch (e) { return 'noir'; } }
+  setTheme = e => { const v = e.target.value; try { const d = JSON.parse(localStorage.getItem(Component.DESK) || '{}'); d.theme = v; localStorage.setItem(Component.DESK, JSON.stringify(d)); } catch (err) {} this.setState({ theme: v }); };
+  state = { theme: this.readTheme(), mode: window.CIBAuth && window.CIBAuth.hasUsers() ? 'login' : 'setup', name: '', pass: '', pass2: '', error: '', busy: false, shake: false, user: null };
+  componentDidMount() { const A = window.CIBAuth; if (A) { const u = A.user(); if (u && !u.mustChange) return this.go(); } setTimeout(() => { const el = document.querySelector('[data-first]') || document.querySelector('input[type=password]'); if (el) el.focus(); }, 80); }
+  next() { const m = String(location.hash || '').match(/next=([^&]+)/); return m ? decodeURIComponent(m[1]) : (this.props.deskFile || 'Case Files.dc.html'); }
+  go() { if (window.CIBFoley) window.CIBFoley.play('latch'); setTimeout(() => location.replace(this.next()), 220); }
+  submit = async () => {
+    const A = window.CIBAuth, s = this.state; if (!A || s.busy) return;
+    this.setState({ busy: true, error: '' });
+    try {
+      if (s.mode === 'setup') { if (s.pass !== s.pass2) throw new Error('Passwords do not match'); await A.createUser({ name: s.name, pass: s.pass, role: 'admin' }); await A.login(s.name, s.pass); return this.go(); }
+      if (s.mode === 'change') { if (s.pass !== s.pass2) throw new Error('Passwords do not match'); await A.setPassword(s.user.id, s.pass, false, s.user.name); return this.go(); }
+      const u = await A.login(s.name, s.pass);
+      if (u.mustChange) return this.setState({ mode: 'change', user: u, pass: '', pass2: '', busy: false });
+      this.go();
+    } catch (e) { if (window.CIBFoley) window.CIBFoley.play('close'); this.setState({ error: String(e && e.message || e), busy: false, shake: true, pass: '', pass2: '' }); setTimeout(() => this.setState({ shake: false }), 500); }
+  };
+  renderVals() {
+    const s = this.state, setup = s.mode === 'setup', change = s.mode === 'change';
+    return {
+      title: setup ? 'Open the office.' : change ? 'Choose a new password.' : 'Sign in.',
+      blurb: setup ? 'No accounts exist yet. The first account becomes the administrator; add analysts, reviewers and viewers from the desk afterwards.' : change ? 'Your password was reset by an administrator. Set your own before continuing.' : 'Accounts, roles and sessions live in this browser for now; the production build authenticates against your identity provider.',
+      askName: !change, askConfirm: setup || change, passLabel: setup || change ? 'PASSWORD · 8+ CHARACTERS' : 'PASSWORD', passAuto: setup || change ? 'new-password' : 'current-password',
+      name: s.name, pass: s.pass, pass2: s.pass2, onName: e => this.setState({ name: e.target.value }), onPass: e => this.setState({ pass: e.target.value }), onPass2: e => this.setState({ pass2: e.target.value }), onKey: e => { if (e.key === 'Enter') { e.preventDefault(); this.submit(); } },
+      hasError: !!s.error, error: s.error, submit: this.submit, submitLabel: s.busy ? 'Checking…' : setup ? 'Create admin account' : change ? 'Save and continue' : 'Sign in',
+      cardAnim: s.shake ? 'shake .4s ease' : 'cardIn .5s ease-out both',
+      theme: s.theme, themes: Object.keys(Component.T).map(id => ({ id, label: Component.T[id][0] })), onTheme: this.setTheme, navBack: () => history.back(), navFwd: () => history.forward(), navReload: () => location.reload(),
+      deskBg: (Component.T[s.theme] || Component.T.noir)[1], lampGrad: 'radial-gradient(70% 55% at 50% -5%, rgba(' + (Component.T[s.theme] || Component.T.noir)[2] + ',.17) 0%, rgba(' + (Component.T[s.theme] || Component.T.noir)[2] + ',0) 60%), radial-gradient(130% 110% at 50% 60%, rgba(0,0,0,0) 40%, rgba(0,0,0,' + ((Component.T[s.theme] || Component.T.noir)[1] > '#8' ? .18 : .8) + ') 100%)', hasPublic: !setup && !change && !!(window.CIBAuth && window.CIBAuth.hasPublic()), guest: () => { window.CIBAuth.guest(); this.go(); },
+      foot: setup ? 'Passwords are hashed (PBKDF2-SHA256, 150k rounds) before they touch storage. There is no recovery without another admin.' : 'Sessions last 12 hours and lock after 15 minutes idle. Forgotten password: ask an administrator to reset it.',
+    };
+  }
+}
+</script>
+</body>
+</html>
