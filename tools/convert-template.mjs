@@ -53,8 +53,13 @@ const PATCHES = [
     { pages: ['board'] }],
 ];
 
-function readDc(file) {
-  const html = fs.readFileSync(file, 'utf8');
+// Template text patches (applied before parsing): [description, find, replace, pages]
+const TEMPLATE_PATCHES = [
+  ['users panel caption reflects server accounts', 'browser-local accounts · the production build uses your identity provider', 'server accounts · scrypt-hashed passwords · every change audited', ['desk']],
+];
+function readDc(file, pageName) {
+  let html = fs.readFileSync(file, 'utf8');
+  for (const [, find, rep, pages] of TEMPLATE_PATCHES) if (!pages || pages.includes(pageName)) html = html.split(find).join(rep);
   const open = html.indexOf('<x-dc>'), close = html.lastIndexOf('</x-dc>');
   if (open < 0 || close < 0) throw new Error('no <x-dc> block in ' + file);
   const template = html.slice(open + 6, close);
@@ -69,7 +74,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 async function convert(pg) {
-  const { template, props, script } = readDc(path.join(root, pg.file));
+  const { template, props, script } = readDc(path.join(root, pg.file), pg.name);
   const out = await page.evaluate(({ template, imports, clsPrefix }) => {
     // ---------- pre-encoding (mirrors the runtime) ----------
     const CAMEL = 'sc-camel-';
