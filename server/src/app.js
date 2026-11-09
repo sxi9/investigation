@@ -41,6 +41,7 @@ export function buildApp(opts = {}) {
     referrerPolicy: { policy: 'no-referrer' }, hsts: config.secureCookies ? { maxAge: 15552000, includeSubDomains: true } : false,
   });
   app.register(rateLimit, { global: true, max: 600, timeWindow: '1 minute' });
+  app.removeContentTypeParser('text/plain');
   app.addContentTypeParser(/^(?!application\/json)(?!multipart).*/i, { parseAs: 'buffer', bodyLimit: config.maxFileBytes }, (req, body, done) => done(null, body));
 
   const cookieOpts = () => ({ path: '/', httpOnly: true, sameSite: 'strict', secure: config.secureCookies, maxAge: Math.floor(config.sessionLifeMs / 1000) });
@@ -54,6 +55,8 @@ export function buildApp(opts = {}) {
     const tok = req.cookies[COOKIE];
     const u = users.bySession(tok);
     req.user = u === 'guest' ? GUEST : u; req.sessionToken = u ? tok : '';
+    // a temporary password (admin reset) only unlocks the password change itself
+    if (req.user && req.user.mustChange && !/^\/api\/auth\/(password|session|logout|touch)(\?|$)/.test(req.url)) throw err('Change your password first', 403);
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       if (req.headers['x-requested-with'] !== 'CIB') throw err('missing X-Requested-With header', 403);
       const origin = req.headers.origin; const host = req.headers.host;
@@ -108,7 +111,7 @@ export function buildApp(opts = {}) {
   // ---- store: cases + per-user preferences
   app.get('/api/store', async (req) => {
     const u = need(req);
-    return { cases: store.visibleCases(u), desk: u.guest ? null : store.getPref(u, 'desk'), settings: u.guest ? null : store.getPref(u, 'settings'), serverTime: new Date().toISOString() };
+    return { cases: store.visibleCases(u), total: store.totalCases(), desk: u.guest ? null : store.getPref(u, 'desk'), settings: u.guest ? null : store.getPref(u, 'settings'), serverTime: new Date().toISOString() };
   });
   app.get('/api/store/case/:id', async (req) => { const u = need(req); const c = store.getCase(u, req.params.id); if (!c) throw err('Not found', 404); return { case: c }; });
   app.put('/api/store', async (req) => {
@@ -124,7 +127,7 @@ export function buildApp(opts = {}) {
   });
 
   // ---- files (media mirror)
-  app.put('/api/files/:id', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const buf = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body || '')); return store.putFile(u, req.params.id, buf, req.headers['content-type'], req.headers['x-file-name']); });
+  app.put('/api/files/:id', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const buf = Buffer.isBuffer(req.body) ? req.body : typeof req.body === 'string' ? Buffer.from(req.body) : Buffer.from(JSON.stringify(req.body || '')); return store.putFile(u, req.params.id, buf, req.headers['content-type'], req.headers['x-file-name']); });
   app.get('/api/files/:id', async (req, reply) => { needAccount(req); const f = store.getFile(req.user, req.params.id); if (!f) throw err('Not found', 404); reply.header('content-type', f.mime || 'application/octet-stream').header('x-sha256', f.sha256).header('cache-control', 'private, max-age=86400').header('content-disposition', 'inline'); return reply.send(f.data); });
 
   // ---- enrichment proxy

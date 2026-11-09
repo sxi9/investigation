@@ -29,7 +29,9 @@ const S = {
     const cases = [...r.cases, ...keepLocal];
     snapshot = new Map(r.cases.map(c => [c.id, JSON.stringify(stripServer(c))]));
     const activeId = cases.some(c => c.id === local.activeId) ? local.activeId : (cases[0] && cases[0].id);
-    rawSet(KEY, JSON.stringify({ ...(local.enc ? {} : local), cases, activeId, seeded: ['c2', 'server'] }));
+    // a brand-new installation (no cases on the server at all) lets the board seed its two sample cases once
+    const seeded = r.total === 0 && !cases.length ? [] : ['c2', 'server'];
+    rawSet(KEY, JSON.stringify({ ...(local.enc ? {} : local), cases, activeId, seeded }));
     if (r.desk) rawSet(DESK, JSON.stringify({ ...(readJson(DESK) || {}), ...r.desk }));
     if (r.settings) rawSet(SETTINGS, JSON.stringify({ ...(readJson(SETTINGS) || {}), ...r.settings }));
     S.status.lastPull = new Date().toISOString();

@@ -23,6 +23,18 @@ export const config = {
   anthropicKey: env.ANTHROPIC_API_KEY || '',
   anthropicModel: env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
   trustProxy: env.CIB_TRUST_PROXY === '1',
+  // Provider API keys the proxy attaches server-side (the browser never sees them). Hosts are added to the
+  // allow-list only when their key is configured.
+  providerKeys: {
+    'threatfox-api.abuse.ch': env.THREATFOX_AUTH_KEY ? { 'Auth-Key': env.THREATFOX_AUTH_KEY } : null,
+    'urlhaus-api.abuse.ch': env.THREATFOX_AUTH_KEY ? { 'Auth-Key': env.THREATFOX_AUTH_KEY } : null,
+    'mb-api.abuse.ch': env.THREATFOX_AUTH_KEY ? { 'Auth-Key': env.THREATFOX_AUTH_KEY } : null,
+    'www.virustotal.com': env.VT_API_KEY ? { 'x-apikey': env.VT_API_KEY } : null,
+    'api.shodan.io': env.SHODAN_API_KEY ? { query: { key: env.SHODAN_API_KEY } } : null,
+    'api.greynoise.io': env.GREYNOISE_API_KEY ? { key: env.GREYNOISE_API_KEY } : null,
+    'api.abuseipdb.com': env.ABUSEIPDB_API_KEY ? { Key: env.ABUSEIPDB_API_KEY, Accept: 'application/json' } : null,
+    'urlscan.io': env.URLSCAN_API_KEY ? { 'API-Key': env.URLSCAN_API_KEY } : null,
+  },
   // Hosts the enrichment proxy may reach. Everything else is refused.
   proxyAllow: (env.CIB_PROXY_ALLOW || [
     'crt.sh', 'urlscan.io', 'threatfox-api.abuse.ch', 'urlhaus-api.abuse.ch', 'mb-api.abuse.ch', 'bazaar.abuse.ch',
@@ -31,3 +43,4 @@ export const config = {
     'dns.google', 'services.nvd.nist.gov', 'www.cisa.gov', 'api.ransomware.live', 'www.ransomware.live', 'feeds.feedburner.com',
   ].join(',')).split(',').map(s => s.trim()).filter(Boolean),
 };
+for (const [h, k] of Object.entries(config.providerKeys)) if (k && !config.proxyAllow.includes(h)) config.proxyAllow.push(h);

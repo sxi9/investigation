@@ -6,7 +6,7 @@
   "description": "Backend for the Cyber Investigation Board: accounts, sessions, case storage, files, enrichment proxy, AI gateway.",
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning src/index.js",
-    "test": "node --disable-warning=ExperimentalWarning --test test/"
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

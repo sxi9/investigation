@@ -11,6 +11,12 @@ function isPrivate(ip) {
   return p[0] === 10 || p[0] === 127 || p[0] === 0 || (p[0] === 169 && p[1] === 254) || (p[0] === 172 && p[1] >= 16 && p[1] <= 31) || (p[0] === 192 && p[1] === 168) || (p[0] === 100 && p[1] >= 64 && p[1] <= 127);
 }
 
+// Keys configured on the server are attached per host; `query` entries go on the URL instead of a header.
+export function providerHeaders(u) {
+  const k = config.providerKeys[u.hostname]; if (!k) return {};
+  const headers = {}; for (const [name, val] of Object.entries(k)) { if (name === 'query') { for (const [qn, qv] of Object.entries(val)) u.searchParams.set(qn, qv); } else headers[name] = val; }
+  return headers;
+}
 export async function proxyFetch(rawUrl, { method = 'GET', body = null, contentType = '' } = {}) {
   let u; try { u = new URL(String(rawUrl || '')); } catch (e) { throw err('bad url'); }
   if (u.protocol !== 'https:') throw err('https only');
@@ -20,8 +26,9 @@ export async function proxyFetch(rawUrl, { method = 'GET', body = null, contentT
   try { const addrs = await dns.lookup(u.hostname, { all: true }); if (addrs.some(a => isPrivate(a.address))) throw err('refused: private address', 403); } catch (e) { if (e.status) throw e; throw err('cannot resolve host', 502); }
   const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), config.proxyTimeoutMs);
   try {
+    const extra = providerHeaders(u);
     const r = await fetch(u, { method: method === 'POST' ? 'POST' : 'GET', body: method === 'POST' ? body : undefined, redirect: 'follow', signal: ctrl.signal,
-      headers: { 'user-agent': 'cyber-investigation-board/1.0 (+enrichment proxy)', 'accept': 'application/json, text/plain, */*', ...(contentType ? { 'content-type': contentType } : {}) } });
+      headers: { 'user-agent': 'cyber-investigation-board/1.0 (+enrichment proxy)', 'accept': 'application/json, text/plain, */*', ...(contentType ? { 'content-type': contentType } : {}), ...extra } });
     const buf = Buffer.from(await r.arrayBuffer());
     if (buf.length > config.proxyMaxBytes) throw err('upstream response too large', 502);
     return { status: r.status, type: r.headers.get('content-type') || 'application/octet-stream', body: buf };

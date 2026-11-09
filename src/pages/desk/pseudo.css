@@ -1,10 +1,10 @@
 /* GENERATED: style-hover / style-focus rules from design/Case Files.dc.html */
-.scd0:hover{background:{{ T.btnHover }} !important;color:#fff !important}
-.scd1:hover{background:{{ T.btnHover }} !important}
-.scd2:focus{border-color:{{ T.accent }} !important;outline:none !important}
+.scd0:hover{color:#fff !important}
+.scd1:hover{}
+.scd2:focus{outline:none !important}
 .scd3:focus{outline:none !important}
-.scd4:hover{background:{{ T.accent }} !important;color:#fff !important}
-.scd5:hover{color:{{ T.accent }} !important}
-.scd6:hover{background:{{ T.accent }} !important}
+.scd4:hover{color:#fff !important}
+.scd5:hover{}
+.scd6:hover{}
 .scd7:hover{color:#fff !important}
-.scd8:hover{border-color:{{ T.accent }} !important;color:{{ T.textStrong }} !important}
+.scd8:hover{}

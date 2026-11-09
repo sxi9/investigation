@@ -32,6 +32,12 @@ const PATCHES = [
   ['login copy reflects the server-side accounts', "'Accounts, roles and sessions live in this browser for now; the production build authenticates against your identity provider.'", "'Accounts, roles and sessions are kept on the server. Passwords are hashed with scrypt and never stored in the browser.'", { pages: ['login'] }],
   ['login footer reflects scrypt + server sessions', "'Passwords are hashed (PBKDF2-SHA256, 150k rounds) before they touch storage. There is no recovery without another admin.'", "'Passwords are hashed with scrypt on the server and never stored in the browser. There is no recovery without another admin.'", { pages: ['login'] }],
   ['login footer: session policy', "'Sessions last 12 hours and lock after 15 minutes idle. Forgotten password: ask an administrator to reset it.'", "'Sessions last 12 hours and lock after 15 minutes idle; ten wrong passwords lock the account for 15 minutes. Forgotten password: ask an administrator to reset it.'", { pages: ['login'] }],
+  ['server mode: an empty visible set does not re-seed the sample cases',
+    "else if (d && Array.isArray(d.cases) && d.cases.length) saved = d; } } catch (e) {} }\n    if (lockedPayload)",
+    "else if (d && Array.isArray(d.cases) && (d.cases.length || (Array.isArray(d.seeded) && d.seeded.includes('server')))) saved = d; } } catch (e) {} }\n    if (lockedPayload)", { pages: ['board'] }],
+  ['server mode: start a blank case instead of the sample when the user has none',
+    "let cases = this.migrate(saved ? saved.cases : [Component.sample()]);",
+    "let cases = this.migrate(saved && saved.cases.length ? saved.cases : saved ? [{ id: Component.uid(), v: 3, number: 'CASE 0417', title: 'Untitled case', notes: '', items: [], threads: [], groups: [], dismissed: [], review: 'draft', log: [] }] : [Component.sample()]);", { pages: ['board'] }],
   ['CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win',
     "proxy(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }",
     "proxy(u) { return '/api/proxy?url=' + encodeURIComponent(u); }", { pages: ['board'] }],
@@ -91,7 +97,9 @@ async function convert(pg) {
     function pseudoClass(pseudo, css) {
       const k = pseudo + '|' + css; if (pseudoCache.has(k)) return pseudoCache.get(k);
       const cls = clsPrefix + (pn++).toString(36); const pe = pseudo === 'before' || pseudo === 'after';
-      pseudoRules.push('.' + cls + (pe ? '::' : ':') + pseudo + '{' + (pe ? css : importantify(css)) + '}');
+      // declarations with {{ }} holes cannot be static CSS; the browser dropped them as invalid in the original too
+      const clean = css.split(';').filter(d => !d.includes('{{')).join(';');
+      pseudoRules.push('.' + cls + (pe ? '::' : ':') + pseudo + '{' + (pe ? clean : importantify(clean)) + '}');
       pseudoCache.set(k, cls); return cls;
     }
     // ---------- expressions ----------

@@ -37,3 +37,20 @@ Everything below came up while driving the board through the two worked cases (t
 
 - Extract IOCs with defanged input, the OSINT workbench's type detection, the Audit tab's backlog, snapshots with diff, playback, the brief and one-pager, and the STIX round trip all behaved as designed and needed no workaround.
 - RDAP and NVD lookups return real data from the browser without keys; the Vilnius / Falkenstein locations on the SafePay board and the CVE descriptions came from them.
+
+## Version 2 (login, desk, board with media and feeds) and the server
+
+Found while porting the second design package and putting the server behind it.
+
+26. **The design's accounts were browser-local.** `auth.js` kept PBKDF2 hashes, sessions and the audit in `localStorage`, so anyone with the device had every account and every case. Replaced by server-side scrypt hashes, HttpOnly session cookies with idle and absolute expiry, lockout, rate limits, CSRF checks and a hash-chained audit (`docs/BACKEND.md`). The pages were not changed: the same `window.CIBAuth` surface is served from the server.
+27. **A temporary password should unlock nothing but the password change.** The prototype let a user with `mustChange` keep working if they skipped the change screen. The server now refuses every other request until the password is changed.
+28. **The board used a public third-party CORS proxy** (`api.allorigins.win`) for live lookups, which means every selector an analyst searched for was sent to an unrelated service. It now goes through the server's allow-listed proxy with an SSRF guard, and provider keys (ThreatFox, VirusTotal, Shodan, GreyNoise, AbuseIPDB, urlscan) are attached server-side.
+29. **abuse.ch APIs need a key now.** ThreatFox, URLhaus and MalwareBazaar answer 401 without an `Auth-Key`; the live-feed and hash lookups only work once `THREATFOX_AUTH_KEY` is set. The UI shows "blocked" rather than "needs a key"; it should say which.
+30. **Fresh accounts re-seeded the sample cases.** With an empty visible set the board created "Operation Lantern" and the Binance case again, and the server then rejected them as not visible. The store layer now tells the board whether the whole server is empty; later users start with one blank case.
+31. **Encrypt-at-rest in the browser and server sync do not mix.** An encrypted local store cannot be pushed; the server is the system of record. The button should either be removed in server mode or re-pointed at per-case server-side encryption with a key the user holds.
+32. **Hover styles with `{{ }}` holes were silently dropped** (`style-hover="background:{{ T.accent }}"` on the desk and board): the runtime wrote the literal braces into CSS, so those hover states never applied in the design either. A theme-aware hover needs a CSS variable (`--accent`) rather than a template hole.
+33. **Media files are not tied to a case.** Uploads are stored per card id, so file reads are allowed to any signed-in account; TLP applies to the case, not to the file. The file table should record the case id and the read path should run `canSee`.
+34. **Desk and board keep separate copies of preferences.** Theme, lamp, drawer state and analyst name live in `desk.v1` and `settings.v1`; they are now saved per user on the server, but a change on one page shows on the other only after a reload.
+35. **Live updates are last-writer-wins per case.** Two analysts editing the same case within the debounce window overwrite each other's whole document; the loser's change is audited but lost. Per-item operations (spec §3) would merge instead.
+36. **The AI gateway's offline engine is rule-based.** Assess, entities and stance are useful without a key; translation is not possible offline and says so. A local model (or a translation service) behind the same endpoint would close that gap without touching the pages.
+37. **Node's built-in SQLite is still experimental.** It avoided a native build step, but a production deployment should pin the Node version (22.x) or swap `src/db.js` to better-sqlite3 / Postgres; the schema is small.

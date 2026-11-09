@@ -9,7 +9,7 @@ const IOC = {
   email: /\b[\w.+-]+(?:@|\[@\])[\w.-]+(?:\[\.\]|\.)[a-z]{2,}\b/gi,
   sha256: /\b[a-f0-9]{64}\b/gi, sha1: /\b[a-f0-9]{40}\b/gi, md5: /\b[a-f0-9]{32}\b/gi,
   cve: /\bCVE-\d{4}-\d{4,7}\b/gi,
-  money: /(?:[$€£¥]\s?\d[\d,.]*(?:\s?(?:k|m|bn|million|billion))?|\b\d[\d,.]*\s?(?:USD|EUR|GBP|BTC|ETH|USDT)\b)/gi,
+  money: /(?:[$€£¥]\s?\d[\d,.]*(?:\s?(?:million|billion|thousand|bn|k|m)\b)?|\b\d[\d,.]*\s?(?:USD|EUR|GBP|BTC|ETH|USDT)\b)/gi,
   date: /\b(?:\d{4}-\d{2}-\d{2}|\d{1,2}\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s\d{4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s\d{1,2},?\s\d{4})\b/g,
   phone: /(?:\+|00)\d[\d\s().-]{7,}\d/g,
   plate: /\b[A-Z]{1,3}[- ]?\d{1,4}[- ]?[A-Z]{0,3}\b/g,
@@ -20,7 +20,7 @@ const SUPPORT = ['support', 'agree', 'endorse', 'stand with', 'we back', 'in fav
 const OPPOSE = ['oppose', 'against', 'reject', 'condemn', 'boycott', 'stop', 'ban', 'never', 'refuse', 'shame', 'resign', 'corrupt', 'lies', 'hoax', 'fake'];
 const ORG_HINT = /\b(?:Inc|Ltd|LLC|GmbH|AG|SA|Corp|Corporation|Company|Group|Bank|University|Ministry|Agency|Department|Police|Authority|Foundation|Institute|Labs?|Holdings|Partners|Exchange|Telecom|Airlines|Hospital|Council|Union|Party|Army)\b/;
 const PLACE_HINT = new Set(['street', 'st', 'road', 'rd', 'avenue', 'ave', 'square', 'lane', 'bridge', 'station', 'airport', 'port', 'harbour', 'harbor', 'city', 'county', 'province', 'district', 'island', 'river', 'london', 'paris', 'berlin', 'moscow', 'beijing', 'new york', 'washington', 'tokyo', 'delhi', 'sydney', 'pyongyang', 'kyiv', 'tehran', 'dubai', 'singapore', 'amsterdam', 'vilnius', 'lithuania', 'germany', 'france', 'russia', 'china', 'ukraine', 'iran', 'usa', 'uk', 'india', 'australia', 'europe', 'africa', 'asia']);
-const STOP = new Set(['The', 'This', 'That', 'These', 'Those', 'There', 'Then', 'When', 'Where', 'What', 'Which', 'Who', 'Why', 'How', 'And', 'But', 'For', 'From', 'With', 'Into', 'After', 'Before', 'Over', 'Under', 'About', 'Our', 'Your', 'Their', 'His', 'Her', 'Its', 'New', 'Also', 'Last', 'First', 'Next', 'Case', 'Note', 'Source', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'TLP', 'CVE', 'IP', 'DNS', 'URL', 'SHA', 'MD5', 'FBI', 'CISA', 'VPN', 'RDP', 'SMB', 'PDF']);
+const STOP = new Set(['The', 'This', 'That', 'These', 'Those', 'There', 'Then', 'When', 'Where', 'What', 'Which', 'Who', 'Why', 'How', 'And', 'But', 'For', 'From', 'With', 'Into', 'After', 'Before', 'Over', 'Under', 'About', 'Our', 'Your', 'Their', 'His', 'Her', 'Its', 'New', 'Also', 'Last', 'First', 'Next', 'Case', 'Note', 'Source', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'TLP', 'CVE', 'IP', 'DNS', 'URL', 'SHA', 'MD5', 'FBI', 'CISA', 'VPN', 'RDP', 'SMB', 'PDF', 'Plate', 'Registration', 'Subject', 'Re', 'Fw', 'Fwd']);
 
 const uniq = (arr, key = x => x) => { const seen = new Set(); return arr.filter(x => { const k = key(x).toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; }); };
 const refang = s => String(s || '').replace(/\[\.\]/g, '.').replace(/\[@\]/g, '@').replace(/hxxp/gi, 'http');
@@ -53,7 +53,7 @@ export function extractEntities(text) {
   (t.match(IOC.ipv4) || []).forEach(x => push('object', x, 'IP address'));
   (t.match(IOC.sha256) || []).forEach(x => push('object', x, 'SHA-256'));
   // people and organisations: capitalised runs of 2–4 words
-  const caps = t.match(/\b(?:[A-Z][\p{L}'’.-]+(?:\s(?:of|de|van|von|der|al|bin|ibn|la|le|du|da)\s)?){2,4}/gu) || [];
+  const caps = t.match(/\b[A-Z][\p{L}'’-]+(?:\s(?:(?:of|de|van|von|der|al|bin|ibn|la|le|du|da)\s)?[A-Z][\p{L}'’-]+){1,3}/gu) || [];
   for (const c of caps) {
     const words = c.trim().split(/\s+/); if (STOP.has(words[0])) continue;
     const lc = c.toLowerCase();

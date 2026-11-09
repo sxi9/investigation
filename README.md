@@ -1,8 +1,11 @@
 # Cyber Investigation Board
 
-A noir-style investigation board for cyber intelligence work: pinned evidence cards, red-thread links, IOC extraction, ATT&CK techniques, an OSINT workbench, analysis of competing hypotheses, case briefs and STIX 2.1 export. Runs entirely in the browser; cases are saved to `localStorage` (optionally AES-GCM encrypted).
+A noir-style investigation board for intelligence work: pinned evidence cards, red-thread links, IOC extraction, ATT&CK techniques, an OSINT workbench, analysis of competing hypotheses, case briefs and STIX 2.1 export, plus (version 2) a sign-in page, a case-files desk, case modes, maps, media cards, live feeds and a suspect matrix. A small secured server holds accounts, roles, cases, files, an enrichment proxy and the AI gateway.
 
 ![Investigation Board](docs/screenshots/01-overview.png)
+
+- **[Version 2 walkthrough](docs/V2.md)** — sign-in, the desk, roles, live sync between analysts, guest access, lockout, AI without a key, with screenshots.
+- **[Backend](docs/BACKEND.md)** — how to run the server, what is secured and how, the API, the built-in analyst engine, tests.
 
 - **[Feature guide](docs/FEATURES.md)** — every function with a labelled screenshot.
 - **[Worked investigation](docs/TUTORIAL.md)** — a real October 2026 campaign (vendor-themed Okta / ServiceNow vishing against e-commerce SaaS providers) built up step by step, with instructions.
@@ -15,11 +18,14 @@ A noir-style investigation board for cyber intelligence work: pinned evidence ca
 ## Run it
 
 ```bash
-npm install
-npm run dev
+npm install && npm run build
 ```
 
-Open the URL Vite prints (default `http://localhost:5173`). `npm run build` writes a static site to `dist/`; `npm run preview` serves it. There is no backend: everything runs in the page, and the fonts load from Google Fonts.
+```bash
+cd server && npm install && npm start
+```
+
+Open `http://127.0.0.1:8787/`. The first visit creates the administrator account; add analysts, reviewers and viewers from the desk's **Users** panel. For development run the server and `npm run dev` in the root (Vite proxies `/api`). Configuration, security notes and the API are in [docs/BACKEND.md](docs/BACKEND.md). Fonts load from Google Fonts; map tiles from OpenStreetMap.
 
 ## Keys
 
@@ -31,29 +37,26 @@ Quick-add commands: `d` domain · `i` ip · `h` hash · `m` email · `w` wallet 
 
 | Path | What it is |
 | --- | --- |
-| `design/Investigation Board.dc.html` | The original design file (Claude Design export) and its runtime `support.js`. Source of truth for the UI. |
-| `tools/convert-template.mjs` | Converts the design file's template dialect (`{{ }}`, `sc-if`, `sc-for`, `style-hover`) into plain JSX. Re-run after editing the design file. |
-| `src/App.jsx` | **Generated** JSX for the whole screen. |
-| `src/logic.js` | The application logic class, carried over from the design file (state, board maths, exports, OSINT, STIX, ACH, …). |
-| `src/dc.js` | A small shim: the logic base class, the style helper, and the React host that renders the template from `renderVals()`. |
-| `src/settings.js` | Look & behaviour defaults from the design's property panel (paper, pins, thread style, lighting, defang, stale days, …). |
-| `src/helmet.css`, `src/pseudo.css` | Generated global styles and the hover/focus rules. |
-| `docs/` | Feature guide, tutorial, backend spec, screenshots, sample exports. |
+| `design/*.dc.html`, `design/auth.js`, `design/foley.js` | The version-2 design files (Claude Design export): Login, Case Files, CaseFolder, Investigation Board, the browser-only auth prototype (replaced by the server) and the sound module. `design/v1/` keeps the first board. |
+| `tools/convert-template.mjs`, `tools/pages.json` | Converts the design pages' template dialect (`{{ }}`, `sc-if`, `sc-for`, `dc-import`, `style-hover`) into plain JSX, one folder per page, with the route and runtime patches listed in the script header. Re-run after editing a design file. |
+| `src/pages/<page>/` | **Generated** per page: `App.jsx` (template), `logic.js` (the design's logic class), `settings.js` (property-panel defaults), styles, and `index.jsx` (the React host). |
+| `src/runtime/` | The glue to the server: `auth.js` (`window.CIBAuth`), `store.js` (localStorage ↔ server sync, live events, media mirror), `claude.js` (AI gateway), `proxy.js` (CORS-blocked hosts), `boot.jsx`. |
+| `src/dc.js` | The logic base class, the style helper and the React host that renders a template from `renderVals()`. |
+| `index.html`, `desk.html`, `board.html` | The three pages. |
+| `server/` | Fastify + SQLite backend: accounts, sessions, roles, case store, files, proxy, AI gateway, events. `npm test` runs its API tests. |
+| `docs/` | Guides, specs, screenshots, sample exports, PDFs. |
 
-### Regenerating from the design file
+### Regenerating from the design files
 
 ```bash
-node tools/convert-template.mjs "design/Investigation Board.dc.html"
+node tools/convert-template.mjs
 ```
 
-The converter needs Playwright's Chromium (it parses the template with a real DOM). It rewrites `src/App.jsx`, `src/pseudo.css` and `src/helmet.css`; `src/logic.js` is the design file's script with two small fixes applied (see below).
+The converter needs Playwright's Chromium (it parses the templates with a real DOM). It rewrites everything under `src/pages/`. The logic classes are the design files' scripts with the patches listed in the converter's header (routes, the enrichment proxy, media mirroring, server-mode seeding, login copy).
 
-### Fixes applied to the design's logic
+### Fixes applied to the first design's logic
 
-Both were found while exercising every feature in a browser and would have broken the original file in the same way:
-
-1. **Board export / case brief / one-pager crashed when the case had a cluster.** `renderBoard()` drew the cluster rectangles before the canvas context existed. The drawing now happens after the context is created and translated.
-2. **The passphrase (lock) screen crashed on load.** The locked initial state was missing the `extract`, `newFrom`, `newTo` and `newRel` fields that `renderVals()` reads. They are now initialised.
+Found while exercising every feature of version 1 in a browser (the version-2 design file already contains them): board export / case brief / one-pager crashed when the case had a cluster, and the passphrase lock screen crashed on load. See `docs/IMPROVEMENTS.md`.
 
 ## Regenerating the screenshots and guides
 
@@ -88,6 +91,7 @@ The first script writes `docs/screenshots/*.png` and `docs/feature-check.json`; 
 
 ## Notes
 
-- "Analyse with Claude" (Inspector) only works inside the Claude app preview; elsewhere it shows a toast.
-- Live OSINT lookups use public endpoints that allow browser access (Google DNS, RDAP, …). Endpoints that refuse cross-origin requests (crt.sh, urlscan, ThreatFox, Wayback) fall back to launcher links; the console shows the refusals, which is expected.
-- The two sample cases are seeded on first load: "Operation Lantern" (fictional phishing case) and "Binance $6.3B heist" (from the design file).
+- "Analyse with Claude", translate, stance and entities go through the server's AI gateway: the Anthropic API when `ANTHROPIC_API_KEY` is set, a built-in rule-based engine otherwise.
+- OSINT sources that refuse browser requests are fetched through the server's allow-listed proxy; anything not on the list stays a launcher link.
+- On a brand-new server the first board opened seeds the two sample cases ("Operation Lantern", "Binance $6.3B heist"); later users start with a blank case.
+- The feature guide, tutorial and SafePay case documents were captured on version 1 of the board; every function shown there is still present in version 2.

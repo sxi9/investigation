@@ -32,6 +32,7 @@ function shallowDiffKeys(a, b) { const keys = new Set([...Object.keys(a || {}), 
 
 export const store = {
   hasPublic: () => !!q.anyPublic.get(),
+  totalCases: () => q.all.all().length,
   visibleCases(u) { return q.all.all().filter(r => canSee(u, meta(r))).map(withRev); },
   getCase(u, id) { const r = q.one.get(id); if (!r || r.deleted_at) return null; if (!canSee(u, meta(r))) return null; return withRev(r); },
   // Apply a batch of client cases. Returns what was accepted (with new revs / numbers) and what was rejected.
