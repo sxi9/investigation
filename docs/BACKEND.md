@@ -69,7 +69,7 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 | `PUT /files/:id`, `GET /files/:id` | editors / accounts | Media mirror; body is the raw file, response carries `sha256`. |
 | `GET\|POST /proxy?url=` | account | Fetch an allow-listed HTTPS URL on the browser's behalf. |
 | `POST /ai/complete` | account | `{system, messages, max_tokens}` → `{text, engine}`. |
-| `GET /events` | signed in | Server-sent events: `case` (`id`, `rev`, `by`) and `case-deleted`, filtered by what the listener may see. |
+| `GET /events` | signed in | Server-sent events: `case`, `case-deleted`, `presence`, `notify`, filtered by what the listener may see. |
 
 ## How the pages use it
 
@@ -78,6 +78,14 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 - `auth.js` exposes `window.CIBAuth` with the same methods the design's `auth.js` had. Synchronous reads come from a cache filled by `init()` before the page renders; writes call the API and update the cache optimistically.
 - `store.js` pulls the user's cases into the pages' `localStorage` documents before render, intercepts writes to those keys, pushes changed cases (debounced, per case, with revisions) and applies other people's changes from the event stream unless the same case has unsaved local edits.
 - `claude.js` makes `window.claude.complete` call the gateway. `proxy.js` sends CORS-blocked hosts through `/api/proxy`. Media `putBlob`/`getBlob` are mirrored to `/api/files`.
+
+## Working together: merge, history, presence, notifications, review
+
+- **Merged saves.** Every case write carries the revision the client started from. If the server has moved on, the write is merged three ways against that revision: fields the client changed win over fields it did not; cards, threads, groups, snapshots and hypotheses merge per element and per field; an element deleted by one side but edited by the other is kept; the log is a union. Two analysts can work on one board without overwriting each other. The audit line says when a merge happened.
+- **Revision history.** Each save stores the previous document (`case_revisions`, last `CIB_REVISIONS_KEEP` = 50 per case). `GET /api/store/case/:id/revisions` lists them, `GET …/revisions/:rev` returns one, `POST …/restore/:rev` (editors) makes it current and keeps the current state in the history.
+- **Presence.** Pages post `{caseId, sel, editing}` to `POST /api/presence` every 10 s and on selection change; `GET /api/presence?caseId=` lists who is on a case; `DELETE /api/presence` clears on leave. Updates are pushed as `presence` events. The board shows the strip and a soft-lock notice when someone else is typing in the selected card; nothing is blocked.
+- **Notifications.** `GET /api/notifications` (`items`, `unread`), `POST /api/notifications/read` `{ids: [...]|"all"}`. Created by the server for @mentions in new comments (`@Full Name`, `@first_name`, or a unique first name), review requests (to the chosen reviewer, else all reviewers and admins), publish / send-back (to admins and the previous editor) and overdue tasks (hourly scan, once per task, to the task owner by name or the last editor). Pushed as `notify` events to the user's open tabs. `GET /api/users/names` gives every account the names needed for mentions and reviewer selection.
+- **Review rule.** When a case moves to *in review* the server records who asked. TLP:RED and AMBER+STRICT files cannot be published from draft, and cannot be published by the account that requested the review; a reviewer or admin with the TLP:RED grant publishes. The board's Activity drawer → Review sends a file to a chosen reviewer.
 
 ## AI providers
 

@@ -14,7 +14,8 @@ import { audit, verifyAuditChain } from './crypto.js';
 import { proxyFetch } from './proxy.js';
 import { complete, listProviders, setDisabled, chainLabel } from './ai/index.js';
 import { research, availableSources, gather, buildPrompt, parseAnswer } from './research.js';
-import { subscribe, broadcast, keepAlive } from './events.js';
+import { subscribe, broadcast, keepAlive, setClientCase } from './events.js';
+import { setPresence, clearPresence, listPresence, notifications, startSchedulers } from './collab.js';
 
 const COOKIE = 'cib_session';
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
@@ -127,6 +128,20 @@ export function buildApp(opts = {}) {
     return { ...res, deleted };
   });
 
+  app.get('/api/store/case/:id/revisions', async (req) => { const u = need(req); return { revisions: store.listRevisions(u, req.params.id) }; });
+  app.get('/api/store/case/:id/revisions/:rev', async (req) => { const u = need(req); return { case: store.getRevision(u, req.params.id, Number(req.params.rev)) }; });
+  app.post('/api/store/case/:id/restore/:rev', async (req) => { const u = needAccount(req); const c = store.restoreRevision(u, req.params.id, Number(req.params.rev), u.name, ip(req)); broadcast({ type: 'case', id: c.id, rev: c.rev, by: u.name }, { id: c.id, tlp: c.tlp, public: !!c.public }, null); return { case: c }; });
+
+  // ---- presence (who is on which case, which card they are editing)
+  app.post('/api/presence', async (req) => { const u = need(req); const b = req.body || {}; setClientCase(req.sessionToken, b.caseId || null); return { people: setPresence(req.sessionToken, u, { caseId: typeof b.caseId === 'string' ? b.caseId.slice(0, 64) : null, sel: typeof b.sel === 'string' ? b.sel.slice(0, 64) : null, editing: typeof b.editing === 'string' ? b.editing.slice(0, 64) : null, tab: String(b.tab || '').slice(0, 20) }) }; });
+  app.get('/api/presence', async (req) => { need(req); return { people: listPresence(req.query.caseId || null) }; });
+  app.delete('/api/presence', async (req) => { need(req); clearPresence(req.sessionToken); return { ok: true }; });
+
+  // ---- notifications
+  app.get('/api/notifications', async (req) => { const u = needAccount(req); return notifications.list(u.id); });
+  app.post('/api/notifications/read', async (req) => { const u = needAccount(req); const b = req.body || {}; for (const id of Array.isArray(b.ids) ? b.ids : [b.ids || 'all']) notifications.read(u.id, id); return notifications.list(u.id); });
+  app.get('/api/users/names', async (req) => { needAccount(req); return { users: users.list().map(x => ({ id: x.id, name: x.name, role: x.role })) }; });
+
   // ---- files (media mirror)
   app.put('/api/files/:id', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const buf = Buffer.isBuffer(req.body) ? req.body : typeof req.body === 'string' ? Buffer.from(req.body) : Buffer.from(JSON.stringify(req.body || '')); return store.putFile(u, req.params.id, buf, req.headers['content-type'], req.headers['x-file-name']); });
   app.get('/api/files/:id', async (req, reply) => { needAccount(req); const f = store.getFile(req.user, req.params.id); if (!f) throw err('Not found', 404); reply.header('content-type', f.mime || 'application/octet-stream').header('x-sha256', f.sha256).header('cache-control', 'private, max-age=86400').header('content-disposition', 'inline'); return reply.send(f.data); });
@@ -190,7 +205,7 @@ export function buildApp(opts = {}) {
     await new Promise(res => reply.raw.on('close', res));
     return reply;
   });
-  keepAlive();
+  keepAlive(); startSchedulers();
 
   // ---- static site (the built pages) when dist exists
   if (fs.existsSync(path.join(config.distDir, 'index.html'))) {

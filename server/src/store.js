@@ -6,6 +6,8 @@ import { config } from './config.js';
 import { canSee, canEdit, canCreate, canReview, REVIEW_FIELDS, isAdmin } from './acl.js';
 import { audit, sha256, uid } from './crypto.js';
 import { users } from './users.js';
+import { mergeCase } from './merge.js';
+import { revisions, afterCaseWrite, publishAllowed } from './collab.js';
 
 const q = {
   all: db.prepare('SELECT * FROM cases WHERE deleted_at IS NULL'),
@@ -66,19 +68,37 @@ export const store = {
           if (!canReview(u, em) || changed.some(k => !REVIEW_FIELDS.has(k))) { rejected.push({ id: c.id, reason: 'read-only for your role' }); continue; }
         }
         if ((m.tlp === 'red' || m.tlp === 'amber+strict') && !u.tlpRed && !isAdmin(u)) { rejected.push({ id: c.id, reason: 'no TLP:RED grant' }); continue; }
-        if (typeof c.rev === 'number' && c.rev < existing.rev && existing.updated_by !== by) {
-          // stale write from another client: last writer still wins, but we say so
-          audit(by, 'overwrote ' + em.id + ' rev ' + existing.rev + ' with a client at rev ' + c.rev, ip);
+        let incoming = c, merged = false;
+        if (typeof c.rev === 'number' && c.rev < existing.rev) {
+          // stale write: three-way merge against the revision the client started from, so both analysts' work survives
+          const base = revisions.get(c.id, c.rev);
+          incoming = mergeCase(base, old, c); merged = true;
+          audit(by, 'merged ' + em.id + ': client rev ' + c.rev + ' into server rev ' + existing.rev + (base ? '' : ' (no common base kept; client fields won)'), ip);
         }
-        if (JSON.stringify({ ...old, rev: 0, updatedAt: 0, updatedBy: 0 }) === JSON.stringify({ ...c, rev: 0, updatedAt: 0, updatedBy: 0 }) && !existing.deleted_at) { accepted.push({ id: c.id, rev: existing.rev, number: existing.number, unchanged: true }); continue; }
-        let number = m.number; if (!/^CASE \d{4}$/.test(number)) number = existing.number;
-        q.upd.run(number, m.title, m.tlp, m.pub, m.archived, m.review, now, by, JSON.stringify({ ...c, number }), c.id);
-        const r = q.one.get(c.id); accepted.push({ id: c.id, rev: r.rev, number: r.number });
+        if (JSON.stringify({ ...old, rev: 0, updatedAt: 0, updatedBy: 0 }) === JSON.stringify({ ...incoming, rev: 0, updatedAt: 0, updatedBy: 0 }) && !existing.deleted_at) { accepted.push({ id: c.id, rev: existing.rev, number: existing.number, unchanged: true }); continue; }
+        if ((incoming.review || 'draft') === 'in review' && (old.review || 'draft') !== 'in review') incoming.reviewRequestedBy = by;
+        const pub = publishAllowed(old, incoming, by); if (!pub.ok) { rejected.push({ id: c.id, reason: pub.reason }); continue; }
+        const mm = docMeta(incoming); let number = mm.number; if (!/^CASE \d{4}$/.test(number)) number = existing.number;
+        revisions.record(c.id, existing.rev, existing.doc, existing.updated_by);
+        q.upd.run(number, mm.title, mm.tlp, mm.pub, mm.archived, mm.review, now, by, JSON.stringify({ ...incoming, number }), c.id);
+        const r = q.one.get(c.id); accepted.push({ id: c.id, rev: r.rev, number: r.number, merged });
+        try { afterCaseWrite(old, { ...incoming, id: c.id, number, updatedAt: now, updatedBy: by }, by, { id: c.id, tlp: mm.tlp, public: !!mm.pub }); } catch (e) { console.error('notification scan failed', e); }
       }
       commit.run();
     } catch (e) { rollback.run(); throw e; }
     return { accepted, rejected };
   },
+  restoreRevision(u, id, rev, by, ip) {
+    const r = q.one.get(id); if (!r || r.deleted_at || !canEdit(u, meta(r))) throw err('Not found', 404);
+    const doc = revisions.get(id, rev); if (!doc) throw err('No such revision', 404);
+    revisions.record(id, r.rev, r.doc, r.updated_by);
+    const m = docMeta(doc); const now = new Date().toISOString();
+    q.upd.run(r.number, m.title, m.tlp, m.pub, m.archived, m.review, now, by, JSON.stringify({ ...doc, number: r.number }), id);
+    audit(by, 'restored ' + r.number + ' to revision ' + rev, ip);
+    return withRev(q.one.get(id));
+  },
+  listRevisions(u, id) { const r = q.one.get(id); if (!r || r.deleted_at || !canSee(u, meta(r))) throw err('Not found', 404); return revisions.list(id); },
+  getRevision(u, id, rev) { const r = q.one.get(id); if (!r || r.deleted_at || !canSee(u, meta(r))) throw err('Not found', 404); const d = revisions.get(id, rev); if (!d) throw err('No such revision', 404); return d; },
   deleteCases(u, ids, by, ip) {
     const out = [];
     for (const id of ids || []) {

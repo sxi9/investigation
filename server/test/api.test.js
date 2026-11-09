@@ -13,10 +13,10 @@ const app = buildApp();
 before(async () => { await app.ready(); });
 after(async () => { await app.close(); fs.rmSync(tmp, { recursive: true, force: true }); });
 
-const H = { 'x-requested-with': 'CIB', 'content-type': 'application/json' };
+const H = { 'x-requested-with': 'CIB' };
 const jar = {}; // name -> cookie
 async function call(method, url, body, as, extraHeaders = {}) {
-  const headers = { ...H, ...extraHeaders }; if (as && jar[as]) headers.cookie = jar[as];
+  const headers = { ...H, ...extraHeaders }; if (body !== undefined && !extraHeaders['content-type']) headers['content-type'] = 'application/json'; if (as && jar[as]) headers.cookie = jar[as];
   const r = await app.inject({ method, url, payload: body === undefined ? undefined : (Buffer.isBuffer(body) ? body : JSON.stringify(body)), headers });
   const set = r.headers['set-cookie']; if (as && set) jar[as] = String(Array.isArray(set) ? set[0] : set).split(';')[0];
   let j = null; try { j = r.json(); } catch (e) {}
