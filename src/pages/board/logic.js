@@ -1,5 +1,5 @@
 // Logic for the board page, carried over from design/Investigation Board.dc.html with the runtime base
-// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; desk route; desk route (bookmarklet string); server mode: an empty visible set does not re-seed the sample cases; server mode: start a blank case instead of the sample when the user has none; board applies other people's changes arriving from the server; legal hold: the board refuses to delete a held case; enrichment on pin: indicators added to the board are looked up once; enrichment when an inbox indicator is pinned; CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win; jget routes CORS-blocked hosts through the proxy; media blobs are mirrored to the server file store; media blobs missing locally are fetched from the server.
+// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; desk route; desk route (bookmarklet string); server mode: an empty visible set does not re-seed the sample cases; server mode: start a blank case instead of the sample when the user has none; board applies other people's changes arriving from the server; legal hold: the board refuses to delete a held case; UX: Esc works from inside a text box (closes panels, drops the selection) instead of being swallowed; UX: unknown quick-add commands are refused with help instead of becoming a note; UX: ? in quick add shows every command; UX: four-letter quick-add commands (host, file, mail, code, feed) are recognised; UX: hostname and file-name indicator kinds in quick add; hostname and file-name kinds in the kinds table; hash algorithm shown in the brief and letters; kindLabel helper: hash length → algorithm; brief: indicator type column uses the algorithm label; letters: algorithm label; brief: timeline table prints the time of day; timeline: cards on the same day are ordered by time of day; ACH: evidence weights (×1 ×2 ×3) and weighted scores; ACH: weight button on each evidence row; brief: weighted ACH scores and the leading hypothesis; free spot fills gaps and then rows under the board instead of a staircase; new cards from the inbox and quick add land in a free spot instead of the centre; enrichment on pin: indicators added to the board are looked up once; enrichment when an inbox indicator is pinned; CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win; jget routes CORS-blocked hosts through the proxy; media blobs are mirrored to the server file store; media blobs missing locally are fetched from the server.
 /* eslint-disable */
 import React from 'react';
 import { DCLogic } from '../../dc.js';
@@ -32,7 +32,7 @@ class Component extends DCLogic {
     ];
     return {
       RED, TYPES, ORDER: Object.keys(TYPES), RELS, REL: Object.fromEntries(RELS.map(r => [r.id, r])),
-      KINDS: { domain: 'Domain', ip: 'IP address', url: 'URL', hash: 'File hash', handle: 'Handle', email: 'Email', wallet: 'Wallet', cve: 'CVE', phone: 'Phone' },
+      KINDS: { domain: 'Domain', hostname: 'Hostname', ip: 'IP address', url: 'URL', hash: 'File hash', filename: 'File name', handle: 'Handle', email: 'Email', wallet: 'Wallet', cve: 'CVE', phone: 'Phone' },
       PIN: {
         red: ['#ff9ba1', RED, '#6b0a10'], brass: ['#ffe9a3', '#c9962a', '#5a3d0a'],
         person: ['#ff9ba1', RED, '#6b0a10'], indicator: ['#ffe2a0', '#e8a71c', '#6b4a0e'], link: ['#bfe0ff', '#4ea1e8', '#123a66'],
@@ -326,6 +326,7 @@ class Component extends DCLogic {
   addItem(type, extra = {}, pinned = false, at = null) {
     this.sfx(pinned ? 'pin' : 'paper');
     const K = Component.K, id = Component.uid(), w = K.TYPES[type].w;
+    if (pinned && !at && this.cs().items.some(i => i.pinned)) { const sp = this.freeSpot(w, 170); at = { x: sp.x + w / 2, y: sp.y + 10 }; }
     let pos = { x: 0, y: 0 };
     if (pinned) {
       const c = at || this.center();
@@ -623,7 +624,10 @@ class Component extends DCLogic {
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     items.forEach(i => { x0 = Math.min(x0, i.x); y0 = Math.min(y0, i.y); x1 = Math.max(x1, i.x + K.TYPES[i.type].w); y1 = Math.max(y1, i.y + this.h(i.id)); });
     groups.forEach(g => { x0 = Math.min(x0, g.x); y0 = Math.min(y0, g.y - 34); x1 = Math.max(x1, g.x + g.w); y1 = Math.max(y1, g.y + g.h); });
-    return (x1 - x0) >= (y1 - y0) ? { x: Math.round(x0), y: Math.round(y1 + 90) } : { x: Math.round(x1 + 90), y: Math.round(y0) };
+    const hit = (x, y) => items.some(i => x < i.x + K.TYPES[i.type].w + 30 && x + w + 30 > i.x && y < i.y + this.h(i.id) + 30 && y + h + 30 > i.y) || groups.some(g => x < g.x + g.w + 30 && x + w + 30 > g.x && y < g.y + g.h + 30 && y + h + 30 > g.y - 34);
+    const stepY = h + 40, stepX = w + 40; const X1 = Math.max(x1, x0 + 5 * stepX);
+    for (let y = y0; y < y1 + 80 * stepY; y += stepY) for (let x = x0; x <= X1 - w; x += stepX) if (!hit(x, y)) return { x: Math.round(x), y: Math.round(y) };
+    return { x: Math.round(x0), y: Math.round(y1 + 90) };
   }
   dropActor(a) {
     const K = Component.K, gh = Math.max(300, Math.ceil(a.techniques.length / 2) * 150 + 90), spot = this.freeSpot(760, gh), gx = spot.x, gy = spot.y, base = { title: '', body: '', url: '', value: '', kind: 'domain', date: '', tags: '', status: '', chain: '', amount: '', txFrom: '', txTo: '', image: null, pinned: true };
@@ -658,6 +662,7 @@ class Component extends DCLogic {
     } catch (e) { this.setState({ ai: { busy: false, forId: sel.id, res: null, err: String(e && e.message || e) } }); }
   };
   stixId(type) { const u = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }); return type + '--' + u; }
+  kindLabel(i) { const K = Component.K; if (i.kind === 'hash') { const n = String(i.value || '').replace(/\s/g, '').length; return (n === 32 ? 'MD5' : n === 40 ? 'SHA-1' : n === 64 ? 'SHA-256' : n === 128 ? 'SHA-512' : 'File') + ' hash'; } return K.KINDS[i.kind] || i.kind; }
   exportStix = () => {
     const K = Component.K, cs = this.cs(), now = new Date().toISOString(), ids = {}, objs = [], conf = i => i.status === 'confirmed' ? 85 : i.status === 'false' ? 10 : 40;
     const reportId = this.stixId('report');
@@ -691,7 +696,7 @@ class Component extends DCLogic {
   // ---------- timeline + presentation + quick add
   timelineLayout(pinned) {
     const K = Component.K, COLW = 290, X0 = 80, pos = {}, axis = [];
-    const dated = pinned.filter(i => i.date).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : (a.num || 0) - (b.num || 0)), undated = pinned.filter(i => !i.date).sort((a, b) => (a.num || 0) - (b.num || 0));
+    const dated = pinned.filter(i => i.date).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : (a.time || '99') < (b.time || '99') ? -1 : (a.time || '99') > (b.time || '99') ? 1 : (a.num || 0) - (b.num || 0)), undated = pinned.filter(i => !i.date).sort((a, b) => (a.num || 0) - (b.num || 0));
     const cols = []; dated.forEach(i => { let c = cols[cols.length - 1]; if (!c || c.date !== i.date) { c = { date: i.date, items: [] }; cols.push(c); } c.items.push(i); });
     let x = X0, bottom = 80;
     cols.forEach(c => { let y = 80; c.items.forEach(i => { pos[i.id] = { x: x + (COLW - 50 - K.TYPES[i.type].w) / 2 + 25, y }; y += this.h(i.id) + 44; }); axis.push({ x, label: this.fmtDate(c.date), items: c.items.length }); bottom = Math.max(bottom, y); x += COLW; });
@@ -836,7 +841,7 @@ class Component extends DCLogic {
   reqText() {
     const K = Component.K, cs = this.cs(), r = this.state.req, by = (this.state.analyst || '').trim() || 'Investigations team', tlp = K.TLP.find(t => t[0] === (cs.tlp || '')) || K.TLP[0];
     const inds = cs.items.filter(i => i.type === 'indicator' && r.sel[i.id]);
-    const lines = inds.map(i => '  - ' + (K.KINDS[i.kind] || i.kind) + ': ' + this.defang(i.value, i.kind) + (i.status ? ' [' + (K.STAMP_LABEL[i.status] || '') + ']' : '') + (i.source ? ' — source: ' + i.source : '') + (i.lastSeen ? ' — last seen ' + i.lastSeen : ''));
+    const lines = inds.map(i => '  - ' + this.kindLabel(i) + ': ' + this.defang(i.value, i.kind) + (i.status ? ' [' + (K.STAMP_LABEL[i.status] || '') + ']' : '') + (i.source ? ' — source: ' + i.source : '') + (i.lastSeen ? ' — last seen ' + i.lastSeen : ''));
     const head = (cs.tlp ? tlp[1] + '\n' : '') + 'Case reference: ' + cs.number + ' — ' + cs.title + '\nDate: ' + this.today() + '\nTo: ' + (r.to || '[recipient]') + '\nFrom: ' + by + '\n\n';
     const bodies = {
       takedown: 'Subject: Takedown request — ' + inds.length + ' malicious indicator(s)\n\nWe are investigating ' + cs.title + ' and have identified the following resources used in the activity. We request that they be suspended or removed under your abuse policy. Indicators are defanged; replace [.] with a dot.\n\n' + lines.join('\n') + '\n\nSummary of the activity:\n' + (cs.judgement && cs.judgement.text ? cs.judgement.text : (cs.notes || '').split('\n')[0]) + '\n\nEvidence is available on request. Please confirm receipt and the action taken, and preserve logs relating to these resources.\n\n' + by,
@@ -864,15 +869,16 @@ class Component extends DCLogic {
   onQuickKey = e => { if (e.key === 'Enter') { e.preventDefault(); this.quickAdd(this.state.quick); } else if (e.key === 'Escape') { e.target.blur(); this.setState({ quick: '' }); } };
   quickAdd(text) {
     text = String(text || '').trim(); if (!text) return;
-    const K = Component.K, CMD = { d: ['indicator', 'domain'], i: ['indicator', 'ip'], h: ['indicator', 'hash'], m: ['indicator', 'email'], w: ['indicator', 'wallet'], cve: ['indicator', 'cve'], '@': ['indicator', 'handle'], u: ['link'], e: ['event'], n: ['note'], p: ['person'], t: ['ttp'], l: ['location'], doc: ['doc'], c: ['cluster'], x: ['tx'], org: ['target'], v: ['video'], vid: ['video'], a: ['audio'], pdf: ['pdf'], mail: ['email'], code: ['code'], log: ['code'], feed: ['feed'], mon: ['monitor'], car: ['vehicle'], veh: ['vehicle'], obj: ['object'], st: ['statement'] };
-    const m = text.match(/^(@|[a-z]{1,3})\s+(.+)$/i); let cmd = m ? m[1].toLowerCase() : '', rest = m ? m[2].trim() : text, type, kind;
+    if (text === '?' || text === 'help') { this.setState({ quick: '' }); return this.toast('quick add: d domain · host hostname · i ip · u url · h hash · f filename · m email · w wallet · cve CVE · @ handle · e date title · n note · p person · t T1566 · l location · doc · x transfer · org target · c cluster · v video · a audio · pdf · mail · code · log · feed · mon · car · obj · st statement'); }
+    const K = Component.K, CMD = { d: ['indicator', 'domain'], host: ['indicator', 'hostname'], f: ['indicator', 'filename'], file: ['indicator', 'filename'], i: ['indicator', 'ip'], h: ['indicator', 'hash'], m: ['indicator', 'email'], w: ['indicator', 'wallet'], cve: ['indicator', 'cve'], '@': ['indicator', 'handle'], u: ['link'], e: ['event'], n: ['note'], p: ['person'], t: ['ttp'], l: ['location'], doc: ['doc'], c: ['cluster'], x: ['tx'], org: ['target'], v: ['video'], vid: ['video'], a: ['audio'], pdf: ['pdf'], mail: ['email'], code: ['code'], log: ['code'], feed: ['feed'], mon: ['monitor'], car: ['vehicle'], veh: ['vehicle'], obj: ['object'], st: ['statement'] };
+    const m = text.match(/^(@|[a-z]{1,4})\s+(.+)$/i); let cmd = m ? m[1].toLowerCase() : '', rest = m ? m[2].trim() : text, type, kind;
     if (CMD[cmd]) [type, kind] = CMD[cmd];
     else {
       rest = text;
       if (/^https?:\/\//i.test(rest)) type = 'link';
       else if (/^T\d{4}(\.\d{3})?$/i.test(rest)) type = 'ttp';
       else if (/^\d{4}-\d{2}-\d{2}\b/.test(rest)) type = 'event';
-      else { const f = this.extractIocs(rest); if (f.length === 1 && this.refang(rest).toLowerCase().replace(/^@/, '') === f[0].value.toLowerCase().replace(/^@/, '')) { type = 'indicator'; kind = f[0].kind; } else type = 'note'; }
+      else { const f = this.extractIocs(rest); if (f.length === 1 && this.refang(rest).toLowerCase().replace(/^@/, '') === f[0].value.toLowerCase().replace(/^@/, '')) { type = 'indicator'; kind = f[0].kind; } else if (m && m[1].length <= 4 && /^[a-z]+$/i.test(m[1]) && !/^(a|an|the|to|of|in|on|at|is|it|by|for|and|or|we|he|she|re|fw|if|no|so|as|do|be|up|my|me|us|ok|vs|this|that|with|from|our|his|her|its|new|old|two|one|all|any|not|but|has|had|was|are|were|who|why|how|see|also|will|can|may|per|via|re)$/i.test(m[1])) { this.toast('Unknown quick-add command "' + m[1] + '". Type ? for the list.'); return; } else type = 'note'; }
     }
     let id = null;
     if (type === 'cluster') { this.addGroup(rest); }
@@ -976,7 +982,7 @@ class Component extends DCLogic {
   };
   onKey = e => {
     const t = e.target, tag = t && t.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) { if (e.key !== 'Escape') return; t.blur(); }
     const s = this.state;
     if (s.screen === 'home') { if (e.key === 'Escape') this.setState(st => ({ tplOpen: false, lockOpen: false, renameId: null, extract: { ...st.extract, open: false } })); return; }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); return this.undo(); }
@@ -1323,13 +1329,13 @@ class Component extends DCLogic {
     } else {
       body = top + (cv ? '<img class="board" src="' + cv.toDataURL('image/jpeg', .85) + '">' : '')
         + '<h2>Summary</h2><pre>' + esc(cs.notes || '—') + '</pre>'
-        + (hyps.length ? '<h2>Competing hypotheses</h2>' + table(['Evidence', ...hyps.map(hy => esc(hy.text))], cs.items.filter(i => i.pinned && i.status !== 'false').sort((a, b) => (a.num || 0) - (b.num || 0)).map(i => [label(i), ...hyps.map(hy => { const v = ach[i.id + '|' + hy.id] || ''; return '<div class="c ' + v + '">' + (v === 'C' ? 'consistent' : v === 'I' ? 'inconsistent' : v === 'N' ? 'neutral' : '·') + '</div>'; })])) + '<p class="muted">Inconsistencies: ' + hyps.map(hy => esc(hy.text) + ' = ' + cs.items.filter(i => i.pinned && ach[i.id + '|' + hy.id] === 'I').length).join(' · ') + '</p>' : '')
-        + '<h2>Indicators</h2>' + table(['№', 'Type', 'Value', 'Status', 'Source', 'Seen', 'Context'], inds.map(i => [num('E', i.num), esc(K.KINDS[i.kind] || i.kind), mono(this.display(i, V)), stamp(i), src(i), mono([i.firstSeen, i.lastSeen].filter(Boolean).join(' → ')), esc([i.title, i.body].filter(Boolean).join(' — ')) + (i.tags ? ' ' + tags(i) : '')]))
+        + (hyps.length ? '<h2>Competing hypotheses</h2>' + table(['Evidence', ...hyps.map(hy => esc(hy.text))], cs.items.filter(i => i.pinned && i.status !== 'false').sort((a, b) => (a.num || 0) - (b.num || 0)).map(i => [label(i), ...hyps.map(hy => { const v = ach[i.id + '|' + hy.id] || ''; return '<div class="c ' + v + '">' + (v === 'C' ? 'consistent' : v === 'I' ? 'inconsistent' : v === 'N' ? 'neutral' : '·') + '</div>'; })])) + (() => { const W = cs.achW || {}; const sc = hyps.map(hy => ({ hy, n: cs.items.filter(i => i.pinned && ach[i.id + '|' + hy.id] === 'I').reduce((a, i) => a + (Number(W[i.id]) || 1), 0), cells: cs.items.filter(i => i.pinned && ach[i.id + '|' + hy.id] === 'I').length })).sort((a, b) => a.n - b.n); const weighted = Object.values(W).some(w => Number(w) > 1); return '<p class="muted">' + (weighted ? 'Weighted inconsistency (evidence weights ×1–×3): ' : 'Inconsistencies: ') + sc.map(x => esc(x.hy.text) + ' = ' + x.n + (weighted && x.cells !== x.n ? ' (' + x.cells + ' cells)' : '')).join(' · ') + (sc.length > 1 ? '. Leading hypothesis: <b>' + esc(sc[0].hy.text) + '</b>' + (sc[1].n === sc[0].n ? ' (tied)' : '') : '') + '</p>'; })() : '')
+        + '<h2>Indicators</h2>' + table(['№', 'Type', 'Value', 'Status', 'Source', 'Seen', 'Context'], inds.map(i => [num('E', i.num), esc(this.kindLabel(i)), mono(this.display(i, V)), stamp(i), src(i), mono([i.firstSeen, i.lastSeen].filter(Boolean).join(' → ')), esc([i.title, i.body].filter(Boolean).join(' — ')) + (i.tags ? ' ' + tags(i) : '')]))
         + (cs.items.some(i => i.type === 'tx') ? '<h2>Transfers</h2>' + table(['№', 'Chain', 'Amount', 'From', 'To', 'Tx hash', 'Date'], cs.items.filter(i => i.type === 'tx').map(i => [num('E', i.num), esc(i.chain), esc(i.amount), mono(i.txFrom), mono(i.txTo), mono(i.value), esc(this.fmtDate(i.date))])) : '')
         + '<h2>ATT&amp;CK techniques</h2>' + table(['ID', 'Technique', 'Tactic', 'Notes'], ttps.map(i => [mono(i.value), esc(i.title), esc(i.kind), esc(i.body)]))
         + '<h2>People &amp; personas</h2>' + table(['Name', 'Aliases / notes', 'Source', 'Status'], people.map(i => [esc(i.title), esc(i.body), src(i), stamp(i)]))
         + (targets.length ? '<h2>Targets</h2>' + table(['Organisation', 'Sector', 'Region', 'Impact', 'Notes'], targets.map(i => [esc(i.title), esc(i.sector), esc(i.region), esc(i.impact), esc(i.body)])) : '')
-        + '<h2>Timeline</h2>' + table(['Date', 'Event', 'Type'], tl.map(i => [mono(this.fmtDate(i.date)), label(i), esc(K.TYPES[i.type].label)]))
+        + '<h2>Timeline</h2>' + table(['Date', 'Event', 'Type'], tl.map(i => [mono(this.fmtDate(i.date) + (i.time ? ' ' + i.time : '')), label(i), esc(K.TYPES[i.type].label)]))
         + '<h2>Threads</h2>' + table(['№', 'From', 'Relation', 'To', 'Confidence', 'Evidence'], cs.threads.map(t => [num('T', t.num), byId[t.from] ? label(byId[t.from]) : '—', esc((K.REL[t.rel] || K.REL.linked).label), byId[t.to] ? label(byId[t.to]) : '—', esc(t.conf || 'high'), esc(t.why || '')]))
         + ((cs.groups || []).length ? '<h2>Clusters</h2>' + table(['Cluster', 'Cards'], (cs.groups || []).map(g => [esc(g.title), this.groupMembers(g, cs.items).map(label).join(', ') || '<span class="muted">empty</span>'])) : '')
         + '<h2>Evidence</h2>' + table(['Type', 'Item', 'Status', 'Source', 'Custody'], rest.map(i => [esc(K.TYPES[i.type].label), label(i) + (i.tags ? ' ' + tags(i) : ''), stamp(i), src(i), i.fileHash ? mono(i.fileName + ' · sha256 ' + i.fileHash + ' · ' + i.addedBy + ' · ' + new Date(i.addedAt).toLocaleString()) : '']))
@@ -1644,8 +1650,8 @@ class Component extends DCLogic {
     const comments = sel ? (sel.comments || []).map(cm => ({ by: cm.by, when: this.fmtWhen(cm.at), text: cm.text, mentions: (String(cm.text || '').match(/@([\w.-]+)/g) || []).map(x => x.slice(1)), get hasMentions() { return this.mentions.length > 0; }, onRemove: () => this.upCase(c => ({ ...c, items: c.items.map(i => i.id === sel.id ? { ...i, comments: (i.comments || []).filter(x => x.id !== cm.id) } : i) })) })) : [];
     const xc = this.xcase(sel);
     const hyps = cs.hypotheses || [], ach = cs.ach || [], achItems = pinnedRaw.filter(i => i.status !== 'false').sort((a, b) => (a.num || 0) - (b.num || 0));
-    const hypVals = hyps.map(hy => { const n = achItems.filter(i => (cs.ach || {})[i.id + '|' + hy.id] === 'I').length; return { id: hy.id, text: hy.text, score: n + ' inconsistent', scoreColor: n === 0 ? '#3fae63' : n < 3 ? '#e8a71c' : K.RED, onRemove: () => this.upCase(c => ({ ...c, hypotheses: (c.hypotheses || []).filter(x => x.id !== hy.id) })) }; });
-    const achRows = hyps.length ? achItems.map(i => ({ numText: Component.numText('E', i.num), label: label(i), cells: hyps.map(hy => { const key = i.id + '|' + hy.id, v = (cs.ach || {})[key] || ''; return { label: v === 'C' ? 'CONSISTENT' : v === 'I' ? 'INCONSISTENT' : v === 'N' ? 'NEUTRAL' : '·', bg: v === 'C' ? '#143d24' : v === 'I' ? '#4a0e14' : v === 'N' ? '#1d1d21' : '#111113', color: v === 'C' ? '#7fe0a0' : v === 'I' ? '#ff8a94' : v ? '#8d877b' : '#3a3a40', onCycle: () => this.upCase(c => { const cur = (c.ach || {})[key] || '', next = cur === '' ? 'C' : cur === 'C' ? 'I' : cur === 'I' ? 'N' : ''; return { ...c, ach: { ...(c.ach || {}), [key]: next } }; }) }; }) })) : [];
+    const achW = cs.achW || {}; const wOf = (i) => Number(achW[i.id]) || 1; const hypVals = hyps.map(hy => { const cells = achItems.filter(i => (cs.ach || {})[i.id + '|' + hy.id] === 'I'); const n = cells.reduce((a, i) => a + wOf(i), 0); return { id: hy.id, text: hy.text, score: n + ' weighted inconsistency' + (cells.length !== n ? ' (' + cells.length + ' cells)' : ''), scoreColor: n === 0 ? '#3fae63' : n < 3 ? '#e8a71c' : K.RED, onRemove: () => this.upCase(c => ({ ...c, hypotheses: (c.hypotheses || []).filter(x => x.id !== hy.id) })) }; });
+    const achRows = hyps.length ? achItems.map(i => ({ numText: Component.numText('E', i.num), label: label(i), weight: '×' + wOf(i), weightColor: wOf(i) > 1 ? '#e8a71c' : '#3a3a40', onWeight: () => this.upCase(c => ({ ...c, achW: { ...(c.achW || {}), [i.id]: (Number((c.achW || {})[i.id]) || 1) % 3 + 1 } })), cells: hyps.map(hy => { const key = i.id + '|' + hy.id, v = (cs.ach || {})[key] || ''; return { label: v === 'C' ? 'CONSISTENT' : v === 'I' ? 'INCONSISTENT' : v === 'N' ? 'NEUTRAL' : '·', bg: v === 'C' ? '#143d24' : v === 'I' ? '#4a0e14' : v === 'N' ? '#1d1d21' : '#111113', color: v === 'C' ? '#7fe0a0' : v === 'I' ? '#ff8a94' : v ? '#8d877b' : '#3a3a40', onCycle: () => this.upCase(c => { const cur = (c.ach || {})[key] || '', next = cur === '' ? 'C' : cur === 'C' ? 'I' : cur === 'I' ? 'N' : ''; return { ...c, ach: { ...(c.ach || {}), [key]: next } }; }) }; }) })) : [];
     const reqInds = cs.items.filter(i => i.type === 'indicator' && i.value);
     const reqRows = reqInds.map(i => ({ kind: K.KINDS[i.kind] || i.kind, value: this.defang(i.value, i.kind), status: i.status ? (K.STAMP_LABEL[i.status] || '') : '', checked: !!s.req.sel[i.id], onToggle: () => this.setState(st => ({ req: { ...st.req, sel: { ...st.req.sel, [i.id]: !st.req.sel[i.id] } } })) }));
     let aiVals = {};
@@ -1711,7 +1717,7 @@ class Component extends DCLogic {
       pivots: sel ? this.pivots(sel) : [], hasPivots: !!sel && (sel.type === 'indicator' || this.pivots(sel).length > 0),
       chains: K.CHAINS, setChain: this.setter('chain'), setAmount: this.setter('amount'), setTxFrom: this.setter('txFrom'), setTxTo: this.setter('txTo'),
       actorsOpen: s.actorsOpen, openActors: this.openActors, closeActors: this.closeActors, actors: K.ACTORS.map(a => ({ name: a.name, aliases: a.aliases.join(', '), origin: a.origin, motive: a.motive, summary: a.summary, techniques: a.techniques, onDrop: () => this.dropActor(a) })),
-      exportStix: this.exportStix, analyse: this.analyse, aiLabel: s.ai.busy && sel && s.ai.forId === sel.id ? 'Thinking…' : 'Analyse with Claude', aiNote: sel && s.ai.forId === sel.id && s.ai.err ? 'Failed: ' + s.ai.err : 'Reads the whole board, suggests threads',
+      kindLabel: this.kindLabel, exportStix: this.exportStix, analyse: this.analyse, aiLabel: s.ai.busy && sel && s.ai.forId === sel.id ? 'Thinking…' : 'Analyse with Claude', aiNote: sel && s.ai.forId === sel.id && s.ai.err ? 'Failed: ' + s.ai.err : 'Reads the whole board, suggests threads',
       hasAi: !!sel && !!s.ai.res && s.ai.forId === sel.id, ai: aiVals,
       worldFilter: [V.mood === 'cold case' ? 'sepia(.42) contrast(.9) brightness(.9)' : '', this.theme().filter !== 'none' ? this.theme().filter : ''].filter(Boolean).join(' ') || 'none', lightLamp: V.lighting === 'lamp',
       boardBg: this.theme().boardBg, boardGrad: this.theme().boardGrad,

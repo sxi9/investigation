@@ -337,7 +337,7 @@ export default function render(v) {
               {"\n  "}
               <div style={{flex: "1"}} />
               {"\n  "}
-              <input data-quick="1" value={v.quick ?? ""} onChange={v.onQuick} onKeyDown={v.onQuickKey} placeholder="/ quick add — d domain · i ip · h hash · u url · e date title · n note · p person · t T1566 · c cluster" spellCheck="false" title="Type a command and press Enter. With no command the value is auto-detected." style={{height: "30px", flex: "2 1 260px", minWidth: "160px", maxWidth: "460px", padding: "0 10px", border: "1px solid #2c2c31", background: "#0c0c0e", color: "#e8e4da", font: "12px 'IBM Plex Mono',monospace"}} className="scb0" />
+              <input data-quick="1" value={v.quick ?? ""} onChange={v.onQuick} onKeyDown={v.onQuickKey} placeholder="/ quick add — d domain · i ip · h hash · f filename · u url · e date title · p person · t T1566 · ? for all" spellCheck="false" title="Type a command and press Enter. With no command the value is auto-detected." style={{height: "30px", flex: "2 1 260px", minWidth: "160px", maxWidth: "460px", padding: "0 10px", border: "1px solid #2c2c31", background: "#0c0c0e", color: "#e8e4da", font: "12px 'IBM Plex Mono',monospace"}} className="scb0" />
               {"\n  "}
               <div style={{position: "relative", flex: "1 1 140px", minWidth: "110px", maxWidth: "220px"}}>
                 {"\n    "}
@@ -4781,7 +4781,7 @@ export default function render(v) {
                 </div>
                 {"\n    "}
                 <div style={{padding: "8px 16px 0", font: "12px/1.5 'Archivo Narrow',sans-serif", color: "#8d877b"}}>
-                  {"Click a cell to cycle: consistent · inconsistent · neutral. The hypothesis with the fewest inconsistencies survives; the one you favour is not the test."}
+                  {"Click a cell to cycle: consistent · inconsistent · neutral. Click ×1 on a row to weight that evidence ×2 or ×3 (how diagnostic it is). The hypothesis with the lowest weighted inconsistency survives; the one you favour is not the test."}
                 </div>
                 {"\n    "}
                 <div style={{overflow: "auto", minHeight: "0", padding: "10px 16px 16px"}}>
@@ -4828,6 +4828,9 @@ export default function render(v) {
                               <span style={{font: "10px 'IBM Plex Mono',monospace", color: "#8d877b", flex: "none"}}>
                                 {ar?.numText}
                               </span>
+                              <button data-ach-weight="1" onClick={ar?.onWeight} title="Weight of this evidence: click to cycle ×1 ×2 ×3 (diagnosticity)" style={{border: "1px solid #2c2c31", background: "transparent", color: `${ar?.weightColor ?? ""}`, font: "10px 'IBM Plex Mono',monospace", cursor: "pointer", padding: "0 4px", flex: "none"}}>
+                                {ar?.weight}
+                              </button>
                               <span style={{font: "12px 'Special Elite',monospace", color: "#e8e4da", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: "0"}}>
                                 {ar?.label}
                               </span>

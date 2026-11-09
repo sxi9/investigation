@@ -11,7 +11,7 @@ const TIMEOUT = Number(env.RESEARCH_FETCH_TIMEOUT_MS || 15000);
 const MAX_TEXT = 6000, MAX_SOURCES = 12, MAX_READ = 6;
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
 const TYPES = new Set(['note', 'link', 'person', 'indicator', 'doc', 'event', 'location', 'ttp', 'tx', 'target']);
-const KINDS = new Set(['domain', 'ip', 'url', 'hash', 'handle', 'email', 'wallet', 'cve', 'phone']);
+const KINDS = new Set(['domain', 'hostname', 'ip', 'url', 'hash', 'handle', 'email', 'wallet', 'cve', 'phone', 'filename']);
 const RELS = new Set(['linked', 'suspected', 'alias', 'controls', 'resolves', 'located']);
 
 function isPrivate(ip) {
@@ -109,7 +109,7 @@ function cleanCard(c, sources) {
   const type = TYPES.has(c.type) ? c.type : 'note';
   const si = Number.isInteger(c.source_index) ? c.source_index : (Number.isInteger(c.source) ? c.source : -1);
   const src = sources[si];
-  const out = { type, title: String(c.title || '').slice(0, 140), body: String(c.body || '').slice(0, 1200), tags: String(c.tags || '').slice(0, 120), date: /^\d{4}-\d{2}-\d{2}$/.test(c.date || '') ? c.date : '', confidence: ['high', 'medium', 'low'].includes(c.confidence) ? c.confidence : 'medium', source: src ? (src.title || src.provider) + ' · ' + new URL(src.url).hostname : String(c.source_name || 'AI research').slice(0, 140), url: src ? src.url : (type === 'link' && /^https?:\/\//.test(c.url || '') ? c.url : ''), collected: today(), srcGrade: src ? src.grade : 'C', infoGrade: c.confidence === 'high' ? '2' : c.confidence === 'low' ? '4' : '3', sourceIndex: si };
+  const out = { type, title: String(c.title || '').slice(0, 140), body: String(c.body || '').slice(0, 1200), tags: String(c.tags || '').slice(0, 120), date: /^\d{4}-\d{2}-\d{2}$/.test(c.date || '') ? c.date : '', time: /^\d{2}:\d{2}$/.test(c.time || '') ? c.time : '', confidence: ['high', 'medium', 'low'].includes(c.confidence) ? c.confidence : 'medium', source: src ? (src.title || src.provider) + ' · ' + new URL(src.url).hostname : String(c.source_name || 'AI research').slice(0, 140), url: src ? src.url : (type === 'link' && /^https?:\/\//.test(c.url || '') ? c.url : ''), collected: today(), srcGrade: src ? src.grade : 'C', infoGrade: c.confidence === 'high' ? '2' : c.confidence === 'low' ? '4' : '3', sourceIndex: si };
   if (type === 'indicator') { out.kind = KINDS.has(c.kind) ? c.kind : 'domain'; out.value = String(c.value || '').trim().slice(0, 300); if (!out.value) return null; if (out.kind === 'cve') out.value = out.value.toUpperCase(); }
   if (type === 'ttp') { const m = String(c.value || c.title || '').match(/T\d{4}(\.\d{3})?/i); out.value = m ? m[0].toUpperCase() : ''; out.kind = String(c.kind || '').slice(0, 40); }
   if (type === 'link' && !out.url && src) out.url = src.url;

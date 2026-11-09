@@ -33,6 +33,9 @@ Development with hot reload: run the server as above and `npm run dev` in the ro
 | `CIB_BACKUP_HOURS`, `CIB_BACKUPS_KEEP` | `24`, `14` | Automatic `VACUUM INTO` snapshots under `CIB_DATA_DIR/backups`, and how many to keep. `0` hours disables the scheduler. |
 | `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | unset | Single sign-on. Setting issuer and client id shows the SSO button; the redirect URI is `/api/auth/oidc/callback`. |
 | `OIDC_LABEL`, `OIDC_DEFAULT_ROLE`, `OIDC_ADMINS`, `OIDC_ALLOWED_DOMAINS`, `OIDC_SCOPE` | `Single sign-on`, `viewer`, unset, unset, `openid profile email` | Button text, role for new SSO accounts, e-mails (or subjects) that are made admin, e-mail domains allowed in, scopes requested. |
+| `MISP_URL`, `MISP_KEY` | unset | Push cases as MISP events (Account → Share). |
+| `THEHIVE_URL`, `THEHIVE_KEY` | unset | Push cases as TheHive alerts with observables. |
+| `JIRA_URL`, `JIRA_EMAIL`, `JIRA_TOKEN`, `JIRA_PROJECT`, `JIRA_ISSUE_TYPE` | unset, `Task` | Open Jira issues from a case. |
 | AI provider keys (see **AI providers** below) | unset | Any number of model providers; they are tried in order and the built-in engine answers when none is configured or all fail. |
 
 ## What is secured, and how
@@ -80,6 +83,12 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 | `POST /admin/purge` | admin | `{days}` → hard-delete wastebasket cases older than that (legal holds skipped). |
 | `GET /admin/holds`, `POST /admin/holds/:id` | admin | List cases with their hold state; `{on}` sets or clears a legal hold and broadcasts the change. |
 | `GET /admin/person-data?name=` | admin | Personal-data export for a named person across all cases. |
+| `POST /ingest` | account | Raw file body with `X-File-Name`: `.eml`, `.pdf`, text/HTML → `{summary, cards, threads, sources, kind}` in the research-result shape. |
+| `POST /ai/draft` | account | `{caseId or case, kind: summary\|takedown\|rfi\|hypotheses, to, ids}` → `{text or hypotheses, engine}`. |
+| `GET /store/case/:id/stix.json` | readers of the case | STIX 2.1 bundle of the case with stable ids. |
+| `GET\|POST /feeds`, `DELETE /feeds/:id`, `POST /feeds/push` | admin | Manage token feeds (name, `tlpMax`, `confirmedOnly`, `indicatorsOnly`, `tags`, `caseIds`, `webhook`, `everyH`); the token is returned once. |
+| `GET /feeds/:id/stix.json\|indicators.csv\|indicators.txt?token=` | token (no session) | Poll a feed; also `Authorization: Bearer <token>`. 404 for a wrong token. |
+| `GET /integrations`, `POST /integrations/misp\|thehive\|jira` | account / analysts and admins | Which systems are configured; push `{caseId, ids?, summary?, description?}`. Upstream failures come back as 424 with the upstream status. |
 | `GET /users`, `POST /users`, `PATCH /users/:id`, `POST /users/:id/password`, `DELETE /users/:id` | admin | Manage accounts, roles, TLP:RED grant and case scope; reset passwords (user must change on next sign-in). |
 | `GET /store` | signed in | Visible cases (with `rev`), the user's desk and settings documents. |
 | `GET /store/case/:id` | signed in | One case (404 when hidden). |
@@ -164,6 +173,14 @@ Without a model key the gateway still answers the board's four prompts, from rul
 
 Configure any provider above to replace all four with a model.
 
+## Reporting, feeds and integrations
+
+- **STIX** (`server/src/stix.js`): the same mapping the board's export uses, but with ids derived from case and item ids (UUIDv5) so repeated exports and feeds describe the same objects. Falsified items are dropped; hash patterns name the algorithm by length; `hostname` maps to `domain-name`, `filename` to `file:name`.
+- **Feeds** (`server/src/feeds.js`): token hashed at rest, scope checked per pull (maximum TLP, confirmed-only, optional case ids or case tags), pull counter and last-pull time; webhook pushes run every 15 minutes for feeds whose interval has elapsed.
+- **Integrations** (`server/src/integrations.js`): MISP `POST /events` (attribute types by kind, `to_ids` for confirmed, TLP tag), TheHive `POST /api/v1/alert` (observables with `dataType`, numeric TLP, `ioc` flag), Jira `POST /rest/api/3/issue` (ADF description, labels). Fifteen-second timeout; every push is audited; the page adds a link card and a log line.
+- **Ingestion** (`server/src/ingest.js`): a dependency-free MIME parser for `.eml` (encoded words, quoted-printable and base64 parts, Received chain with private ranges skipped, attachments hashed), `pdfjs-dist` for the text layer of PDFs, and the research extractor (model or rules) for text.
+- **Drafts** (`server/src/drafts.js`): a digest of the case (notes, judgement, exhibits with numbers, threads, hypotheses) goes to the model with a task-specific prompt; without a model the rules engine writes a factual summary, a letter from the indicator list, or hypothesis candidates from the evidence types present. The engine is returned and logged on the case.
+
 ## Deployment
 
 ```bash
@@ -179,4 +196,4 @@ The image is multi-stage (`Dockerfile`): Vite builds the pages, then a slim Node
 cd server && npm test
 ```
 
-`test/security.test.js` covers TOTP setup, the two-step login, challenge reuse, admin and self disable, RS256 id_token verification (tampering, audience, issuer, expiry, nonce, `alg: none`), SSO account creation and password refusal, per-file access on a TLP:RED case, legal hold through the API and the sync path, retention purge, backups (the snapshot opens as a database) and the personal-data export. The older suites cover setup, CSRF and origin checks, weak passwords, roles and scopes, lockout and reset, server-assigned numbers and revisions, reviewer and viewer limits, guests, files, proxy guards, the local AI shapes, logout and the audit chain. The end-to-end browser run is `node tools/capture/v2.cjs` (see `docs/V2.md`).
+`test/reporting.test.js` covers STIX conversion, feed creation, scoping, token checks and the three output formats, the MISP/TheHive/Jira payloads against a mocked HTTP layer, `.eml` and text ingestion, and the four draft kinds. `test/security.test.js` covers TOTP setup, the two-step login, challenge reuse, admin and self disable, RS256 id_token verification (tampering, audience, issuer, expiry, nonce, `alg: none`), SSO account creation and password refusal, per-file access on a TLP:RED case, legal hold through the API and the sync path, retention purge, backups (the snapshot opens as a database) and the personal-data export. The older suites cover setup, CSRF and origin checks, weak passwords, roles and scopes, lockout and reset, server-assigned numbers and revisions, reviewer and viewer limits, guests, files, proxy guards, the local AI shapes, logout and the audit chain. The end-to-end browser run is `node tools/capture/v2.cjs` (see `docs/V2.md`).

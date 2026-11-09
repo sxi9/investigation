@@ -1,0 +1,157 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "Z01 setup: admin, sample case on the board",
+      "detail": "29 exhibits on CASE 0418"
+    },
+    {
+      "ok": true,
+      "name": "Z02 ACH: hypotheses, cells and evidence weights (×1 → ×2) change the score",
+      "detail": "Click a cell to cycle: consistent · inconsistent · neutral. Click ×1 on a row to weight that evidence ×2 or ×3 (how diagnostic it is). The hypothesis with the lowest weighted inconsistency survives; the one you favour is not the test."
+    },
+    {
+      "ok": true,
+      "name": "Z03 AI drafts: competing hypotheses proposed from the case and added to the ACH grid",
+      "detail": "2 → 8 hypotheses"
+    },
+    {
+      "ok": true,
+      "name": "Z04 AI drafts: executive summary appended to the case notes",
+      "detail": "engine: rules"
+    },
+    {
+      "ok": true,
+      "name": "Z06 documents in: an .eml becomes event, sender, reply-to, relay, link, attachment hash and file-name cards",
+      "detail": "Invoice_4471.pdf · 86f11f555247… · event 2026-11-03 09:14"
+    },
+    {
+      "ok": true,
+      "name": "Z05 AI drafts: takedown letter from the case indicators",
+      "detail": "Subject: Abuse report and takedown request — 6 resource(s) used in Binance $6.3B heist"
+    },
+    {
+      "ok": true,
+      "name": "Z07 quick add: ? lists every command, unknown commands are refused, f and host kinds work",
+      "detail": "filename + hostname cards, unknown command refused"
+    },
+    {
+      "ok": true,
+      "name": "Z08 timeline: cards on the same day are ordered by time of day; new cards land in free spots",
+      "detail": "same column, 09:14 above 14:05 · 38 pinned cards without overlap"
+    },
+    {
+      "ok": true,
+      "name": "Z09 share: push the case to MISP, TheHive and Jira (stand-in server); link cards and log lines are added",
+      "detail": "MISP 8 attributes · TheHive 8 observables · Jira Block the lure domain at the perimeter"
+    },
+    {
+      "ok": true,
+      "name": "Z10 STIX feed: create a token feed, pull it as STIX, CSV and plain text without a session",
+      "detail": "3 STIX objects · 3 plain indicators · csv kind,value,status,case,first_seen,last_seen"
+    },
+    {
+      "ok": true,
+      "name": "Z11 case brief prints weighted ACH scores, the leading hypothesis, hash algorithms and times",
+      "detail": "weighted scores, leading hypothesis, SHA-256 label, 09:14 in the timeline table"
+    },
+    {
+      "ok": true,
+      "name": "Z12 Esc closes a panel from inside a text box",
+      "detail": "ACH closed by Esc while typing"
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "z01-ach-weights.png",
+      "title": "Z01 · Weighted ACH",
+      "caption": "Competing hypotheses with weighted evidence: click a cell to cycle consistent / inconsistent / neutral, and click the ×1 on a row to weight that evidence ×2 or ×3 when it is more diagnostic. The score per hypothesis is the weighted inconsistency; the case brief prints it and names the leading hypothesis.",
+      "marks": [
+        "Evidence weight ×2",
+        "Weighted score per hypothesis"
+      ]
+    },
+    {
+      "file": "z02-draft-hypotheses.png",
+      "title": "Z02 · AI hypotheses",
+      "caption": "Drafts: the model (or the rules engine when no key is set) proposes competing hypotheses from the whole case, each with the evidence that would discriminate it, including a benign or misattribution option. \"Add to the ACH grid\" puts them next to your own.",
+      "marks": [
+        "Choose a draft type",
+        "Add to the ACH grid"
+      ]
+    },
+    {
+      "file": "z03-draft-summary.png",
+      "title": "Z03 · AI case summary",
+      "caption": "Executive summary drafted from notes, exhibits, threads and hypotheses, citing exhibit numbers. \"Append to case notes\" stamps it with the date and the engine that wrote it, so a reviewer can tell a model's words from the analyst's.",
+      "marks": [
+        "Append to the notes"
+      ]
+    },
+    {
+      "file": "z05-ingest-eml.png",
+      "title": "Z05 · Email ingestion",
+      "caption": "From a file: the server parses the .eml (decoded headers, Received chain, links, attachments hashed) and proposes an event card for the message plus indicator cards for the sender, the mismatching Reply-To, the first external relay, every link and each attachment's SHA-256 and file name, threaded to the event. PDFs and text files go through entity extraction instead.",
+      "marks": [
+        "Pick the .eml or .pdf"
+      ]
+    },
+    {
+      "file": "z04-draft-takedown.png",
+      "title": "Z04 · AI takedown draft",
+      "caption": "Takedown / abuse letter drafted for the recipient you name, listing the case's live indicators defanged, asking for suspension and log preservation. Open it as a page to print or copy it into your ticketing system.",
+      "marks": [
+        "Recipient",
+        "Open as a letter"
+      ]
+    },
+    {
+      "file": "z06-quick-add-help.png",
+      "title": "Z06 · Quick add",
+      "caption": "Quick add now explains itself: type ? for every command; an unknown command is refused with a hint instead of silently becoming a note; new kinds f (file name) and host (hostname) join the indicator set, and hash cards are labelled MD5 / SHA-1 / SHA-256 in the brief and letters.",
+      "marks": [
+        "Every quick-add command"
+      ]
+    },
+    {
+      "file": "z07-timeline-time.png",
+      "title": "Z07 · Timeline by time",
+      "caption": "Timeline view: cards sharing a date are now stacked in time-of-day order (09:14 above 14:05), and the brief's chronology prints the time column. New cards added from quick add or an import land in a free spot beside the board rather than on a pile in the centre.",
+      "marks": [
+        "09:14 first",
+        "14:05 after it"
+      ]
+    },
+    {
+      "file": "z08-share-misp.png",
+      "title": "Z08 · Push to MISP / TheHive / Jira",
+      "caption": "Share: with MISP, TheHive or Jira configured on the server, one click pushes the case: a MISP event with typed attributes (to_ids for confirmed indicators), a TheHive alert with observables and TLP, or a Jira issue. The result links back, a link card lands in the inbox and the case log records it. Falsified indicators are never sent.",
+      "marks": [
+        "Push a MISP event",
+        "Created, with a link back",
+        "Open a Jira issue"
+      ]
+    },
+    {
+      "file": "z09-stix-feed.png",
+      "title": "Z09 · STIX feed",
+      "caption": "STIX feeds (admins): a feed is a token URL scoped by maximum TLP and, if you like, confirmed indicators only. A TIP imports stix.json, a SIEM takes indicators.csv, a firewall pulls indicators.txt. The token is shown once; remove the feed to revoke it. Add an https webhook and an interval to push the bundle on a schedule.",
+      "marks": [
+        "Create a feed",
+        "One-time token and pull URL"
+      ]
+    },
+    {
+      "file": "z10-brief-ach.png",
+      "title": "Z10 · Brief with weighted ACH",
+      "caption": "The case brief now ranks the hypotheses by weighted inconsistency and names the leading one, labels hash indicators by algorithm, and prints the time of day in the timeline table.",
+      "marks": [
+        "Weighted ACH table"
+      ]
+    }
+  ]
+}

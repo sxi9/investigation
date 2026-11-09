@@ -21,6 +21,11 @@ import { loadAttack, refreshAttack } from './attack.js';
 import { backupNow, listBackups, startBackupScheduler } from './backup.js';
 import { oidcConfig, startUrl, exchange, identityFrom } from './oidc.js';
 import QRCode from 'qrcode';
+import { feeds, startFeedScheduler } from './feeds.js';
+import { available as integrationsAvailable, pushMisp, pushTheHive, createJira } from './integrations.js';
+import { ingest } from './ingest.js';
+import { draft } from './drafts.js';
+import { caseToStix, bundle as stixBundle } from './stix.js';
 import { actors } from './actors.js';
 import { watchers, runWatcher, startWatcherScheduler, WATCH_INTERVALS, WATCH_CHECKS } from './watchers.js';
 
@@ -253,6 +258,42 @@ export function buildApp(opts = {}) {
   app.delete('/api/actors/:id', async (req) => { const u = needAdmin(req); actors.remove(req.params.id, u.name); return { ok: true }; });
   app.post('/api/actors/import', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const b = req.body; const json = Buffer.isBuffer(b) ? JSON.parse(b.toString('utf8')) : (typeof b === 'string' ? JSON.parse(b) : b); return actors.importBundle(json, u.name); });
 
+  // ---- documents in: .eml / .pdf / text → proposed cards (same shape as research results)
+  const dec0 = (v) => { try { return decodeURIComponent(String(v || '')); } catch (e) { return String(v || ''); } };
+  app.post('/api/ingest', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (req) => {
+    const u = needAccount(req); const name = dec0(req.headers['x-file-name'] || 'upload'); const body = req.body;
+    const data = Buffer.isBuffer(body) ? body : Buffer.from(typeof body === 'string' ? body : JSON.stringify(body || ''));
+    const dec = (v) => { try { return decodeURIComponent(String(v || '')); } catch (e) { return String(v || ''); } }; let existing = [], context = ''; try { existing = JSON.parse(dec(req.headers['x-existing']) || '[]'); } catch (e) {} context = dec(req.headers['x-context']).slice(0, 1500);
+    const r = await ingest({ name, mime: req.headers['content-type'], data, existing, context, useModel: req.headers['x-use-model'] !== '0' });
+    audit(u.name, 'ingested ' + name + ' (' + r.kind + ', ' + r.cards.length + ' cards)', ip(req)); return r;
+  });
+  // ---- AI drafts over the whole case
+  app.post('/api/ai/draft', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (req) => {
+    const u = needAccount(req); const b = req.body || {}; const cs = b.case && b.case.items ? b.case : store.getCase(u, b.caseId); if (!cs) throw err('Not found', 404);
+    const r = await draft(cs, { kind: b.kind, to: b.to, ids: Array.isArray(b.ids) ? b.ids : null }); audit(u.name, 'AI draft (' + b.kind + ', ' + r.engine + ') for ' + cs.number, ip(req)); return r;
+  });
+  // ---- STIX feeds (token URLs for TIPs, SIEMs, firewalls) and one-off bundles
+  app.get('/api/store/case/:id/stix.json', async (req, reply) => { const u = need(req); const c = store.getCase(u, req.params.id); if (!c) throw err('Not found', 404); reply.header('content-disposition', 'attachment; filename="' + c.number.replace(/\s+/g, '-') + '.stix.json"'); return stixBundle(caseToStix(c)); });
+  app.get('/api/feeds', async (req) => { needAdmin(req); return { feeds: feeds.list() }; });
+  app.post('/api/feeds', async (req) => { const me = needAdmin(req); return { feed: feeds.create(me.name, req.body || {}) }; });
+  app.delete('/api/feeds/:id', async (req) => { const me = needAdmin(req); feeds.remove(me.name, req.params.id); return { ok: true }; });
+  app.post('/api/feeds/push', async (req) => { needAdmin(req); return { pushed: await feeds.pushDue(true) }; });
+  app.get('/api/feeds/:id/:file', { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const m = String(req.params.file).match(/^(stix\.json|indicators\.csv|indicators\.txt)$/); if (!m) throw err('Not found', 404);
+    const token = req.query.token || String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+    const r = feeds.pull(req.params.id, token, m[1] === 'stix.json' ? 'stix' : m[1] === 'indicators.csv' ? 'csv' : 'txt');
+    reply.header('content-type', r.type + '; charset=utf-8').header('cache-control', 'no-store'); return r.body;
+  });
+  // ---- push to MISP / TheHive / Jira
+  app.get('/api/integrations', async (req) => { need(req); return integrationsAvailable(); });
+  app.post('/api/integrations/:system', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (req) => {
+    const u = needAccount(req); const b = req.body || {}; const cs = store.getCase(u, b.caseId); if (!cs) throw err('Not found', 404);
+    if (!['admin', 'analyst'].includes(u.role)) throw err('Analysts and admins only', 403);
+    const o = { ids: Array.isArray(b.ids) ? b.ids : null, by: u.name, summary: b.summary, description: b.description, issueType: b.issueType };
+    if (req.params.system === 'misp') return pushMisp(cs, o); if (req.params.system === 'thehive') return pushTheHive(cs, o); if (req.params.system === 'jira') return createJira(cs, o);
+    throw err('Unknown system', 404);
+  });
+
   // ---- administration: backups, retention, personal data
   app.post('/api/admin/backup', { config: { rateLimit: { max: 6, timeWindow: '1 hour' } } }, async (req) => { const me = needAdmin(req); return backupNow(me.name); });
   app.get('/api/admin/backups', async (req) => { needAdmin(req); return { backups: listBackups() }; });
@@ -270,7 +311,7 @@ export function buildApp(opts = {}) {
     await new Promise(res => reply.raw.on('close', res));
     return reply;
   });
-  keepAlive(); startSchedulers(); startWatcherScheduler(); startBackupScheduler();
+  keepAlive(); startSchedulers(); startWatcherScheduler(); startBackupScheduler(); startFeedScheduler();
   const purge = setInterval(() => { try { store.purgeDeleted(config.retentionDays); } catch (e) {} }, 6 * 3600e3); purge.unref();
 
   // ---- static site (the built pages) when dist exists

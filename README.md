@@ -4,6 +4,7 @@ A noir-style investigation board for intelligence work: pinned evidence cards, r
 
 ![Investigation Board](docs/screenshots/01-overview.png)
 
+- **[Walkthrough 6](docs/V6.md)** — push to MISP, TheHive and Jira, scheduled STIX feeds, email and PDF ingestion, AI drafts (summary, takedown, hypotheses), weighted ACH, timeline by time of day, quick-add and placement fixes.
 - **[Walkthrough 5](docs/V5.md)** — two-factor sign-in, OIDC single sign-on, per-file TLP access, legal hold, retention, backups, personal-data export, Docker + Caddy TLS deployment.
 - **[Walkthrough 4](docs/V4.md)** — enrichment on pin, watchers with webhooks, duplicate finder, the full ATT&CK matrix and an editable actor library.
 - **[Walkthrough 3](docs/V3.md)** — AI research (query → attributed cards, manual Claude route), the multi-provider gateway, presence and soft locks, merged edits, revision history, mentions and review rules.

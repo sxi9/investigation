@@ -87,6 +87,45 @@ function Operations() {
   </div>;
 }
 
+function Integrations() {
+  const A = window.CIBAuth; const me = A.user(); const [av, setAv] = useState(null); const [feedsL, setFeeds] = useState([]); const [busy, setBusy] = useState(''); const [last, setLast] = useState(null);
+  const [jira, setJira] = useState({ summary: '', description: '' }); const [nf, setNf] = useState({ name: '', tlpMax: 'green', confirmedOnly: true, indicatorsOnly: true, webhook: '', everyH: 0 }); const [newTok, setNewTok] = useState(null);
+  const admin = me && me.role === 'admin'; const page = window.CIBPage; const cs = () => { try { return page && page.cs ? page.cs() : null; } catch (e) { return null; } };
+  const load = async () => { try { setAv(await api('GET', '/api/integrations')); if (admin) setFeeds((await api('GET', '/api/feeds')).feeds); } catch (e) { toast(e.message); } };
+  useEffect(() => { load(); }, []);
+  const c = cs(); const canPush = c && me && ['admin', 'analyst'].includes(me.role);
+  const push = async (system) => { if (!c) return; setBusy(system); try { const r = await api('POST', '/api/integrations/' + system, { caseId: c.id, ...(system === 'jira' ? { summary: jira.summary || undefined, description: jira.description } : {}) }); setLast(r); toast((system === 'jira' ? 'Issue ' : system === 'misp' ? 'MISP event ' : 'TheHive alert ') + (r.id || '') + ' created'); if (page && page.addItem) page.addItem('link', { title: (system === 'misp' ? 'MISP event ' : system === 'thehive' ? 'TheHive alert ' : 'Jira ') + (r.id || ''), url: r.url, body: 'Pushed from this case on ' + new Date().toISOString().slice(0, 10) + (r.count ? ' · ' + r.count + ' indicators' : ''), tags: 'integration, ' + system, source: system }, false, null); if (page && page.logEvt) page.logEvt('Pushed to ' + system + ': ' + (r.id || r.url)); } catch (e) { toast(e.message); } setBusy(''); };
+  const mkFeed = async () => { setBusy('feed'); try { const r = await api('POST', '/api/feeds', { ...nf, everyH: Number(nf.everyH) || 0 }); setNewTok(r.feed); setNf({ ...nf, name: '' }); await load(); } catch (e) { toast(e.message); } setBusy(''); };
+  const rmFeed = async (f) => { if (!window.confirm('Remove feed "' + f.name + '"? Consumers lose access immediately.')) return; try { await api('DELETE', '/api/feeds/' + f.id); await load(); } catch (e) { toast(e.message); } };
+  const stixUrl = c ? '/api/store/case/' + encodeURIComponent(c.id) + '/stix.json' : '';
+  return <div>
+    <div style={S.lab}>This case → {c ? c.number : 'open a case on the board'}</div>
+    {!av ? <div style={S.note}>Loading…</div> : <div>
+      <div style={S.row}><span style={{ flex: 1 }}>MISP {av.labels.misp ? <span style={{ color: '#8d877b', font: F.mono }}>· {av.labels.misp}</span> : null}</span>{av.misp ? <button data-push="misp" style={{ ...S.btn, borderColor: '#e8a71c', color: '#ffe2a0' }} disabled={!canPush || busy === 'misp'} onClick={() => push('misp')}>Push event</button> : <span style={{ font: F.mono, color: '#8d877b' }}>set MISP_URL + MISP_KEY</span>}</div>
+      <div style={S.row}><span style={{ flex: 1 }}>TheHive {av.labels.thehive ? <span style={{ color: '#8d877b', font: F.mono }}>· {av.labels.thehive}</span> : null}</span>{av.thehive ? <button data-push="thehive" style={{ ...S.btn, borderColor: '#e8a71c', color: '#ffe2a0' }} disabled={!canPush || busy === 'thehive'} onClick={() => push('thehive')}>Create alert</button> : <span style={{ font: F.mono, color: '#8d877b' }}>set THEHIVE_URL + THEHIVE_KEY</span>}</div>
+      <div style={{ ...S.row, flexWrap: 'wrap' }}><span style={{ flex: '1 0 100%' }}>Jira {av.labels.jira ? <span style={{ color: '#8d877b', font: F.mono }}>· {av.labels.jira}</span> : null}</span>{av.jira ? <><input data-jira-summary="1" placeholder="issue summary (default: case title)" value={jira.summary} onChange={e => setJira({ ...jira, summary: e.target.value })} style={S.inp} /><button data-push="jira" style={{ ...S.btn, borderColor: '#e8a71c', color: '#ffe2a0' }} disabled={!canPush || busy === 'jira'} onClick={() => push('jira')}>Open issue</button></> : <span style={{ font: F.mono, color: '#8d877b' }}>set JIRA_URL, JIRA_EMAIL, JIRA_TOKEN, JIRA_PROJECT</span>}</div>
+      {last ? <div data-push-result="1" style={S.note}>Created <a href={last.url} target="_blank" rel="noreferrer" style={{ color: '#ffe2a0' }}>{last.system} {last.id}</a>{last.count ? ' with ' + last.count + ' indicators' : ''}; a link card was added to the inbox and the case log.</div> : null}
+      <div style={S.note}>Falsified indicators are never pushed; confirmed ones are flagged for detection (to_ids / ioc). OpenCTI and other TIPs can poll the STIX feed below or import <a href={stixUrl} style={{ color: '#ffe2a0' }}>this case's STIX bundle</a>.</div>
+    </div>}
+    {admin ? <div>
+      <div style={S.lab}>STIX feeds · scheduled exports</div>
+      <div style={S.note}>A feed is a token URL that a TIP, SIEM or firewall polls: <span style={S.code}>…/stix.json</span>, <span style={S.code}>…/indicators.csv</span> or <span style={S.code}>…/indicators.txt</span>. Scope by maximum TLP, optionally confirmed indicators only; add an https webhook to push the bundle every N hours.</div>
+      <div style={{ ...S.row, flexWrap: 'wrap' }}>
+        <input data-feed-name="1" placeholder="feed name (e.g. perimeter blocklist)" value={nf.name} onChange={e => setNf({ ...nf, name: e.target.value })} style={S.inp} />
+        <select value={nf.tlpMax} onChange={e => setNf({ ...nf, tlpMax: e.target.value })} style={{ ...S.inp, flex: 'none' }}>{['clear', 'green', 'amber', 'amber+strict', 'red'].map(t => <option key={t} value={t}>≤ TLP:{t.toUpperCase()}</option>)}</select>
+        <label style={{ font: F.mono, color: '#d8d3c7', display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={nf.confirmedOnly} onChange={e => setNf({ ...nf, confirmedOnly: e.target.checked })} /> confirmed only</label>
+      </div>
+      <div style={{ ...S.row, flexWrap: 'wrap' }}>
+        <input placeholder="optional https:// webhook to push to" value={nf.webhook} onChange={e => setNf({ ...nf, webhook: e.target.value })} style={S.inp} />
+        <span style={{ font: F.mono, color: '#8d877b' }}>every</span><input value={nf.everyH} onChange={e => setNf({ ...nf, everyH: e.target.value.replace(/\D/g, '') })} style={{ ...S.inp, flex: 'none', width: 40 }} /><span style={{ font: F.mono, color: '#8d877b' }}>h</span>
+        <button data-feed-create="1" style={{ ...S.btn, borderColor: '#e8a71c', color: '#ffe2a0' }} disabled={!nf.name.trim() || busy === 'feed'} onClick={mkFeed}>Create feed</button>
+      </div>
+      {newTok ? <div data-feed-token="1" style={{ ...S.note, color: '#ffe2a0' }}>Token for "{newTok.name}" (shown once): <span style={S.code}>{newTok.token}</span><br />Pull URL: <span style={S.code}>{location.origin + newTok.url}?token={newTok.token}</span></div> : null}
+      {feedsL.map(f => <div key={f.id} style={S.row}><span style={{ flex: 1 }}>{f.name}</span><span style={{ font: F.mono, color: '#8d877b' }}>≤ {f.scope.tlpMax.toUpperCase()}{f.scope.confirmedOnly ? ' · confirmed' : ''} · {f.pulls} pulls{f.lastPull ? ' · last ' + when(f.lastPull) : ''}{f.everyH ? ' · push every ' + f.everyH + 'h' : ''}</span><button style={S.danger} onClick={() => rmFeed(f)}>Remove</button></div>)}
+    </div> : null}
+  </div>;
+}
+
 function Account({ page }) {
   const A = window.CIBAuth; const [open, setOpen] = useState(false); const [tab, setTab] = useState('security'); const [me, setMe] = useState(A && A.user());
   useEffect(() => A ? A.onChange(() => setMe(A.user())) : undefined, []);
@@ -98,8 +137,9 @@ function Account({ page }) {
       <div style={S.h}><span style={{ flex: 1 }}>Account</span>
         <button data-acct-tab="security" style={S.tab(tab === 'security')} onClick={() => setTab('security')}>Security</button>
         {admin ? <button data-acct-tab="ops" style={S.tab(tab === 'ops')} onClick={() => setTab('ops')}>Operations</button> : null}
+        {!me.guest ? <button data-acct-tab="share" style={S.tab(tab === 'share')} onClick={() => setTab('share')}>Share</button> : null}
         <button style={S.btn} onClick={() => setOpen(false)}>×</button></div>
-      {tab === 'ops' && admin ? <Operations /> : <Security />}
+      {tab === 'ops' && admin ? <Operations /> : tab === 'share' ? <Integrations /> : <Security />}
     </div> : null}
   </>;
 }

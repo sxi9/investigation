@@ -3,7 +3,7 @@ import os, sys
 from PIL import Image
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'docs')
 before = after = 0
-for d in ['screenshots', 'tutorial', 'case-safepay', 'case-safepay/evidence', 'v2', 'v3', 'v4', 'v5']:
+for d in ['screenshots', 'tutorial', 'case-safepay', 'case-safepay/evidence', 'v2', 'v3', 'v4', 'v5', 'v6']:
     for f in sorted(os.listdir(os.path.join(root, d))):
         if not f.endswith('.png'): continue
         p = os.path.join(root, d, f); before += os.path.getsize(p)

@@ -1,7 +1,7 @@
 // AI research panel: an overlay on the board (not part of the generated template). Gathers sources on the
 // server, proposes cards, and imports the ones you tick into the inbox or onto the board. Also offers the
 // manual route: copy a prompt, run it in Claude (or any model) yourself, paste the answer, import.
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { api } from './api.js';
 
@@ -39,6 +39,30 @@ function Panel({ onClose }) {
   const [pasted, setPasted] = useState('');
   const [msg, setMsg] = useState('');
   const [engine, setEngine] = useState('');
+  const [draftKind, setDraftKind] = useState('summary');
+  const [draftTo, setDraftTo] = useState('');
+  const [draft, setDraft] = useState(null);
+  const fileRef = useRef(null);
+  const ingestFile = async (file) => {
+    if (!file) return; setBusy('Reading ' + file.name + '…'); setMsg('');
+    try {
+      const r = await fetch('/api/ingest', { method: 'POST', credentials: 'same-origin', headers: { 'X-Requested-With': 'CIB', 'content-type': file.type || 'application/octet-stream', 'x-file-name': encodeURIComponent(file.name), 'x-existing': encodeURIComponent(JSON.stringify(existing().slice(0, 400))), 'x-context': encodeURIComponent(context()) }, body: file });
+      const j = await r.json(); if (!r.ok) throw new Error(j.error || 'HTTP ' + r.status);
+      setQuery(file.name); setResult({ ...j, query: file.name }); setMsg(j.cards.length + ' cards proposed from ' + file.name + (j.pages ? ' (' + j.pages + ' pages)' : '') + '.');
+    } catch (e) { setMsg(e.message); } finally { setBusy(''); if (fileRef.current) fileRef.current.value = ''; }
+  };
+  const makeDraft = async () => {
+    setBusy('Drafting…'); setMsg(''); setDraft(null);
+    try { const r = await api('POST', '/api/ai/draft', { case: cs(), kind: draftKind, to: draftTo }); setDraft(r); setEngine(r.engine || ''); } catch (e) { setMsg(e.message); } finally { setBusy(''); }
+  };
+  const applyDraft = () => {
+    if (!draft || !logic) return;
+    if (draft.kind === 'hypotheses') { const add = draft.hypotheses; logic.upCase(c => ({ ...c, hypotheses: [...(c.hypotheses || []), ...add.map(h => ({ id: logic.constructor.uid(), text: h.text, why: h.why }))] })); if (logic.logEvt) logic.logEvt('AI proposed ' + add.length + ' hypotheses (' + draft.engine + ')'); if (logic.toast) logic.toast(add.length + ' hypotheses added to the ACH grid'); if (logic.openAch) logic.openAch(); onClose(); return; }
+    if (draft.kind === 'summary') { const stamp = 'AI SUMMARY · ' + new Date().toISOString().slice(0, 10) + ' · ' + draft.engine; logic.upCase(c => ({ ...c, notes: (c.notes ? c.notes + '\n\n' : '') + stamp + '\n' + draft.text })); if (logic.logEvt) logic.logEvt('AI case summary appended to notes (' + draft.engine + ')'); if (logic.toast) logic.toast('Summary appended to the case notes'); if (logic.setState) logic.setState({ tab: 'notes', showRight: true }); onClose(); return; }
+    const w = window.open('', '_blank'); if (!w) { navigator.clipboard && navigator.clipboard.writeText(draft.text); if (logic.toast) logic.toast('Pop-ups blocked; the letter is on the clipboard'); return; }
+    w.document.open(); w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + (draft.kind === 'rfi' ? 'Request for information' : 'Takedown request') + '</title><style>body{margin:0;background:#f4f2ec;color:#1b1a17}pre{max-width:820px;margin:0 auto;padding:48px;font:13px/1.65 "Special Elite","Courier New",monospace;white-space:pre-wrap}</style></head><body><pre>' + draft.text.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</pre></body></html>'); w.document.close();
+    if (logic.logEvt) logic.logEvt('AI ' + draft.kind + ' letter drafted (' + draft.engine + ')');
+  };
   useEffect(() => { api('GET', '/api/research/sources').then(a => { setAvail(a); setSources(s => [...s, ...Object.keys(a.keyed).filter(k => a.keyed[k])]); }).catch(() => {}); api('GET', '/api/ai/providers').then(p => setEngine(p.chain)).catch(() => {}); }, []);
   useEffect(() => { const k = e => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
   const existing = () => cs().items.map(i => (i.value || i.title || '').trim()).filter(Boolean);
@@ -71,6 +95,7 @@ function Panel({ onClose }) {
       const c = res.cards[i]; const key = String(c.value || c.title).toLowerCase(); if (have.has(key)) { skipped++; continue; }
       const type = K.TYPES[c.type] ? c.type : 'note';
       const f = { title: c.title, body: c.body, tags: c.tags, date: c.date, source: c.source, url: c.url, collected: c.collected, srcGrade: c.srcGrade, infoGrade: c.infoGrade, status: '' };
+      if (c.time) f.time = c.time;
       if (type === 'indicator') { f.kind = c.kind; f.value = c.value; f.status = 'unverified'; }
       if (type === 'ttp') { f.value = c.value; f.kind = c.kind || ''; }
       if (type === 'target') { f.sector = c.sector; f.region = c.region; f.impact = c.impact; }
@@ -100,6 +125,8 @@ function Panel({ onClose }) {
           <div style={{ font: F.mono, color: '#8d877b', flex: 1 }}>{engine ? 'engine chain: ' + engine : ''}</div>
           <button style={S.chip(mode === 'auto')} onClick={() => setMode('auto')}>Automatic</button>
           <button style={S.chip(mode === 'manual')} onClick={() => setMode('manual')}>Prompt for Claude · paste answer</button>
+          <button data-research-mode="file" style={S.chip(mode === 'file')} onClick={() => setMode('file')}>From a file</button>
+          <button data-research-mode="drafts" style={S.chip(mode === 'drafts')} onClick={() => setMode('drafts')}>Drafts</button>
           <button style={S.btn} onClick={onClose}>Close</button>
         </div>
         <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -116,7 +143,33 @@ function Panel({ onClose }) {
             <span style={{ ...S.lab, paddingTop: 8 }}>URLs</span>
             <textarea value={urls} onChange={e => setUrls(e.target.value)} placeholder="Optional: one https:// URL per line (advisories, articles, vendor reports). They are read on the server." style={{ ...S.ta, minHeight: 48, flex: 1 }} />
           </div>
-          {mode === 'auto' ? (
+          {mode === 'file' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={S.lab}>Drop a document in: .eml (headers, links, attachments hashed), .pdf (text layer), .txt / .md / .html / .csv / .json. The server proposes cards; nothing lands on the board until you import.</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <input ref={fileRef} data-research-file="1" type="file" accept=".eml,.pdf,.txt,.md,.html,.htm,.csv,.json,message/rfc822,application/pdf,text/*" onChange={e => ingestFile(e.target.files && e.target.files[0])} style={{ font: F.mono, color: '#d8d3c7' }} />
+                <span style={{ font: F.mono, color: '#8d877b' }}>{busy || msg}</span>
+              </div>
+            </div>
+          ) : mode === 'drafts' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={S.lab}>Drafts are written from the whole case (notes, exhibits, threads, hypotheses) by the configured model, or by the built-in rules engine when none is. Read before you send.</div>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                {[['summary', 'Executive summary → notes'], ['takedown', 'Takedown / abuse letter'], ['rfi', 'Request for information'], ['hypotheses', 'Competing hypotheses → ACH']].map(([k, l]) => <button key={k} data-draft-kind={k} style={S.chip(draftKind === k)} onClick={() => { setDraftKind(k); setDraft(null); }}>{l}</button>)}
+                {draftKind === 'takedown' || draftKind === 'rfi' ? <input data-draft-to="1" value={draftTo} onChange={e => setDraftTo(e.target.value)} placeholder="To: abuse desk, registrar, partner…" style={{ ...S.input, flex: '1 1 220px' }} /> : null}
+                <button data-draft-run="1" style={S.red} onClick={makeDraft} disabled={!!busy}>{busy ? 'Working…' : 'Draft it'}</button>
+                <span style={{ font: F.mono, color: '#8d877b' }}>{busy || msg}</span>
+              </div>
+              {draft ? <div data-draft-result="1" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ font: F.mono, color: '#8d877b' }}>engine: {draft.engine}</div>
+                {draft.kind === 'hypotheses' ? <div>{draft.hypotheses.map((h, i) => <div key={i} style={{ padding: '6px 8px', borderBottom: '1px solid #1c1c20', font: F.ui }}><div style={{ color: '#f3f1ea' }}>{h.text}</div><div style={{ font: F.mono, color: '#8d877b' }}>{h.why}</div></div>)}</div> : <textarea readOnly value={draft.text} style={{ ...S.ta, minHeight: 220 }} onFocus={e => e.target.select()} />}
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button data-draft-apply="1" style={S.red} onClick={applyDraft}>{draft.kind === 'hypotheses' ? 'Add to the ACH grid' : draft.kind === 'summary' ? 'Append to case notes' : 'Open as a letter'}</button>
+                  {draft.text ? <button style={S.btn} onClick={() => { navigator.clipboard && navigator.clipboard.writeText(draft.text); setMsg('Copied.'); }}>Copy</button> : null}
+                </div>
+              </div> : null}
+            </div>
+          ) : mode === 'auto' ? (
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <button data-research-run="1" style={S.red} onClick={run} disabled={!!busy}>{busy ? 'Working…' : 'Research and propose cards'}</button>
               <span style={{ font: F.mono, color: '#8d877b' }}>{busy || msg}</span>
