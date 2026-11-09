@@ -91,7 +91,7 @@ The first script writes `docs/screenshots/*.png` and `docs/feature-check.json`; 
 
 ## Notes
 
-- "Analyse with Claude", translate, stance and entities go through the server's AI gateway: the Anthropic API when `ANTHROPIC_API_KEY` is set, a built-in rule-based engine otherwise.
+- "Analyse with Claude", translate, stance and entities go through the server's AI gateway, which can chain Anthropic, OpenAI, Azure OpenAI, Gemini, Cohere, Mistral, Groq, OpenRouter, DeepSeek, xAI, Together, Perplexity, Fireworks, Ollama, LM Studio or any OpenAI-compatible endpoint, falling back in order and ending with a built-in rule-based engine (see `docs/BACKEND.md`, AI providers).
 - OSINT sources that refuse browser requests are fetched through the server's allow-listed proxy; anything not on the list stays a launcher link.
 - On a brand-new server the first board opened seeds the two sample cases ("Operation Lantern", "Binance $6.3B heist"); later users start with a blank case.
 - The feature guide, tutorial and SafePay case documents were captured on version 1 of the board; every function shown there is still present in version 2.

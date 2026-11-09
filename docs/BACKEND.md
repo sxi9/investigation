@@ -29,7 +29,7 @@ Development with hot reload: run the server as above and `npm run dev` in the ro
 | `CIB_MAX_FILE_MB` | `50` | Largest media file accepted by the file store. |
 | `CIB_PROXY_ALLOW` | see `server/src/config.js` | Comma-separated hosts the enrichment proxy may reach. |
 | `THREATFOX_AUTH_KEY`, `VT_API_KEY`, `SHODAN_API_KEY`, `GREYNOISE_API_KEY`, `ABUSEIPDB_API_KEY`, `URLSCAN_API_KEY` | unset | Provider keys the proxy attaches server-side. A host is added to the proxy allow-list only when its key is set; the browser never sees the key. abuse.ch (ThreatFox, URLhaus, MalwareBazaar) now requires an `Auth-Key` even for free use. |
-| `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | unset, `claude-sonnet-5-5` | When set, "Analyse with Claude", translate, stance and entity extraction use the model. When unset, the built-in rule-based engine answers (see below). |
+| AI provider keys (see **AI providers** below) | unset | Any number of model providers; they are tried in order and the built-in engine answers when none is configured or all fail. |
 
 ## What is secured, and how
 
@@ -42,7 +42,7 @@ Development with hot reload: run the server as above and `npm run dev` in the ro
 - **Audit**: append-only table where each row hashes the previous one; `/api/health` reports whether the chain verifies. Sign-ins, failures, lockouts, user changes, resets, case creation, deletion and stale overwrites are recorded with the client IP.
 - **Files**: content-addressed (SHA-256) immutable store under `CIB_DATA_DIR/files`, written once, served only to signed-in accounts with the hash in a response header. Sizes are capped.
 - **Enrichment proxy**: HTTPS only, explicit host allow-list, no credentials in URLs, DNS resolution checked against private ranges before each request (SSRF guard), 12 s timeout, 4 MB cap, rate-limited, accounts only. Replaces the third-party `allorigins.win` proxy the design used.
-- **AI gateway**: the browser never holds a model key. Prompts go to the server, which calls Anthropic only if a key is configured.
+- **AI gateway**: the browser never holds a model key. Prompts go to the server, which calls whichever providers are configured, in order, and falls back to the built-in engine.
 
 ### Not done here, and worth knowing
 
@@ -79,6 +79,35 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 - `store.js` pulls the user's cases into the pages' `localStorage` documents before render, intercepts writes to those keys, pushes changed cases (debounced, per case, with revisions) and applies other people's changes from the event stream unless the same case has unsaved local edits.
 - `claude.js` makes `window.claude.complete` call the gateway. `proxy.js` sends CORS-blocked hosts through `/api/proxy`. Media `putBlob`/`getBlob` are mirrored to `/api/files`.
 
+## AI providers
+
+The gateway behind `POST /api/ai/complete` (and therefore behind "Analyse with Claude", translate, stance and entities) can use as many model providers as you give it keys for. They are tried in order; a provider that fails (bad key, quota, timeout, empty answer) is skipped and the next one answers, with the failure recorded in the audit line and returned to the client as `tried`. A provider that failed is rested for `AI_COOLDOWN_S` (default 120 s) unless the failure was a 429. Identical prompts are served from a short cache (`AI_CACHE_TTL_S`, default 600 s). The built-in rule engine is always last, so the buttons never dead-end.
+
+| Provider | Configure | Default model (override with the `_MODEL` variable) |
+| --- | --- | --- |
+| Anthropic | `ANTHROPIC_API_KEY` | `ANTHROPIC_MODEL` = `claude-sonnet-5-5` |
+| OpenAI | `OPENAI_API_KEY` (`OPENAI_BASE_URL` optional) | `OPENAI_MODEL` = `gpt-4.1-mini` |
+| Azure OpenAI | `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT` (`AZURE_OPENAI_API_VERSION`) | the deployment |
+| Google Gemini | `GEMINI_API_KEY` or `GOOGLE_API_KEY` | `GEMINI_MODEL` = `gemini-2.5-flash` |
+| Cohere | `COHERE_API_KEY` | `COHERE_MODEL` = `command-a-03-2025` |
+| Mistral | `MISTRAL_API_KEY` | `MISTRAL_MODEL` = `mistral-small-latest` |
+| Groq | `GROQ_API_KEY` | `GROQ_MODEL` = `llama-3.3-70b-versatile` |
+| OpenRouter (any model behind it) | `OPENROUTER_API_KEY` (`OPENROUTER_SITE`) | `OPENROUTER_MODEL` = `anthropic/claude-sonnet-4` |
+| DeepSeek | `DEEPSEEK_API_KEY` | `DEEPSEEK_MODEL` = `deepseek-chat` |
+| xAI | `XAI_API_KEY` | `XAI_MODEL` = `grok-3-mini` |
+| Together | `TOGETHER_API_KEY` | `TOGETHER_MODEL` = `meta-llama/Llama-3.3-70B-Instruct-Turbo` |
+| Perplexity | `PERPLEXITY_API_KEY` | `PERPLEXITY_MODEL` = `sonar` |
+| Fireworks | `FIREWORKS_API_KEY` | `FIREWORKS_MODEL` = `accounts/fireworks/models/llama-v3p3-70b-instruct` |
+| Ollama (local, no key) | `OLLAMA_MODEL` (`OLLAMA_BASE_URL` = `http://127.0.0.1:11434`) | the model you pulled |
+| LM Studio (local, no key) | `LMSTUDIO_BASE_URL` (`LMSTUDIO_MODEL`) | loaded model |
+| Any OpenAI-compatible endpoint | `AI_CUSTOM_BASE_URL`, `AI_CUSTOM_API_KEY`, `AI_CUSTOM_MODEL`, `AI_CUSTOM_NAME` | as given |
+
+Order: `AI_PROVIDERS=gemini,anthropic,ollama` puts those first (others follow unless `AI_PROVIDERS_STRICT=1`); `AI_DISABLED=openai` removes one; `AI_TIMEOUT_MS` (default 60000) bounds each call. Model names change often; the defaults are a starting point, not a guarantee that a given account has access to them.
+
+Endpoints: `GET /api/ai/providers` lists the chain (admins also see last status, error and latency); `POST /api/ai/providers/:id/test` (admin) sends a one-word health check through one provider; `PATCH /api/ai/providers/:id` with `{"disabled": true|false}` toggles it at runtime. A request may pin a provider with `"provider": "gemini"`. In the browser `window.claude.preferred = 'gemini'` pins it for that tab, and a toast says which engine answered whenever the gateway fell back.
+
+Keys never leave the server; the pages only ever call `/api/ai/complete`.
+
 ## The built-in analyst engine
 
 Without a model key the gateway still answers the board's four prompts, from rules, and says so in its text:
@@ -88,7 +117,7 @@ Without a model key the gateway still answers the board's four prompts, from rul
 - **Stance**: cue-word sentiment and support/oppose phrases, with the most repeated capitalised phrase as the narrative.
 - **Translate**: language detection by script and stop-words; the text is returned unchanged with a note, since no translation model is available offline.
 
-Set `ANTHROPIC_API_KEY` to replace all four with the model.
+Configure any provider above to replace all four with a model.
 
 ## Tests
 

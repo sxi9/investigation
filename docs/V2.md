@@ -16,7 +16,7 @@ The second design package added three pages around the board and a long list of 
 - **Roles are enforced where it matters.** Admin, analyst, reviewer and viewer, with per-user case scope and a separate TLP:RED grant, are checked on every request. A viewer's edit is rejected by the server, not just hidden in the UI; a hidden case is a 404.
 - **Cases live on the server.** The pages still read and write their local store, but it is filled from the server before render, every change is pushed per case with a revision, and other people's changes arrive over a live event stream. Two analysts can work on the same board.
 - **OSINT works for more sources.** Hosts that refuse browser requests (crt.sh, urlscan, ThreatFox, URLhaus, MalwareBazaar, Wayback, Nominatim, Reddit, …) are fetched by the server through an allow-listed proxy with an SSRF guard; the third-party proxy the design used is gone.
-- **The AI buttons work without a key.** "Analyse with Claude", translate, stance and entities go to the server's gateway, which uses the Anthropic API when `ANTHROPIC_API_KEY` is set and a built-in rule-based engine otherwise. The engine labels its answers.
+- **The AI buttons work with any provider, or none.** "Analyse with Claude", translate, stance and entities go to the server's gateway, which tries the configured providers in order (Anthropic, OpenAI, Azure, Gemini, Cohere, Mistral, Groq, OpenRouter, DeepSeek, xAI, Together, Perplexity, Fireworks, Ollama, LM Studio, custom) and falls back to a built-in rule-based engine that labels its answers.
 - **Media is kept.** Video, audio, PDF and image blobs are mirrored to a content-addressed file store, so a case opened on another machine still has its files.
 
 ## Walkthrough

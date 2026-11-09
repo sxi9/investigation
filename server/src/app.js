@@ -12,7 +12,7 @@ import { store } from './store.js';
 import { GUEST, canSee, isAdmin } from './acl.js';
 import { audit, verifyAuditChain } from './crypto.js';
 import { proxyFetch } from './proxy.js';
-import { complete } from './ai/index.js';
+import { complete, listProviders, setDisabled, chainLabel } from './ai/index.js';
 import { subscribe, broadcast, keepAlive } from './events.js';
 
 const COOKIE = 'cib_session';
@@ -74,10 +74,10 @@ export function buildApp(opts = {}) {
   const publicUser = (u) => u && ({ id: u.id, name: u.name, role: u.role, tlpRed: !!u.tlpRed, cases: u.cases, mustChange: !!u.mustChange, guest: !!u.guest, createdAt: u.createdAt, lastLogin: u.lastLogin, locked: !!u.locked });
 
   // ---- health
-  app.get('/api/health', async () => ({ ok: true, users: users.count(), audit: verifyAuditChain(), ai: config.anthropicKey ? config.anthropicModel : 'local' }));
+  app.get('/api/health', async () => ({ ok: true, users: users.count(), audit: verifyAuditChain(), ai: chainLabel() }));
 
   // ---- auth
-  app.get('/api/auth/session', async (req) => ({ user: publicUser(req.user), hasUsers: users.count() > 0, hasPublic: store.hasPublic(), ai: config.anthropicKey ? 'model' : 'local' }));
+  app.get('/api/auth/session', async (req) => ({ user: publicUser(req.user), hasUsers: users.count() > 0, hasPublic: store.hasPublic(), ai: chainLabel() }));
   app.post('/api/auth/setup', { config: { rateLimit: { max: 10, timeWindow: '15 minutes' } } }, async (req, reply) => {
     if (users.count() > 0) throw err('Setup is already done', 409);
     const { name, pass } = req.body || {};
@@ -142,10 +142,18 @@ export function buildApp(opts = {}) {
   // ---- AI gateway
   app.post('/api/ai/complete', { config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req) => {
     const u = needAccount(req); const b = req.body || {};
-    const out = await complete({ system: b.system, messages: b.messages, max_tokens: b.max_tokens });
-    audit(u.name, 'AI request (' + out.engine + ')', ip(req));
+    const out = await complete({ system: b.system, messages: b.messages, max_tokens: b.max_tokens }, { provider: typeof b.provider === 'string' ? b.provider : undefined });
+    if (!out.cached) audit(u.name, 'AI request (' + out.engine + (out.tried.length ? '; fell through ' + out.tried.map(t => t.id).join(',') : '') + ')', ip(req));
     return out;
   });
+  app.get('/api/ai/providers', async (req) => { needAccount(req); const full = isAdmin(req.user); return { chain: chainLabel(), providers: listProviders().map(p => full ? p : { id: p.id, name: p.name, model: p.model, configured: p.configured, disabled: p.disabled, ok: p.ok }) }; });
+  app.post('/api/ai/providers/:id/test', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } }, async (req) => {
+    const me = needAdmin(req); const t0 = Date.now();
+    const out = await complete({ system: 'Reply with the single word OK.', messages: [{ role: 'user', content: 'Health check from the Cyber Investigation Board at ' + new Date().toISOString() }], max_tokens: 64 }, { provider: req.params.id, timeoutMs: 20000 });
+    audit(me.name, 'AI provider test: ' + req.params.id + ' ok', ip(req));
+    return { ok: true, engine: out.engine, latencyMs: Date.now() - t0, sample: String(out.text).slice(0, 80) };
+  });
+  app.patch('/api/ai/providers/:id', async (req) => { const me = needAdmin(req); const b = req.body || {}; if (typeof b.disabled !== 'boolean') throw err('disabled: boolean required'); setDisabled(req.params.id, b.disabled); audit(me.name, (b.disabled ? 'disabled' : 'enabled') + ' AI provider ' + req.params.id, ip(req)); return { chain: chainLabel() }; });
 
   // ---- live events
   app.get('/api/events', async (req, reply) => {
