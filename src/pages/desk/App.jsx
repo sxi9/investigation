@@ -543,7 +543,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,[role=button]:focu
                     {"USERS & ACCESS"}
                   </span>
                   <span style={{font: "11px 'IBM Plex Mono',monospace", color: `${v.T?.textMuted ?? ""}`}}>
-                    {"browser-local accounts · the production build uses your identity provider"}
+                    {"server accounts · scrypt-hashed passwords · every change audited"}
                   </span>
                   <span style={{flex: "1"}} />
                   <button onClick={v.closeAdmin} style={{height: "26px", padding: "0 10px", border: `1px solid ${v.T?.border ?? ""}`, background: `${v.T?.btn ?? ""}`, color: `${v.T?.text2 ?? ""}`, font: "11px 'Archivo Narrow',sans-serif", letterSpacing: ".12em", textTransform: "uppercase", cursor: "pointer"}}>

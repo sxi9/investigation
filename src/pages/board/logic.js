@@ -1,5 +1,5 @@
 // Logic for the board page, carried over from design/Investigation Board.dc.html with the runtime base
-// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; desk route; desk route (bookmarklet string); server mode: an empty visible set does not re-seed the sample cases; server mode: start a blank case instead of the sample when the user has none; CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win; jget routes CORS-blocked hosts through the proxy; media blobs are mirrored to the server file store; media blobs missing locally are fetched from the server.
+// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; desk route; desk route (bookmarklet string); server mode: an empty visible set does not re-seed the sample cases; server mode: start a blank case instead of the sample when the user has none; board applies other people's changes arriving from the server; CORS proxy goes through our own allow-listed server endpoint instead of allorigins.win; jget routes CORS-blocked hosts through the proxy; media blobs are mirrored to the server file store; media blobs missing locally are fetched from the server.
 /* eslint-disable */
 import React from 'react';
 import { DCLogic } from '../../dc.js';
@@ -224,7 +224,15 @@ class Component extends DCLogic {
     };
   }
 
+  applyRemote(ev) {
+    if (!ev) return;
+    if (ev.type === 'case-deleted') { this.setState(s => { const cases = s.cases.filter(c => c.id !== ev.id); return cases.length ? { cases, activeId: s.activeId === ev.id ? cases[0].id : s.activeId, sel: s.activeId === ev.id ? null : s.sel } : {}; }); return; }
+    const c = ev.case; if (!c || !c.id) return;
+    this.setState(s => ({ cases: s.cases.some(x => x.id === c.id) ? s.cases.map(x => x.id === c.id ? Component.numbered(c) : x) : [...s.cases, Component.numbered(c)] }));
+    if (this.state.activeId === c.id && c.updatedBy) this.toast('Updated by ' + c.updatedBy);
+  }
   componentDidMount() {
+    if (window.CIBStore && window.CIBStore.onRemote) window.CIBStore.onRemote(ev => this.applyRemote(ev));
     window.addEventListener('pointermove', this.onMove);
     window.addEventListener('pointerup', this.onUp);
     window.addEventListener('keydown', this.onKey);

@@ -14,7 +14,7 @@ const PW = 'Correct-Horse-Battery-9';
   const text = (page, t) => page.getByText(t, { exact: true }).first();
   const btn = (page, n) => page.getByRole('button', { name: n, exact: true }).first();
   const boardState = (page) => page.evaluate(() => { const el = document.querySelector('#root'); const k = Object.keys(el).find(k => k.startsWith('__reactContainer')); let f = el[k]; while (f && !(f.stateNode && f.stateNode.logic)) f = f.child; const s = f && f.stateNode.logic.state; return s ? { activeId: s.activeId, cases: (s.cases || []).map(c => ({ id: c.id, number: c.number, title: c.title, items: (c.items || []).length, domain: c.domain })), sel: s.sel, screen: s.screen } : null; });
-  const api = (page, method, url, body) => page.evaluate(async ({ method, url, body }) => { const r = await fetch(url, { method, headers: { 'X-Requested-With': 'CIB', 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }); return { status: r.status, body: await r.json().catch(() => null) }; }, { method, url, body });
+  const api = (page, method, url, body) => page.evaluate(async ({ method, url, body }) => { const headers = { 'X-Requested-With': 'CIB' }; if (body !== undefined) headers['content-type'] = 'application/json'; const r = await fetch(url, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined }); return { status: r.status, body: await r.json().catch(() => null) }; }, { method, url, body });
 
   // ================= admin: first run
   const A = await mk('admin'); const a = A.page;

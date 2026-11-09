@@ -1,5 +1,5 @@
 // Logic for the desk page, carried over from design/Case Files.dc.html with the runtime base
-// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; board route.
+// class swapped for the shim in src/dc.js. Patches applied by the converter: desk/login/board routes; board route; desk re-reads the store when other people's changes arrive.
 /* eslint-disable */
 import React from 'react';
 import { DCLogic } from '../../dc.js';
@@ -46,6 +46,7 @@ class Component extends DCLogic {
     return { saved: S, locked, visits: desk.visits || {}, trash, lamp: desk.lamp || 'noir', theme: Component.THEMES[desk.theme] ? desk.theme : 'noir', sort: desk.sort || 'activity', thumbs: desk.thumbs !== false, filter: '', tlpFilter: '', drawers: desk.drawers || { active: true, review: true, published: true, archived: false }, briefOpen: true, briefHidden: false, trashOpen: false, adminOpen: false, nu: { name: '', role: 'analyst', pass: '', error: '' }, hoverCase: null, flipped: {}, opening: null, classified: false, classifiedText: '', fade: 0, renameId: null, tagId: null, savedAt: '', toast: '', quick: '', fileUnder: S.activeId || (S.cases[0] && S.cases[0].id) || '', dropOpen: false, dropItems: [], dragOver: false, strings: [] };
   }
   componentDidMount() {
+    if (window.CIBStore && window.CIBStore.onRemote) window.CIBStore.onRemote(() => this.setState({ saved: this.load() }));
     window.addEventListener('paste', this.onPaste); window.addEventListener('resize', this.measureStrings); window.addEventListener('pointerdown', this.onTouch); window.addEventListener('keydown', this.onTouch);
     const dm = String(location.hash || '').match(/drop=([^&]+)/); if (dm) { const txt = decodeURIComponent(dm[1]); history.replaceState(null, '', location.pathname + location.search); setTimeout(() => { const lines = txt.split('\n'), url = lines[0].trim(), title = (lines[1] || '').trim(); const d = this.detect(url); this.setState({ dropOpen: true, dropItems: [this.mkItem(d ? d[0] : 'link', { ...(d ? d[1] : { url }), title: title || (d && d[1].title) || '', source: 'Bookmarklet' })] }); }, 300); }
     const A = this.auth(); if (A) { const u = A.require("/"); this.user = u; if (u && !u.guest && (this.state.saved.analyst || '') !== u.name) this.upSaved(S => ({ ...S, analyst: u.name })); this.forceUpdate(); }
