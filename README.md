@@ -8,6 +8,7 @@ A noir-style investigation board for cyber intelligence work: pinned evidence ca
 - **[Worked investigation](docs/TUTORIAL.md)** — a real October 2026 campaign (vendor-themed Okta / ServiceNow vishing against e-commerce SaaS providers) built up step by step, with instructions.
 - **[Case file: SafePay ransomware](docs/CASE-SAFEPAY.md)** — a second real case (CISA advisory AA26-293A) that uses every feature: pictures on cards, OSINT on IPs / hashes / CVEs, VirusTotal and other pivots, clusters, merges, snapshots, playback, STIX round trip, encryption.
 - **[Improvements log](docs/IMPROVEMENTS.md)** — problems met while building the cases, and the features or data that would fix them.
+- **PDFs:** [CASE-SAFEPAY.pdf](docs/CASE-SAFEPAY.pdf) (the case process, one step per page), [TUTORIAL.pdf](docs/TUTORIAL.pdf), [IMPROVEMENTS.pdf](docs/IMPROVEMENTS.pdf). Rebuild any of them with `node tools/make-pdf.mjs docs/<file>.md`.
 - **[Backend specification](docs/BACKEND-SPEC.md)** — data model and API for a multi-user server behind this front end.
 - **[Verification report](docs/feature-check.json)** — the automated run that produced the screenshots, with a pass/fail line per feature.
 
