@@ -87,4 +87,14 @@ if (fs.existsSync(v4Json)) {
   v += `## Checks\n\n**${ok} of ${run.checks.length} passed** in the run that produced these screenshots.\n\n| Result | Check | Detail |\n| --- | --- | --- |\n` + run.checks.map(x => `| ${x.ok ? 'PASS' : 'FAIL'} | ${x.name} | ${(x.detail || '').replace(/\|/g, '\\|')} |`).join('\n') + '\n';
   fs.writeFileSync(path.join(docs, 'V4.md'), v);
 }
+// ---- V5.md
+const v5Json = path.join(docs, 'v5', 'v5-run.json');
+if (fs.existsSync(v5Json)) {
+  const run = JSON.parse(fs.readFileSync(v5Json, 'utf8'));
+  let v = fs.readFileSync(path.join(root, 'tools', 'v5-intro.md'), 'utf8') + '\n';
+  for (const s of run.shots) v += section(s, 'v5');
+  const ok = run.checks.filter(x => x.ok).length;
+  v += `## Checks\n\n**${ok} of ${run.checks.length} passed** in the run that produced these screenshots.\n\n| Result | Check | Detail |\n| --- | --- | --- |\n` + run.checks.map(x => `| ${x.ok ? 'PASS' : 'FAIL'} | ${x.name} | ${(x.detail || '').replace(/\|/g, '\\|')} |`).join('\n') + '\n';
+  fs.writeFileSync(path.join(docs, 'V5.md'), v);
+}
 console.log('wrote docs');

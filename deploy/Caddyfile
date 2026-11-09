@@ -1,0 +1,13 @@
+# TLS from Let's Encrypt for CIB_DOMAIN; for a LAN hostname set CIB_DOMAIN to "board.local" and add `tls internal`.
+{$CIB_DOMAIN:localhost} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+	reverse_proxy board:8787 {
+		flush_interval -1
+	}
+}

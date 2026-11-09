@@ -1,0 +1,33 @@
+# One command deployment: the board behind Caddy with automatic TLS.
+#   cp .env.example .env   # set CIB_DOMAIN (and any provider keys)
+#   docker compose up -d
+services:
+  board:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - CIB_SECURE_COOKIES=1
+      - CIB_TRUST_PROXY=1
+    volumes:
+      - cib-data:/data
+    expose:
+      - "8787"
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file: .env
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - board
+volumes:
+  cib-data:
+  caddy-data:
+  caddy-config:

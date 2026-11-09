@@ -18,6 +18,9 @@ import { subscribe, broadcast, keepAlive, setClientCase } from './events.js';
 import { setPresence, clearPresence, listPresence, notifications, startSchedulers } from './collab.js';
 import { enrichIndicator, enrichKinds } from './enrich.js';
 import { loadAttack, refreshAttack } from './attack.js';
+import { backupNow, listBackups, startBackupScheduler } from './backup.js';
+import { oidcConfig, startUrl, exchange, identityFrom } from './oidc.js';
+import QRCode from 'qrcode';
 import { actors } from './actors.js';
 import { watchers, runWatcher, startWatcherScheduler, WATCH_INTERVALS, WATCH_CHECKS } from './watchers.js';
 
@@ -77,13 +80,13 @@ export function buildApp(opts = {}) {
   const need = (req) => { if (!req.user) throw err('Sign in first', 401); return req.user; };
   const needAccount = (req) => { const u = need(req); if (u.guest) throw err('Guests cannot do that', 403); return u; };
   const needAdmin = (req) => { const u = needAccount(req); if (!isAdmin(u)) throw err('Admins only', 403); return u; };
-  const publicUser = (u) => u && ({ id: u.id, name: u.name, role: u.role, tlpRed: !!u.tlpRed, cases: u.cases, mustChange: !!u.mustChange, guest: !!u.guest, createdAt: u.createdAt, lastLogin: u.lastLogin, locked: !!u.locked });
+  const publicUser = (u) => u && ({ id: u.id, name: u.name, role: u.role, tlpRed: !!u.tlpRed, cases: u.cases, mustChange: !!u.mustChange, guest: !!u.guest, createdAt: u.createdAt, lastLogin: u.lastLogin, locked: !!u.locked, totp: !!u.totp, sso: !!u.sso, email: u.email || '' });
 
   // ---- health
   app.get('/api/health', async () => ({ ok: true, users: users.count(), audit: verifyAuditChain(), ai: chainLabel() }));
 
   // ---- auth
-  app.get('/api/auth/session', async (req) => ({ user: publicUser(req.user), hasUsers: users.count() > 0, hasPublic: store.hasPublic(), ai: chainLabel() }));
+  app.get('/api/auth/session', async (req) => { const o = oidcConfig(); return { user: publicUser(req.user), hasUsers: users.count() > 0, hasPublic: store.hasPublic(), ai: chainLabel(), sso: o ? { label: o.label, start: '/api/auth/oidc/start' } : null }; });
   app.post('/api/auth/setup', { config: { rateLimit: { max: 10, timeWindow: '15 minutes' } } }, async (req, reply) => {
     if (users.count() > 0) throw err('Setup is already done', 409);
     const { name, pass } = req.body || {};
@@ -94,9 +97,36 @@ export function buildApp(opts = {}) {
   });
   app.post('/api/auth/login', { config: { rateLimit: { max: 20, timeWindow: '15 minutes' } } }, async (req, reply) => {
     const { name, pass } = req.body || {};
-    const { user, token } = users.login(name, pass, ip(req), req.headers['user-agent']);
-    reply.setCookie(COOKIE, token, cookieOpts());
-    return { user: publicUser(user) };
+    const r = users.login(name, pass, ip(req), req.headers['user-agent']);
+    if (r.totpRequired) return { totpRequired: true, challenge: r.challenge };
+    reply.setCookie(COOKIE, r.token, cookieOpts());
+    return { user: publicUser(r.user) };
+  });
+  app.post('/api/auth/login/totp', { config: { rateLimit: { max: 30, timeWindow: '15 minutes' } } }, async (req, reply) => {
+    const { challenge, code } = req.body || {}; const r = users.finishTotp(challenge, code, ip(req), req.headers['user-agent']);
+    reply.setCookie(COOKIE, r.token, cookieOpts()); return { user: publicUser(r.user) };
+  });
+  app.post('/api/auth/totp/setup', async (req) => { const u = needAccount(req); const r = users.totpSetup(u.id); let svg = ''; try { svg = await QRCode.toString(r.uri, { type: 'svg', margin: 1, width: 180 }); } catch (e) {} return { ...r, svg }; });
+  app.post('/api/auth/totp/confirm', async (req) => { const u = needAccount(req); users.totpConfirm(u.id, (req.body || {}).code, ip(req)); return { ok: true }; });
+  app.post('/api/auth/totp/disable', async (req) => { const u = needAccount(req); users.totpDisable(u.id, (req.body || {}).pass || '', ip(req)); return { ok: true }; });
+  app.post('/api/users/:id/totp/disable', async (req) => { const me = needAdmin(req); users.totpDisable(req.params.id, null, ip(req), me.name); return { ok: true }; });
+  // ---- OIDC single sign-on
+  const originOf = (req) => (config.secureCookies ? 'https' : (req.headers['x-forwarded-proto'] || req.protocol || 'http')) + '://' + req.headers.host;
+  app.get('/api/auth/oidc/start', { config: { rateLimit: { max: 30, timeWindow: '15 minutes' } } }, async (req, reply) => {
+    const { url, state, nonce, verifier } = await startUrl(originOf(req));
+    reply.setCookie('cib_oidc', JSON.stringify({ state, nonce, verifier, next: String(req.query.next || '/desk.html').slice(0, 200) }), { path: '/api/auth/oidc', httpOnly: true, sameSite: 'lax', secure: config.secureCookies, maxAge: 600 });
+    return reply.redirect(url);
+  });
+  app.get('/api/auth/oidc/callback', async (req, reply) => {
+    let st = null; try { st = JSON.parse(req.cookies.cib_oidc || 'null'); } catch (e) {}
+    reply.clearCookie('cib_oidc', { path: '/api/auth/oidc' });
+    if (!st || !req.query.state || req.query.state !== st.state) throw err('SSO state mismatch; start again', 400);
+    if (req.query.error) throw err('SSO refused: ' + req.query.error, 401);
+    const tokens = await exchange(String(req.query.code || ''), st.verifier, originOf(req));
+    const identity = await identityFrom(tokens, st.nonce);
+    const r = users.ssoLogin(identity, ip(req), req.headers['user-agent'], oidcConfig().defaultRole);
+    reply.setCookie(COOKIE, r.token, cookieOpts());
+    return reply.redirect(/^\/[a-z0-9._-]*$/i.test(st.next) ? st.next : '/desk.html');
   });
   app.post('/api/auth/guest', { config: { rateLimit: { max: 30, timeWindow: '15 minutes' } } }, async (req, reply) => {
     if (!store.hasPublic()) throw err('No public case files', 404);
@@ -147,7 +177,7 @@ export function buildApp(opts = {}) {
   app.get('/api/users/names', async (req) => { needAccount(req); return { users: users.list().map(x => ({ id: x.id, name: x.name, role: x.role })) }; });
 
   // ---- files (media mirror)
-  app.put('/api/files/:id', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const buf = Buffer.isBuffer(req.body) ? req.body : typeof req.body === 'string' ? Buffer.from(req.body) : Buffer.from(JSON.stringify(req.body || '')); return store.putFile(u, req.params.id, buf, req.headers['content-type'], req.headers['x-file-name']); });
+  app.put('/api/files/:id', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const buf = Buffer.isBuffer(req.body) ? req.body : typeof req.body === 'string' ? Buffer.from(req.body) : Buffer.from(JSON.stringify(req.body || '')); return store.putFile(u, req.params.id, buf, req.headers['content-type'], req.headers['x-file-name'], String(req.headers['x-case-id'] || '') || null); });
   app.get('/api/files/:id', async (req, reply) => { needAccount(req); const f = store.getFile(req.user, req.params.id); if (!f) throw err('Not found', 404); reply.header('content-type', f.mime || 'application/octet-stream').header('x-sha256', f.sha256).header('cache-control', 'private, max-age=86400').header('content-disposition', 'inline'); return reply.send(f.data); });
 
   // ---- enrichment proxy
@@ -223,6 +253,14 @@ export function buildApp(opts = {}) {
   app.delete('/api/actors/:id', async (req) => { const u = needAdmin(req); actors.remove(req.params.id, u.name); return { ok: true }; });
   app.post('/api/actors/import', async (req) => { const u = needAccount(req); if (!(u.role === 'admin' || u.role === 'analyst')) throw err('Read-only role', 403); const b = req.body; const json = Buffer.isBuffer(b) ? JSON.parse(b.toString('utf8')) : (typeof b === 'string' ? JSON.parse(b) : b); return actors.importBundle(json, u.name); });
 
+  // ---- administration: backups, retention, personal data
+  app.post('/api/admin/backup', { config: { rateLimit: { max: 6, timeWindow: '1 hour' } } }, async (req) => { const me = needAdmin(req); return backupNow(me.name); });
+  app.get('/api/admin/backups', async (req) => { needAdmin(req); return { backups: listBackups() }; });
+  app.post('/api/admin/purge', async (req) => { const me = needAdmin(req); const d = Number((req.body || {}).days); const n = store.purgeDeleted(Number.isFinite(d) && (req.body || {}).days !== undefined && (req.body || {}).days !== '' ? Math.max(0, d) : config.retentionDays); audit(me.name, 'retention purge run: ' + n + ' cases', ip(req)); return { purged: n }; });
+  app.get('/api/admin/person-data', async (req) => { const me = needAdmin(req); audit(me.name, 'personal-data export for "' + String(req.query.name || '').slice(0, 80) + '"', ip(req)); return store.personData(req.query.name); });
+  app.get('/api/admin/holds', async (req) => { const me = needAdmin(req); return { cases: store.listHolds(me) }; });
+  app.post('/api/admin/holds/:id', async (req) => { const me = needAdmin(req); const c = store.setLegalHold(me, req.params.id, !!(req.body || {}).on, me.name, ip(req)); broadcast({ type: 'case', id: c.id, rev: c.rev, by: me.name }, { id: c.id, tlp: c.tlp, public: !!c.public }, null); return { case: { id: c.id, legalHold: !!c.legalHold, rev: c.rev } }; });
+
   // ---- live events
   app.get('/api/events', async (req, reply) => {
     const u = need(req);
@@ -232,7 +270,8 @@ export function buildApp(opts = {}) {
     await new Promise(res => reply.raw.on('close', res));
     return reply;
   });
-  keepAlive(); startSchedulers(); startWatcherScheduler();
+  keepAlive(); startSchedulers(); startWatcherScheduler(); startBackupScheduler();
+  const purge = setInterval(() => { try { store.purgeDeleted(config.retentionDays); } catch (e) {} }, 6 * 3600e3); purge.unref();
 
   // ---- static site (the built pages) when dist exists
   if (fs.existsSync(path.join(config.distDir, 'index.html'))) {

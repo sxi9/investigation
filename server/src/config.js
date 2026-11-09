@@ -23,7 +23,8 @@ export const config = {
   anthropicKey: env.ANTHROPIC_API_KEY || '',
   anthropicModel: env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
   trustProxy: env.CIB_TRUST_PROXY === '1',
-  webhookUrl: env.CIB_WEBHOOK_URL || '', // default webhook for watcher changes (per-watcher URLs override)
+  webhookUrl: env.CIB_WEBHOOK_URL || '',
+  retentionDays: Number(env.CIB_RETENTION_DAYS || 30), // default webhook for watcher changes (per-watcher URLs override)
   // Provider API keys the proxy attaches server-side (the browser never sees them). Hosts are added to the
   // allow-list only when their key is configured.
   providerKeys: {

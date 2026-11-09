@@ -8,6 +8,7 @@ import { audit, sha256, uid } from './crypto.js';
 import { users } from './users.js';
 import { mergeCase } from './merge.js';
 import { revisions, afterCaseWrite, publishAllowed } from './collab.js';
+try { db.exec('ALTER TABLE files ADD COLUMN case_id TEXT'); } catch (e) {}
 
 const q = {
   all: db.prepare('SELECT * FROM cases WHERE deleted_at IS NULL'),
@@ -19,7 +20,10 @@ const q = {
   numTaken: db.prepare('SELECT id FROM cases WHERE number = ? AND id != ? AND deleted_at IS NULL'),
   pref: db.prepare('SELECT doc FROM prefs WHERE user_id = ? AND kind = ?'),
   prefUp: db.prepare('INSERT INTO prefs (user_id, kind, doc, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(user_id, kind) DO UPDATE SET doc = excluded.doc, updated_at = excluded.updated_at'),
-  fIns: db.prepare('INSERT OR REPLACE INTO files (id, owner_id, sha256, size, mime, name, created_at, path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'),
+  fIns: db.prepare('INSERT OR REPLACE INTO files (id, owner_id, sha256, size, mime, name, created_at, path, case_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'),
+  purge: db.prepare('SELECT id, number, title, doc FROM cases WHERE deleted_at IS NOT NULL AND deleted_at <= ?'),
+  hardDel: db.prepare('DELETE FROM cases WHERE id = ?'),
+  allDocs: db.prepare('SELECT id, number, title, tlp, public, doc FROM cases WHERE deleted_at IS NULL'),
   fGet: db.prepare('SELECT * FROM files WHERE id = ?'),
   anyPublic: db.prepare("SELECT 1 FROM cases WHERE public = 1 AND deleted_at IS NULL AND tlp IN ('', 'clear', 'green') LIMIT 1"),
 };
@@ -68,6 +72,7 @@ export const store = {
           if (!canReview(u, em) || changed.some(k => !REVIEW_FIELDS.has(k))) { rejected.push({ id: c.id, reason: 'read-only for your role' }); continue; }
         }
         if ((m.tlp === 'red' || m.tlp === 'amber+strict') && !u.tlpRed && !isAdmin(u)) { rejected.push({ id: c.id, reason: 'no TLP:RED grant' }); continue; }
+        if (!!c.legalHold !== !!old.legalHold && !isAdmin(u)) { rejected.push({ id: c.id, reason: 'only an admin can set or clear a legal hold' }); continue; }
         let incoming = c, merged = false;
         if (typeof c.rev === 'number' && c.rev < existing.rev) {
           // stale write: three-way merge against the revision the client started from, so both analysts' work survives
@@ -88,6 +93,18 @@ export const store = {
     } catch (e) { rollback.run(); throw e; }
     return { accepted, rejected };
   },
+  // legal hold (admin): the case cannot be deleted or purged while it is held
+  setLegalHold(u, id, on, by, ip) {
+    if (!isAdmin(u)) throw err('Admins only', 403);
+    const r = q.one.get(id); if (!r || r.deleted_at) throw err('Not found', 404);
+    const doc = JSON.parse(r.doc); if (!!doc.legalHold === !!on) return withRev(r);
+    revisions.record(id, r.rev, r.doc, r.updated_by);
+    const now = new Date().toISOString(); const next = { ...doc, legalHold: !!on, legalHoldBy: on ? by : undefined, legalHoldAt: on ? now : undefined, log: [...(doc.log || []), { t: now, m: (on ? 'Legal hold set by ' : 'Legal hold cleared by ') + by }] };
+    const m = docMeta(next); q.upd.run(r.number, m.title, m.tlp, m.pub, m.archived, m.review, now, by, JSON.stringify(next), id);
+    audit(by, (on ? 'set legal hold on ' : 'cleared legal hold on ') + r.number, ip);
+    return withRev(q.one.get(id));
+  },
+  listHolds(u) { if (!isAdmin(u)) throw err('Admins only', 403); return q.allDocs.all().map(r => ({ id: r.id, number: r.number, title: r.title, tlp: r.tlp, legalHold: !!JSON.parse(r.doc).legalHold })); },
   restoreRevision(u, id, rev, by, ip) {
     const r = q.one.get(id); if (!r || r.deleted_at || !canEdit(u, meta(r))) throw err('Not found', 404);
     const doc = revisions.get(id, rev); if (!doc) throw err('No such revision', 404);
@@ -104,6 +121,7 @@ export const store = {
     for (const id of ids || []) {
       const r = q.one.get(id); if (!r || r.deleted_at) continue;
       if (!canEdit(u, meta(r))) continue;
+      if (JSON.parse(r.doc).legalHold) { audit(by, 'refused to delete ' + r.number + ': legal hold', ip); continue; }
       q.del.run(new Date().toISOString(), by, id); audit(by, 'deleted ' + r.number + ' — ' + r.title + ' (30-day retention)', ip); out.push(id);
     }
     return out;
@@ -111,15 +129,33 @@ export const store = {
   getPref(u, kind) { const r = q.pref.get(u.id, kind); return r ? JSON.parse(r.doc) : null; },
   setPref(u, kind, doc) { const s = JSON.stringify(doc ?? {}); if (s.length > 2e6) throw err('preferences too large'); q.prefUp.run(u.id, kind, s, new Date().toISOString()); },
   // ---- files
-  putFile(u, id, buf, mime, name) {
+  putFile(u, id, buf, mime, name, caseId) {
     if (!/^[A-Za-z0-9_.-]{1,80}$/.test(id)) throw err('bad file id');
     if (buf.length > config.maxFileBytes) throw err('file too large', 413);
     const dir = path.join(config.dataDir, 'files'); fs.mkdirSync(dir, { recursive: true });
     const hash = sha256(buf); const p = path.join(dir, hash);
     if (!fs.existsSync(p)) fs.writeFileSync(p, buf, { flag: 'wx' }); // content-addressed, immutable
-    q.fIns.run(id, u.id, hash, buf.length, String(mime || 'application/octet-stream').slice(0, 100), String(name || '').slice(0, 200), new Date().toISOString(), p);
+    if (caseId) { const c = q.one.get(caseId); if (!c || !canEdit(u, meta(c))) throw err('Not found', 404); }
+    q.fIns.run(id, u.id, hash, buf.length, String(mime || 'application/octet-stream').slice(0, 100), String(name || '').slice(0, 200), new Date().toISOString(), p, caseId || null);
     audit(u.name, 'stored file ' + id + ' sha256:' + hash.slice(0, 16) + '… (' + buf.length + ' bytes)');
     return { id, sha256: hash, size: buf.length };
   },
-  getFile(u, id) { const r = q.fGet.get(id); if (!r) return null; return { ...r, data: fs.readFileSync(r.path) }; },
+  getFile(u, id) { const r = q.fGet.get(id); if (!r) return null; if (r.case_id) { const c = q.one.get(r.case_id); if (!c || c.deleted_at || !canSee(u, meta(c))) return null; } return { ...r, data: fs.readFileSync(r.path) }; },
+  // retention: hard-delete soft-deleted cases after CIB_RETENTION_DAYS unless on legal hold
+  purgeDeleted(days) {
+    const cutoff = new Date(Date.now() - days * 86400e3).toISOString(); let n = 0;
+    for (const r of q.purge.all(cutoff)) { if (JSON.parse(r.doc).legalHold) continue; q.hardDel.run(r.id); audit('(retention)', 'purged ' + r.number + ' — ' + r.title + ' after ' + days + ' days in the wastebasket'); n++; }
+    return n;
+  },
+  // personal data about a named person across every case (admin): person cards, comments by them, mentions
+  personData(name) {
+    const needle = String(name || '').trim().toLowerCase(); if (!needle) throw err('name required'); const out = { name, cases: [] };
+    for (const r of q.allDocs.all()) {
+      const d = JSON.parse(r.doc); const hits = { id: r.id, number: r.number, title: r.title, tlp: r.tlp, personCards: [], comments: [], tasks: [], logLines: [] };
+      for (const it of d.items || []) { if (it.type === 'person' && String(it.title || '').toLowerCase().includes(needle)) hits.personCards.push({ id: it.id, title: it.title, body: it.body, tags: it.tags, image: !!it.image }); for (const c of it.comments || []) if (String(c.by || '').toLowerCase() === needle || String(c.text || '').toLowerCase().includes(needle)) hits.comments.push({ item: it.id, by: c.by, at: c.at, text: c.text }); for (const t of it.todo || []) if (String(t.owner || '').toLowerCase() === needle) hits.tasks.push({ item: it.id, text: t.text, due: t.due, done: !!t.done }); }
+      for (const l of d.log || []) if (String(l.m || '').toLowerCase().includes(needle)) hits.logLines.push(l);
+      if (hits.personCards.length || hits.comments.length || hits.tasks.length || hits.logLines.length) out.cases.push(hits);
+    }
+    return out;
+  },
 };

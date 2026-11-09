@@ -86,7 +86,9 @@ const S = {
     es.addEventListener('notify', (ev) => { try { const d = JSON.parse(ev.data); window.dispatchEvent(new CustomEvent('cib:notify', { detail: d.notification })); if (window.CIBAuth && d.notification) window.CIBAuth.toast(d.notification.text); } catch (e) {} });
   },
   // ---- media mirror
-  async putFile(id, blob) { await api('PUT', '/api/files/' + encodeURIComponent(id), blob, { headers: { 'content-type': blob.type || 'application/octet-stream', 'x-file-name': (blob.name || '').slice(0, 200) } }); },
+  // patch fields of a local case (used by admin actions whose server write already happened) and tell the pages
+  patchLocal(id, fields) { const local = readJson(KEY) || {}; const cases = Array.isArray(local.cases) ? local.cases : []; const i = cases.findIndex(x => x.id === id); if (i < 0) return false; cases[i] = { ...cases[i], ...fields }; rawSet(KEY, JSON.stringify({ ...local, cases })); for (const f of listeners) { try { f({ type: 'case', id, case: cases[i] }); } catch (e) {} } return true; },
+  async putFile(id, blob, caseId) { await api('PUT', '/api/files/' + encodeURIComponent(id), blob, { headers: { 'content-type': blob.type || 'application/octet-stream', 'x-file-name': (blob.name || '').slice(0, 200), ...(caseId ? { 'x-case-id': String(caseId) } : {}) } }); },
   async getFile(id) { const r = await api('GET', '/api/files/' + encodeURIComponent(id), undefined, { raw: true }); if (!r.ok) return null; return await r.blob(); },
 };
 // intercept writes to the synced keys (the page code keeps using localStorage as before)

@@ -27,6 +27,13 @@ export default function render(v) {
             {"\n    "}
             <div style={{position: "absolute", right: "8px", top: "26px", display: "flex", gap: "4px", zIndex: "2", flexWrap: "wrap", justifyContent: "flex-end", maxWidth: "60%"}}>
               {"\n      "}
+              {v.f?.legalHold ? (
+                <>
+                  <span data-hold-stamp="1" title="Legal hold: cannot be deleted or purged" style={{padding: "2px 6px", background: "#e8a71c", color: "#1b1a17", font: "9px 'Archivo Narrow',sans-serif", letterSpacing: ".12em", textTransform: "uppercase", boxShadow: "0 2px 4px rgba(0,0,0,.5)"}}>
+                    {"legal hold"}
+                  </span>
+                </>
+              ) : null}
               {v.f?.isPublic ? (
                 <>
                   <span style={{padding: "2px 6px", background: "#3fae63", color: "#fff", font: "9px 'Archivo Narrow',sans-serif", letterSpacing: ".12em", textTransform: "uppercase", boxShadow: "0 2px 4px rgba(0,0,0,.5)"}}>

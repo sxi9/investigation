@@ -1,0 +1,131 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "Y01 setup: first admin, sample case, a viewer account",
+      "detail": "2 case(s) seeded · viewer created"
+    },
+    {
+      "ok": true,
+      "name": "Y02 two-factor setup from Account → Security: QR and secret shown, code confirmed",
+      "detail": "secret 32 chars · enabled"
+    },
+    {
+      "ok": true,
+      "name": "Y03 sign-in now has a second step: password, then the authenticator code; a wrong code is refused",
+      "detail": "session issued after the right code"
+    },
+    {
+      "ok": true,
+      "name": "Y04 single sign-on button appears when an OIDC provider is configured",
+      "detail": "button \"Sign in with Entra ID\" → /api/auth/oidc/start"
+    },
+    {
+      "ok": true,
+      "name": "Y05 operations: back up now writes a SQLite snapshot and lists it",
+      "detail": "cib-2026-11-09T18-02-51-469Z.sqlite · 143360 bytes"
+    },
+    {
+      "ok": true,
+      "name": "Y06 legal hold: set from Operations, stamped on the folder, delete refused",
+      "detail": "case kept; stamp shown; delete refused"
+    },
+    {
+      "ok": true,
+      "name": "Y07 retention: a deleted case is purged on demand; held cases are skipped",
+      "detail": "1 purged · held case kept"
+    },
+    {
+      "ok": true,
+      "name": "Y08 personal data: find everything about a named person across cases and download it",
+      "detail": "\"\"LANTERN\" — unknown operator\" in 1 case(s)"
+    },
+    {
+      "ok": true,
+      "name": "Y09 per-file access: a photo in a TLP:RED case is not served to a viewer without the grant",
+      "detail": "viewer → 404 · admin → 200"
+    },
+    {
+      "ok": true,
+      "name": "Y10 users panel shows second factors and SSO per account",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "Y11 deployment files: Dockerfile, compose with Caddy TLS, env example, backup script",
+      "detail": "present (docker build itself is not run by this capture)"
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "y01-totp-setup.png",
+      "title": "Y01 · Two-factor setup",
+      "caption": "Two-factor authentication: open Account → Security and \"Set up two-factor authentication\". Scan the QR code with any TOTP app (Google Authenticator, Authy, 1Password) or type the secret, then enter the six digits the app shows and confirm. From then on every password sign-in asks for a code. Admins can remove a lost second factor from Operations.",
+      "marks": [
+        "Scan with an authenticator app",
+        "Type the six-digit code",
+        "Confirm and turn on"
+      ]
+    },
+    {
+      "file": "y02-totp-login.png",
+      "title": "Y02 · Second factor at sign-in",
+      "caption": "Signing in with a second factor: after the password the page asks for the authenticator code. The server only issues a session cookie once the code checks out; five wrong codes void the challenge and you start again. SSO accounts sign in through the identity provider button instead.",
+      "marks": [
+        "Six-digit code from the app",
+        "Verify",
+        "A wrong code is refused"
+      ]
+    },
+    {
+      "file": "y03-sso-button.png",
+      "title": "Y03 · Single sign-on",
+      "caption": "Single sign-on: with OIDC_ISSUER, OIDC_CLIENT_ID (and optionally a client secret) set on the server, the login page offers the identity provider. The flow is authorization code with PKCE; the id_token is verified against the provider's JWKS (RS256, issuer, audience, expiry, nonce). First sign-in creates the account with OIDC_DEFAULT_ROLE; OIDC_ADMINS become admins; OIDC_ALLOWED_DOMAINS restricts who may enter.",
+      "marks": [
+        "Sign in through the identity provider",
+        "Local account with password (and TOTP)"
+      ]
+    },
+    {
+      "file": "y04-operations.png",
+      "title": "Y04 · Operations",
+      "caption": "Operations (admins, Account → Operations): write a backup now and see the last ones; run the retention purge for the wastebasket; set or release legal holds per case; look up and download everything the cases hold about a named person; remove a lost second factor.",
+      "marks": [
+        "Back up now",
+        "Retention purge",
+        "Legal hold set on this case",
+        "Personal-data lookup"
+      ]
+    },
+    {
+      "file": "y05-legal-hold.png",
+      "title": "Y05 · Legal hold",
+      "caption": "A held case carries a LEGAL HOLD stamp on its folder. Delete is refused on the desk and on the board, the server ignores delete requests for it, and retention never purges it. The hold and its release are logged on the case and in the audit trail.",
+      "marks": [
+        "Legal hold stamp",
+        "Delete refused"
+      ]
+    },
+    {
+      "file": "y06-personal-data.png",
+      "title": "Y06 · Personal data export",
+      "caption": "Subject access: type a person's name; the server collects their person cards, comments by or about them, tasks assigned to them and log lines that name them, across every case. Download the JSON to answer an access or erasure request. Every lookup is written to the audit trail.",
+      "marks": [
+        "Name to look up",
+        "Download the JSON"
+      ]
+    },
+    {
+      "file": "y07-users-2fa.png",
+      "title": "Y07 · Users panel",
+      "caption": "The Users panel now shows who has a second factor and who signs in through SSO. Admins reset passwords here and remove a lost second factor from Operations; SSO-only accounts have no password to reset.",
+      "marks": [
+        "2FA on for this account"
+      ]
+    }
+  ]
+}

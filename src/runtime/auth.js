@@ -4,7 +4,7 @@ import { api } from './api.js';
 
 const ROLES = [['admin', 'Admin', 'Everything, plus users and settings'], ['analyst', 'Analyst', 'Edits the cases assigned to them'], ['reviewer', 'Reviewer', 'Reads, comments, moves files through review'], ['viewer', 'Viewer', 'Read-only']];
 const PUBLIC_TLPS = ['', 'clear', 'green'];
-const cache = { user: null, hasUsers: false, hasPublic: false, users: [], audit: [], ai: 'local', ready: false };
+const cache = { user: null, hasUsers: false, hasPublic: false, users: [], audit: [], ai: 'local', sso: null, ready: false };
 const listeners = new Set();
 const notify = () => { for (const f of listeners) { try { f(); } catch (e) {} } };
 
@@ -12,7 +12,7 @@ const A = {
   ROLES,
   get ready() { return cache.ready; },
   async init() {
-    try { const s = await api('GET', '/api/auth/session'); cache.user = s.user; cache.hasUsers = !!s.hasUsers; cache.hasPublic = !!s.hasPublic; cache.ai = s.ai || 'local'; } catch (e) { cache.user = null; }
+    try { const s = await api('GET', '/api/auth/session'); cache.user = s.user; cache.hasUsers = !!s.hasUsers; cache.hasPublic = !!s.hasPublic; cache.ai = s.ai || 'local'; cache.sso = s.sso || null; } catch (e) { cache.user = null; }
     cache.ready = true; return cache.user;
   },
   async refreshUsers() { if (!cache.user || cache.user.role !== 'admin') return; try { const r = await api('GET', '/api/users'); cache.users = r.users; cache.audit = r.audit; notify(); } catch (e) {} },
@@ -42,7 +42,13 @@ const A = {
     cache.hasUsers = true; if (first) cache.user = r.user; else cache.users = [...cache.users, r.user];
     A.refreshUsers(); notify(); return r.user;
   },
-  async login(name, pass) { const r = await api('POST', '/api/auth/login', { name, pass }); cache.user = r.user; notify(); return r.user; },
+  async login(name, pass) { const r = await api('POST', '/api/auth/login', { name, pass }); if (r.totpRequired) return { totpRequired: true, challenge: r.challenge }; cache.user = r.user; notify(); return r.user; },
+  async loginTotp(challenge, code) { const r = await api('POST', '/api/auth/login/totp', { challenge, code }); cache.user = r.user; notify(); return r.user; },
+  sso() { return cache.sso; },
+  async totpSetup() { return api('POST', '/api/auth/totp/setup'); },
+  async totpConfirm(code) { await api('POST', '/api/auth/totp/confirm', { code }); cache.user = { ...cache.user, totp: true }; notify(); },
+  async totpDisable(pass) { await api('POST', '/api/auth/totp/disable', { pass }); cache.user = { ...cache.user, totp: false }; notify(); },
+  async adminTotpDisable(id) { await api('POST', '/api/users/' + encodeURIComponent(id) + '/totp/disable'); A.refreshUsers(); },
   async guest() { const r = await api('POST', '/api/auth/guest'); cache.user = r.user; notify(); return r.user; },
   logout() { api('POST', '/api/auth/logout').catch(() => {}); cache.user = null; cache.users = []; notify(); },
   async setPassword(id, pass, mustChange, by) {

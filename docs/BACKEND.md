@@ -29,6 +29,10 @@ Development with hot reload: run the server as above and `npm run dev` in the ro
 | `CIB_MAX_FILE_MB` | `50` | Largest media file accepted by the file store. |
 | `CIB_PROXY_ALLOW` | see `server/src/config.js` | Comma-separated hosts the enrichment proxy may reach. |
 | `THREATFOX_AUTH_KEY`, `VT_API_KEY`, `SHODAN_API_KEY`, `GREYNOISE_API_KEY`, `ABUSEIPDB_API_KEY`, `URLSCAN_API_KEY` | unset | Provider keys the proxy attaches server-side. A host is added to the proxy allow-list only when its key is set; the browser never sees the key. abuse.ch (ThreatFox, URLhaus, MalwareBazaar) now requires an `Auth-Key` even for free use. |
+| `CIB_RETENTION_DAYS` | `30` | Wastebasket cases older than this are hard-deleted every six hours (legal holds are skipped). |
+| `CIB_BACKUP_HOURS`, `CIB_BACKUPS_KEEP` | `24`, `14` | Automatic `VACUUM INTO` snapshots under `CIB_DATA_DIR/backups`, and how many to keep. `0` hours disables the scheduler. |
+| `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` | unset | Single sign-on. Setting issuer and client id shows the SSO button; the redirect URI is `/api/auth/oidc/callback`. |
+| `OIDC_LABEL`, `OIDC_DEFAULT_ROLE`, `OIDC_ADMINS`, `OIDC_ALLOWED_DOMAINS`, `OIDC_SCOPE` | `Single sign-on`, `viewer`, unset, unset, `openid profile email` | Button text, role for new SSO accounts, e-mails (or subjects) that are made admin, e-mail domains allowed in, scopes requested. |
 | AI provider keys (see **AI providers** below) | unset | Any number of model providers; they are tried in order and the built-in engine answers when none is configured or all fail. |
 
 ## What is secured, and how
@@ -42,12 +46,19 @@ Development with hot reload: run the server as above and `npm run dev` in the ro
 - **Audit**: append-only table where each row hashes the previous one; `/api/health` reports whether the chain verifies. Sign-ins, failures, lockouts, user changes, resets, case creation, deletion and stale overwrites are recorded with the client IP.
 - **Files**: content-addressed (SHA-256) immutable store under `CIB_DATA_DIR/files`, written once, served only to signed-in accounts with the hash in a response header. Sizes are capped.
 - **Enrichment proxy**: HTTPS only, explicit host allow-list, no credentials in URLs, DNS resolution checked against private ranges before each request (SSRF guard), 12 s timeout, 4 MB cap, rate-limited, accounts only. Replaces the third-party `allorigins.win` proxy the design used.
+- **Second factor**: TOTP per RFC 6238 (SHA-1, six digits, 30 s, one step of drift). Secrets are generated server-side and only enabled after a correct code; the password step returns a single-use five-minute challenge token instead of a session, and five wrong codes void it. Users turn it off with their password; admins can remove it.
+- **Single sign-on**: OIDC authorization code with PKCE (S256) and a nonce, state kept in a short-lived HttpOnly cookie, discovery from the issuer, id_token verified as RS256 against the provider's JWKS with issuer, audience, expiry and nonce checks (`alg: none` and HS256 are refused). SSO accounts have an empty password hash and cannot sign in with a password. Domain allow-list and admin list are enforced on every sign-in.
+- **Files follow their case**: uploads carry `X-Case-Id`; the server refuses uploads into cases the uploader cannot edit and serves a file only when the reader passes `canSee` for that case. Files without a case (older uploads) stay account-only.
+- **Legal hold**: only admins can set or clear it (also when a case document arrives through the sync API); held cases cannot be soft-deleted and are skipped by retention; both transitions are logged on the case and audited.
+- **Retention and backups**: hard deletion after `CIB_RETENTION_DAYS`; backups are consistent SQLite snapshots (`VACUUM INTO`) written by the scheduler, by `npm run backup`, or from Operations; each is audited with its size.
+- **Personal data**: `GET /api/admin/person-data?name=` collects person cards, comments, tasks and log lines naming a person across all cases for access or erasure requests; every lookup is audited with the name queried.
 - **AI gateway**: the browser never holds a model key. Prompts go to the server, which calls whichever providers are configured, in order, and falls back to the built-in engine.
 
 ### Not done here, and worth knowing
 
-- TLS, backups and an identity provider (OIDC) are deployment concerns; the spec's OIDC flow can replace `/api/auth/*` without touching the pages.
-- Media files are stored per upload, not per case, so file reads are allowed to any signed-in account; TLP enforcement applies to cases, not to individual files.
+- TLS is terminated by Caddy in `docker-compose.yml` (automatic certificates for `CIB_DOMAIN`); the Node server itself speaks plain HTTP behind it and trusts the proxy's `X-Forwarded-*` headers only with `CIB_TRUST_PROXY=1`.
+- The OIDC flow has been exercised against a signed test token, not against a live provider from this environment; the first real login against your provider is the moment to check the claims (`email`, `name`) it actually sends.
+- Erasure is manual: the personal-data export tells you where a person appears; removing them is an edit on each case (which is then a revision).
 - Client-side encryption at rest (the board's **Encrypt** button) still works locally but an encrypted browser store cannot be synced; the server is the system of record.
 
 ## API
@@ -62,11 +73,18 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 | `POST /auth/login`, `POST /auth/logout`, `POST /auth/touch` | — | Sign in (sets the cookie), sign out, refresh idle timer. |
 | `POST /auth/guest` | anyone | Read-only guest session, only while a public CLEAR/GREEN case exists. |
 | `POST /auth/password` | account | Change own password (clears "must change"). |
+| `POST /auth/login/totp` | — | Second step: `{challenge, code}` → session cookie. `POST /auth/login` returns `{totpRequired, challenge}` for accounts with a second factor. |
+| `POST /auth/totp/setup`, `POST /auth/totp/confirm`, `POST /auth/totp/disable` | account | Start (secret, `otpauth://` URI, QR SVG), confirm with a code, turn off with the password. `POST /users/:id/totp/disable` for admins. |
+| `GET /auth/oidc/start?next=`, `GET /auth/oidc/callback` | anyone | Single sign-on redirect and callback (PKCE, nonce, JWKS verification); 404 when OIDC is not configured. |
+| `POST /admin/backup`, `GET /admin/backups` | admin | Write a consistent SQLite snapshot; list the ones kept. |
+| `POST /admin/purge` | admin | `{days}` → hard-delete wastebasket cases older than that (legal holds skipped). |
+| `GET /admin/holds`, `POST /admin/holds/:id` | admin | List cases with their hold state; `{on}` sets or clears a legal hold and broadcasts the change. |
+| `GET /admin/person-data?name=` | admin | Personal-data export for a named person across all cases. |
 | `GET /users`, `POST /users`, `PATCH /users/:id`, `POST /users/:id/password`, `DELETE /users/:id` | admin | Manage accounts, roles, TLP:RED grant and case scope; reset passwords (user must change on next sign-in). |
 | `GET /store` | signed in | Visible cases (with `rev`), the user's desk and settings documents. |
 | `GET /store/case/:id` | signed in | One case (404 when hidden). |
 | `PUT /store` | account | `{cases:[…], deleted:[ids], desk, settings}`. Returns accepted (`id`, `rev`, server `number`) and rejected (`id`, `reason`). Identical writes do not bump revisions; stale writes are applied last-writer-wins and audited. |
-| `PUT /files/:id`, `GET /files/:id` | editors / accounts | Media mirror; body is the raw file, response carries `sha256`. |
+| `PUT /files/:id`, `GET /files/:id` | editors / readers of the case | Media mirror; body is the raw file with `X-Case-Id`, response carries `sha256`. Served only to people who may see the file's case. |
 | `GET\|POST /proxy?url=` | account | Fetch an allow-listed HTTPS URL on the browser's behalf. |
 | `POST /ai/complete` | account | `{system, messages, max_tokens}` → `{text, engine}`. |
 | `GET /events` | signed in | Server-sent events: `case`, `case-deleted`, `presence`, `notify`, filtered by what the listener may see. |
@@ -146,10 +164,19 @@ Without a model key the gateway still answers the board's four prompts, from rul
 
 Configure any provider above to replace all four with a model.
 
+## Deployment
+
+```bash
+cp .env.example .env        # set CIB_DOMAIN, optional OIDC_* and provider keys
+docker compose up -d        # builds the pages, runs the server as a non-root user, Caddy terminates TLS
+```
+
+The image is multi-stage (`Dockerfile`): Vite builds the pages, then a slim Node 22 image runs `server/src/index.js` with `CIB_DATA_DIR=/data` on a named volume and a health check on `/api/health`. `deploy/Caddyfile` proxies to the container and adds HSTS and the usual headers; for a LAN host add `tls internal`. Back up the `cib-data` volume (database snapshots under `/data/backups`, files under `/data/files`). The compose file was not built on the capture machine (no Docker daemon there), so run it once on yours before relying on it.
+
 ## Tests
 
 ```bash
 cd server && npm test
 ```
 
-Covers setup, CSRF and origin checks, weak passwords, roles and scopes, lockout and reset, server-assigned numbers and revisions, reviewer and viewer limits, guests, files, proxy guards, the local AI shapes, logout and the audit chain. The end-to-end browser run is `node tools/capture/v2.cjs` (see `docs/V2.md`).
+`test/security.test.js` covers TOTP setup, the two-step login, challenge reuse, admin and self disable, RS256 id_token verification (tampering, audience, issuer, expiry, nonce, `alg: none`), SSO account creation and password refusal, per-file access on a TLP:RED case, legal hold through the API and the sync path, retention purge, backups (the snapshot opens as a database) and the personal-data export. The older suites cover setup, CSRF and origin checks, weak passwords, roles and scopes, lockout and reset, server-assigned numbers and revisions, reviewer and viewer limits, guests, files, proxy guards, the local AI shapes, logout and the audit chain. The end-to-end browser run is `node tools/capture/v2.cjs` (see `docs/V2.md`).

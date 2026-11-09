@@ -104,9 +104,16 @@ export default function render(v) {
             {"\n    "}
           </div>
           {"\n    "}
+          {v.hasSso ? (
+            <>
+              <button data-sso="1" onClick={v.sso} style={{width: "100%", height: "36px", marginTop: "10px", border: "1px solid #1b1a17", background: "transparent", color: "#1b1a17", font: "11px 'Archivo Narrow',sans-serif", letterSpacing: ".18em", textTransform: "uppercase", cursor: "pointer"}} className="scl3">
+                {v.ssoLabel}
+              </button>
+            </>
+          ) : null}
           {v.hasPublic ? (
             <>
-              <button onClick={v.guest} style={{width: "100%", height: "34px", marginTop: "10px", border: "1px dashed #9a9488", background: "transparent", color: "#5a5650", font: "11px 'Archivo Narrow',sans-serif", letterSpacing: ".18em", textTransform: "uppercase", cursor: "pointer"}} className="scl3">
+              <button onClick={v.guest} style={{width: "100%", height: "34px", marginTop: "10px", border: "1px dashed #9a9488", background: "transparent", color: "#5a5650", font: "11px 'Archivo Narrow',sans-serif", letterSpacing: ".18em", textTransform: "uppercase", cursor: "pointer"}} className="scl4">
                 {"Continue as a guest · public files only"}
               </button>
             </>
