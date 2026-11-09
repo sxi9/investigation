@@ -1,0 +1,214 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "V01 first visit shows the setup card (no accounts yet)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V01 setup creates the admin and lands on the desk",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V02 the board seeds the two sample cases on a brand-new server",
+      "detail": "CASE 0417 Operation Lantern | CASE 0418 Binance $6.3B heist"
+    },
+    {
+      "ok": true,
+      "name": "V02 desk lists the cases from the server",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V03 admin adds an analyst, a reviewer and a viewer from the desk",
+      "detail": "S. Murugan:admin, Ana Lyst:analyst, Rev Iewer:reviewer, View Only:viewer"
+    },
+    {
+      "ok": true,
+      "name": "V04 analyst signs in with the temporary password and must change it",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V05 analyst edits a case on the board; the admin's open board receives it live",
+      "detail": "rev 2 delivered over SSE"
+    },
+    {
+      "ok": true,
+      "name": "V06 board: switch the case mode and seed the Whitechapel example",
+      "detail": "CASE 1888 Whitechapel murders, autumn 1888 · 29 items · mode homicide"
+    },
+    {
+      "ok": true,
+      "name": "V07 geo view renders a Leaflet map",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V08 suspect matrix opens",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V09 \"Analyse with Claude\" works without a model key (built-in engine)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V10 live feed card: ThreatFox through the server proxy",
+      "detail": "proxy reachable: HTTP 401"
+    },
+    {
+      "ok": true,
+      "name": "V11 hand-over pack and court brief exports",
+      "detail": "CASE-1888-handover.zip"
+    },
+    {
+      "ok": true,
+      "name": "V12 settings panel (SIEM links, sounds, theme)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V13 viewer: read-only everywhere, no Users panel",
+      "detail": "rejected: read-only for your role"
+    },
+    {
+      "ok": true,
+      "name": "V14 TLP:RED cases stay hidden from accounts without the grant",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V15 public case → guest can read it only",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "V16 ten wrong passwords lock the account for 15 minutes",
+      "detail": "Account locked after too many failures. Try again in 15 min"
+    },
+    {
+      "ok": true,
+      "name": "V17 audit chain verifies; health reports the engine",
+      "detail": "28 audit rows, ai=local"
+    },
+    {
+      "ok": true,
+      "name": "V18 sign out invalidates the session",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "v01-setup.png",
+      "title": "V01 · First-run setup",
+      "caption": "First run: no accounts exist, so the sign-in page asks for the administrator. Passwords are hashed with scrypt on the server; the browser never stores them.",
+      "marks": [
+        "Admin name",
+        "Password (8+, not on the common list, not your name)",
+        "Create admin account"
+      ]
+    },
+    {
+      "file": "v02-desk.png",
+      "title": "V02 · Case files desk",
+      "caption": "The case-files desk after sign-in: every case the account may see as a folder, drawers by review state, the morning brief, filters, quick add, OSINT, and the admin's Users button. Everything shown comes from the server.",
+      "marks": [
+        "Case folder (open, flip, rename, tag, duplicate, export, archive, public)",
+        "Users, roles and access (admin)",
+        "New case",
+        "Sign out"
+      ]
+    },
+    {
+      "file": "v03-users.png",
+      "title": "V03 · Users and access",
+      "caption": "Users & access: accounts with role, TLP:RED grant and case scope, password reset (the user must choose a new one at next sign-in), removal, and the sign-in audit from the server. New users get a temporary password that unlocks nothing but the password change.",
+      "marks": [
+        "Analyst: edits the cases in scope",
+        "Add a user"
+      ]
+    },
+    {
+      "file": "v04-analyst-desk.png",
+      "title": "V04 · Analyst view",
+      "caption": "The analyst's desk: same cases (scope \"all\"), no Users button, their own name in the top bar.",
+      "marks": []
+    },
+    {
+      "file": "v05-board-example.png",
+      "title": "V05 · Board, modes and the worked example",
+      "caption": "The board in Homicide mode with the built-in worked example (Whitechapel, 1888): modes change the card vocabulary, suspect roles and the suspect matrix. Case changes made here are pushed to the server and appear on every other signed-in board.",
+      "marks": [
+        "Case mode",
+        "Suspect matrix (means · motive · opportunity · alibi)",
+        "Geo view (Leaflet map)"
+      ]
+    },
+    {
+      "file": "v06-geo.png",
+      "title": "V06 · Geo view",
+      "caption": "Geo (G): location cards are placed on a map; OpenStreetMap tiles load directly, geocoding goes through the server proxy.",
+      "marks": [
+        "Geo view"
+      ]
+    },
+    {
+      "file": "v07-suspects.png",
+      "title": "V07 · Suspect matrix",
+      "caption": "Suspect matrix: every person card marked as a suspect scored on means, motive, opportunity and alibi.",
+      "marks": []
+    },
+    {
+      "file": "v08-ai-local.png",
+      "title": "V08 · AI gateway (local engine)",
+      "caption": "\"Analyse with Claude\" without an API key: the server's built-in engine answers in the same JSON shape (summary, suggested stamp, suggested threads, next steps) and labels itself as rule-based. Set ANTHROPIC_API_KEY on the server to use the model instead.",
+      "marks": [
+        "Assessment from the local engine"
+      ]
+    },
+    {
+      "file": "v09-settings.png",
+      "title": "V09 · Settings",
+      "caption": "Settings: theme, atmosphere (sounds, rain, typewriter), SIEM deep-link templates and other preferences, saved per user on the server.",
+      "marks": []
+    },
+    {
+      "file": "v10-viewer.png",
+      "title": "V10 · Viewer",
+      "caption": "A viewer's desk: the same folders, read-only; the server rejects any write from this role.",
+      "marks": []
+    },
+    {
+      "file": "v11-guest.png",
+      "title": "V11 · Guest",
+      "caption": "Guest access: when a case is marked public (TLP:CLEAR or GREEN only), the sign-in page offers \"Continue as a guest\" and the desk shows just that case, read-only.",
+      "marks": [
+        "Only public CLEAR/GREEN cases"
+      ]
+    },
+    {
+      "file": "v12-lockout.png",
+      "title": "V12 · Lockout",
+      "caption": "Brute-force protection: after ten failures the account is locked for 15 minutes even with the right password, sign-ins are rate-limited per IP, and every attempt is in the audit log. An admin reset clears the lock.",
+      "marks": [
+        "Lockout message"
+      ]
+    },
+    {
+      "file": "v13-signin.png",
+      "title": "V13 · Sign in",
+      "caption": "Sign-in page once accounts exist. Sessions last 12 hours and lock after 15 minutes idle.",
+      "marks": [
+        "Sign in"
+      ]
+    }
+  ]
+}
