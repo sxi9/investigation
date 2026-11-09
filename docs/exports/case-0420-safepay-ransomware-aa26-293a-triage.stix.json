@@ -1,0 +1,1376 @@
+{
+  "type": "bundle",
+  "id": "bundle--7495e45f-5a78-44c3-af5c-037191d8de97",
+  "objects": [
+    {
+      "type": "report",
+      "spec_version": "2.1",
+      "id": "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CASE 0420 — SafePay ransomware — AA26-293A triage",
+      "description": "SOURCE\nCISA / FBI / USSS / LKA RLP / NCA / NWROCU joint advisory AA26-293A, 20 Oct 2026. IOCs observed Nov 2024 – Aug 2026.\n\nWHAT TO DO FIRST\n- block the actor-attributed IPs (Bacloud, exfil hosts); review, do not block, the CDN / GitHub / Google ones\n- hunt for ShareFinder.ps1, SharpShares.exe, netscan*, dcsync.exe, Socks_werfault.exe\n- patch CVE-2024-40711 / 40766 / 2023-27532 / 20269 / 2020-3259 on edge devices\n- MFA on VPN, lockouts, offline immutable backups\n\nOPEN\n- Bacloud RFI outstanding\n- no .onion / leak-site address in the advisory",
+      "published": "2026-11-09T15:38:19.084Z",
+      "report_types": [
+        "threat-report"
+      ],
+      "object_refs": [
+        "note--86d7304d-a709-42ba-b013-89846489c99d",
+        "note--3b24cc97-f90a-4e5f-a8fa-9b38e1bfc864",
+        "attack-pattern--8b4034bf-6bcb-469e-8a00-34e38fd242c9",
+        "attack-pattern--daf6e421-bc15-4c3d-844b-3344c41fe88f",
+        "note--09aae9a7-afe9-49c6-8e7c-11dcf37f7540",
+        "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+        "note--9889ace6-22eb-49e2-9323-f08a72871471",
+        "note--38dca305-cfef-4319-95f5-94f3accae367",
+        "vulnerability--41e58613-7d1c-4860-b70a-38b70f5042d0",
+        "vulnerability--a2789b1c-293d-44fb-8b8e-fee18e89d149",
+        "vulnerability--8e5a76b5-f27c-47ba-a034-4ddd0212299b",
+        "vulnerability--0c1be09f-9e1f-4f78-abcb-32204f4ff2a9",
+        "vulnerability--bd9324b8-9200-40e8-8720-0037556f6d63",
+        "indicator--dab4160a-87a4-480b-9fd6-7b2dea9b7422",
+        "indicator--2e0150e4-56fd-4b18-bda4-595fdeecbe51",
+        "indicator--d009e8bd-ddf0-44e4-acc4-18e82a6b46e1",
+        "indicator--d469567e-2356-427e-a203-93f3ab7d24fb",
+        "indicator--c99b268f-1e3e-4513-87ab-9585ec92b12a",
+        "indicator--65dad7da-78c9-42df-b4fb-3a9844425d75",
+        "indicator--93ff9e48-5f21-4a1e-b68f-cf6a2469ec6e",
+        "indicator--818e6dd3-b8f4-4223-b8ae-8a1694438ac7",
+        "indicator--ed9eda91-64a3-438c-ae30-31efa911a978",
+        "indicator--d56a835c-c27a-438b-a7a8-3fa476ac39f8",
+        "indicator--56fdf721-fca0-4d5b-8eee-886db2a9e1d7",
+        "indicator--0a7e829d-6f8c-457e-a3ae-8e79cf0ba818",
+        "indicator--949c63e7-214f-49bd-b1b5-ef7ab28ad257",
+        "indicator--7b184d15-eaed-46db-b837-735bcdf3b42d",
+        "indicator--03f963d1-02d5-484e-85a5-a05cab71262f",
+        "indicator--4e105a4e-8666-44ee-ad69-0fad0388bb4a",
+        "indicator--a38e51df-b8a5-405b-97c6-8e2c4d253763",
+        "indicator--d507ff02-de22-4f53-a811-5ee71e5fc3e0",
+        "indicator--f1eafa37-1651-465e-a8ae-f1f62410f9e2",
+        "note--c5117fe0-5bbc-44e5-b2f7-90b91dd0a879",
+        "note--c67e0596-c554-4f11-a397-6b1acc59b4ec",
+        "attack-pattern--a89b8a9f-760a-43dd-8c7b-d1b6d601da19",
+        "attack-pattern--ea511b8e-8e7c-446a-934e-750ff6f697e1",
+        "attack-pattern--3a2d8602-d930-4459-ad7e-19530b17b5cc",
+        "attack-pattern--c8b107ad-7e3c-435d-b100-4d75844875c3",
+        "attack-pattern--47aa7e58-54b7-4082-9afc-31118fb71210",
+        "attack-pattern--9e1bf1ad-cee4-4d64-bb84-fe7f851ca14a",
+        "attack-pattern--84fbd533-9d8f-46e9-b1fa-c9b747dc4c9c",
+        "attack-pattern--c01cb123-42e5-45b4-b2d3-2348c98ccaf2",
+        "attack-pattern--9cc57335-9076-433d-b237-471210fb5b64",
+        "attack-pattern--df14876f-880b-408d-9589-7a909f947348",
+        "attack-pattern--969f2c6d-b8c5-41e0-9cc8-4abf31baa186",
+        "note--88c1d24d-25b0-4b55-afef-2f52861c87ed",
+        "note--bbbb6781-5077-4308-a605-349cea82f536",
+        "note--0528137f-4387-4337-90d6-3f0d6a42ff9c",
+        "note--8bd15d22-1146-48c2-bef5-eabaf7e554d9",
+        "x-cryptocurrency-transaction--e087f565-fead-446a-b501-368057c8e908",
+        "location--e730dbce-a558-4350-b0a4-495cfcfeb337",
+        "location--fa0cfe1a-8f1c-47dc-9c3d-1d8fe9a91d45",
+        "note--60708dea-65e8-4496-afa7-fa30abae1d66",
+        "note--08e091cc-de6b-4186-af65-ec42f4601669",
+        "note--dcd8705e-8862-4365-bea6-706453dea29c",
+        "vulnerability--b21e799c-4d15-4125-9c8c-8632b70eba8c",
+        "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+        "attack-pattern--23e0f733-1efa-4d0a-8769-76e3b21209a6",
+        "attack-pattern--9e925929-5194-4822-ab5b-0bcd832140aa",
+        "attack-pattern--e1b6d30e-f3f1-48c8-90bf-6c68960ab49e",
+        "attack-pattern--e2b6a576-b8d8-4f94-ab0a-5c5b3949ca70",
+        "relationship--bb3291e5-4769-44c0-97ae-c5f46e37f699",
+        "relationship--ed63ce74-4bb3-4ef1-9791-7222c62b5e6f",
+        "relationship--50b401fa-b281-4547-98e4-340fa6893cf1",
+        "relationship--9a4c320b-fd61-4813-a7ad-8da7bfc9f16a",
+        "relationship--a85eff5c-c77f-436f-9cca-1b04daca6530",
+        "relationship--865b0673-7527-4d83-bb51-a8783f524a06",
+        "relationship--7c97c404-09f9-4553-a4f3-e132af53bd5c",
+        "relationship--7a239b39-781c-44b4-b2e2-9ba67bce2ecc",
+        "relationship--63f0a415-eff2-4c7d-bdd9-56688df38844",
+        "relationship--6e01dba2-1a31-44fb-ab53-f064bd236f9d",
+        "relationship--bbf405f1-31c1-4a2d-a501-ca004320cd51",
+        "relationship--5e21ce18-78d6-4f80-a70b-ec1ffe5c5308",
+        "relationship--03add751-ff36-438d-b1d0-6cc327ce3129",
+        "relationship--51196dab-28df-4c68-bfac-d708791003e6",
+        "relationship--94a67823-b6ef-4174-ac49-0cb107b9eb37",
+        "relationship--8dce68a8-731e-444e-b14c-54de11803d7d",
+        "relationship--00a7bf78-6e51-4a76-959e-5f9dccd6b2d6",
+        "relationship--0332c028-9f50-4186-aada-81284998a565",
+        "relationship--0778ec13-078d-416b-8990-18099e757d09",
+        "relationship--71ee36fa-3a1d-4df9-95e3-4dbac0484a23",
+        "relationship--3577c10e-7d74-471f-8e82-4d3980607b96",
+        "relationship--e460cb8e-c0de-4fba-846c-3708fa0e6efd",
+        "relationship--fd94bf19-b57c-4aef-8834-966537d6a2c4",
+        "grouping--75f05000-ea66-4ff7-bea5-151509614807",
+        "grouping--b6835685-3329-48fc-ae83-136abbf16e1e",
+        "grouping--f3ad1090-cd46-4517-ab30-4a49c7cf4c2f",
+        "grouping--414435f9-6960-4653-a105-0d4a51c8fd6f"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--86d7304d-a709-42ba-b013-89846489c99d",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Initial access",
+      "content": "Initial access",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--3b24cc97-f90a-4e5f-a8fa-9b38e1bfc864",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Encryption begins",
+      "content": "Encryption begins",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--8b4034bf-6bcb-469e-8a00-34e38fd242c9",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Exploit Public-Facing Application",
+      "description": "exhibit E3",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1190",
+          "url": "https://attack.mitre.org/techniques/T1190/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--daf6e421-bc15-4c3d-844b-3344c41fe88f",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Data Encrypted for Impact",
+      "description": "exhibit E4",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1486",
+          "url": "https://attack.mitre.org/techniques/T1486/"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--09aae9a7-afe9-49c6-8e7c-11dcf37f7540",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Leak site post",
+      "content": "Leak site post",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "SafePay affiliate (unidentified)",
+      "description": "No individual identified. Uses Mullvad VPN exits, phished account profiles and stolen or brute-forced VPN credentials. Lives off the land, then installs AnyDesk / TeamViewer to push the locker. A \"representative\" phones victims after encryption.\ntags: actor, affiliate\nexhibit E7",
+      "confidence": 40
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--9889ace6-22eb-49e2-9323-f08a72871471",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "600+ victims — businesses & critical infrastructure",
+      "content": "600+ victims — businesses & critical infrastructure",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--38dca305-cfef-4319-95f5-94f3accae367",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Tools repurposed by the actors",
+      "content": "7-Zip · FileZilla · Mimikatz · PowerShell · PsExec · RClone · ScreenConnect · ShareFinder.ps1 · WinRAR · WinRM · AnyDesk · TeamViewer · Acronis Disk Director · SharpShares · NetExec · Backblaze b2.exe\n\nLegitimate on their own; the advisory warns not to attribute them as malicious without evidence.",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--41e58613-7d1c-4860-b70a-38b70f5042d0",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CVE-2020-3259",
+      "description": "exhibit E10",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2020-3259"
+        }
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--a2789b1c-293d-44fb-8b8e-fee18e89d149",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CVE-2023-20269",
+      "description": "exhibit E11",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2023-20269"
+        }
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--8e5a76b5-f27c-47ba-a034-4ddd0212299b",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CVE-2023-27532",
+      "description": "exhibit E12",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2023-27532"
+        }
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--0c1be09f-9e1f-4f78-abcb-32204f4ff2a9",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CVE-2024-40711",
+      "description": "exhibit E13",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2024-40711"
+        }
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--bd9324b8-9200-40e8-8720-0037556f6d63",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CVE-2024-40766",
+      "description": "exhibit E14",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2024-40766"
+        }
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--dab4160a-87a4-480b-9fd6-7b2dea9b7422",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "921df888aaabcd828a3723f4c9f5fe8b8379c6b7067d16b2ea10152300417eae",
+      "description": "exhibit E15",
+      "pattern": "[file:hashes.'SHA-256' = '921df888aaabcd828a3723f4c9f5fe8b8379c6b7067d16b2ea10152300417eae']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--2e0150e4-56fd-4b18-bda4-595fdeecbe51",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "6c1d36df94ebe367823e73ba33cfb4f40756a5e8ee1e30e8f0ae55d47e220a6a",
+      "description": "exhibit E16",
+      "pattern": "[file:hashes.'SHA-256' = '6c1d36df94ebe367823e73ba33cfb4f40756a5e8ee1e30e8f0ae55d47e220a6a']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d009e8bd-ddf0-44e4-acc4-18e82a6b46e1",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "e79608cf1d6b51324c14bef8883054c1238ed5f080222cc464810e6e14adc346",
+      "description": "exhibit E17",
+      "pattern": "[file:hashes.'SHA-256' = 'e79608cf1d6b51324c14bef8883054c1238ed5f080222cc464810e6e14adc346']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d469567e-2356-427e-a203-93f3ab7d24fb",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "327b8b61eb446cc4f710771e44484f62b804ae3d262b57a56575053e2df67917",
+      "description": "exhibit E18",
+      "pattern": "[file:hashes.'SHA-256' = '327b8b61eb446cc4f710771e44484f62b804ae3d262b57a56575053e2df67917']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c99b268f-1e3e-4513-87ab-9585ec92b12a",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "a0dc80a37eb7e2716c02a94adc8df9baedec192a77bde31669faed228d9ff526",
+      "description": "exhibit E19",
+      "pattern": "[file:hashes.'SHA-256' = 'a0dc80a37eb7e2716c02a94adc8df9baedec192a77bde31669faed228d9ff526']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--65dad7da-78c9-42df-b4fb-3a9844425d75",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "bbdd3620a67aedec4b9a68b2c9cc880b6631215e129816aea19902a6f4bc6f41",
+      "description": "exhibit E20",
+      "pattern": "[file:hashes.'SHA-256' = 'bbdd3620a67aedec4b9a68b2c9cc880b6631215e129816aea19902a6f4bc6f41']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--93ff9e48-5f21-4a1e-b68f-cf6a2469ec6e",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "104.26.2.223",
+      "description": "exhibit E21",
+      "pattern": "[ipv4-addr:value = '104.26.2.223']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--818e6dd3-b8f4-4223-b8ae-8a1694438ac7",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "140.82.114.4",
+      "description": "exhibit E22",
+      "pattern": "[ipv4-addr:value = '140.82.114.4']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ed9eda91-64a3-438c-ae30-31efa911a978",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "185.199.108.133",
+      "description": "exhibit E23",
+      "pattern": "[ipv4-addr:value = '185.199.108.133']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d56a835c-c27a-438b-a7a8-3fa476ac39f8",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "77.37.49.40",
+      "description": "exhibit E24",
+      "pattern": "[ipv4-addr:value = '77.37.49.40']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--56fdf721-fca0-4d5b-8eee-886db2a9e1d7",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "173.194.194.94",
+      "description": "exhibit E25",
+      "pattern": "[ipv4-addr:value = '173.194.194.94']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--0a7e829d-6f8c-457e-a3ae-8e79cf0ba818",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "167.235.225.149",
+      "description": "exhibit E26",
+      "pattern": "[ipv4-addr:value = '167.235.225.149']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--949c63e7-214f-49bd-b1b5-ef7ab28ad257",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "5.255.11.134",
+      "description": "exhibit E27",
+      "pattern": "[ipv4-addr:value = '5.255.11.134']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--7b184d15-eaed-46db-b837-735bcdf3b42d",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "88.119.167.239",
+      "description": "exhibit E28",
+      "pattern": "[ipv4-addr:value = '88.119.167.239']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 85,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--03f963d1-02d5-484e-85a5-a05cab71262f",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "37.10.71.188",
+      "description": "exhibit E29",
+      "pattern": "[ipv4-addr:value = '37.10.71.188']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--4e105a4e-8666-44ee-ad69-0fad0388bb4a",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "07353237350c35d6dc2c8f143b649cd07c71f62b",
+      "description": "exhibit E30",
+      "pattern": "[file:hashes.'SHA-1' = '07353237350c35d6dc2c8f143b649cd07c71f62b']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--a38e51df-b8a5-405b-97c6-8e2c4d253763",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "b498a2683640c983bb069fa2ea9e67cef4a3797d",
+      "description": "exhibit E31",
+      "pattern": "[file:hashes.'SHA-1' = 'b498a2683640c983bb069fa2ea9e67cef4a3797d']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d507ff02-de22-4f53-a811-5ee71e5fc3e0",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "bbfed53e3bb1f306f4da97d995cf4ae5b73ad081",
+      "description": "",
+      "pattern": "[file:hashes.'SHA-1' = 'bbfed53e3bb1f306f4da97d995cf4ae5b73ad081']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--f1eafa37-1651-465e-a8ae-f1f62410f9e2",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "d711a5af5aed48a3b36b98f4fcf52809aebef7a2",
+      "description": "",
+      "pattern": "[file:hashes.'SHA-1' = 'd711a5af5aed48a3b36b98f4fcf52809aebef7a2']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T15:38:19.084Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--c5117fe0-5bbc-44e5-b2f7-90b91dd0a879",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Hostnames seen in SafePay intrusions (CI",
+      "content": "Hostnames seen in SafePay intrusions (CISA AA26-293A): WIN-SBOE3CPNAL, WIN-3IUUOFVTQAR, WIN-DK18BI83M0S, WIN-I1HRRJHCEIV",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--c67e0596-c554-4f11-a397-6b1acc59b4ec",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "#StopRansomware: SafePay Ransomware — joint advisory",
+      "content": "https://www.cisa.gov/news-events/cybersecurity-advisories/aa26-293a\ndate: 2026-10-20",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--a89b8a9f-760a-43dd-8c7b-d1b6d601da19",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "External Remote Services",
+      "description": "exhibit E34",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1133",
+          "url": "https://attack.mitre.org/techniques/T1133/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--ea511b8e-8e7c-446a-934e-750ff6f697e1",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Brute Force",
+      "description": "exhibit E36",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1110",
+          "url": "https://attack.mitre.org/techniques/T1110/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--3a2d8602-d930-4459-ad7e-19530b17b5cc",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Command and Scripting Interpreter",
+      "description": "exhibit E37",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1059",
+          "url": "https://attack.mitre.org/techniques/T1059/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--c8b107ad-7e3c-435d-b100-4d75844875c3",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Account Manipulation",
+      "description": "exhibit E38",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1098",
+          "url": "https://attack.mitre.org/techniques/T1098/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--47aa7e58-54b7-4082-9afc-31118fb71210",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Obfuscated Files or Information",
+      "description": "exhibit E39",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1027",
+          "url": "https://attack.mitre.org/techniques/T1027/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--9e1bf1ad-cee4-4d64-bb84-fe7f851ca14a",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Indicator Removal",
+      "description": "exhibit E40",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1070",
+          "url": "https://attack.mitre.org/techniques/T1070/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--84fbd533-9d8f-46e9-b1fa-c9b747dc4c9c",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Remote Services",
+      "description": "exhibit E41",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021",
+          "url": "https://attack.mitre.org/techniques/T1021/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--c01cb123-42e5-45b4-b2d3-2348c98ccaf2",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Exfiltration Over Web Service",
+      "description": "exhibit E42",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1567",
+          "url": "https://attack.mitre.org/techniques/T1567/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--9cc57335-9076-433d-b237-471210fb5b64",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Service Stop",
+      "description": "exhibit E44",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1489",
+          "url": "https://attack.mitre.org/techniques/T1489/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--df14876f-880b-408d-9589-7a909f947348",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Masquerading",
+      "description": "exhibit E45",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1036",
+          "url": "https://attack.mitre.org/techniques/T1036/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--969f2c6d-b8c5-41e0-9cc8-4abf31baa186",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Ingress Tool Transfer",
+      "description": "exhibit E46",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1105",
+          "url": "https://attack.mitre.org/techniques/T1105/"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--88c1d24d-25b0-4b55-afef-2f52861c87ed",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "SafePay first observed (per CISA)",
+      "content": "date: 2024-08-01",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--bbbb6781-5077-4308-a605-349cea82f536",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Start of IOC observation window",
+      "content": "date: 2024-11-01",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--0528137f-4387-4337-90d6-3f0d6a42ff9c",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Last observed IOCs in FBI investigations",
+      "content": "date: 2026-08-15",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--8bd15d22-1146-48c2-bef5-eabaf7e554d9",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Joint advisory AA26-293A published",
+      "content": "date: 2026-10-20",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "x-cryptocurrency-transaction",
+      "spec_version": "2.1",
+      "id": "x-cryptocurrency-transaction--e087f565-fead-446a-b501-368057c8e908",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Ransom demand — share of revenue, paid in crypto",
+      "chain": "Bitcoin",
+      "amount": "A share of company revenue",
+      "from_address": "Victim (via TOR chat portal, victim-ID login)",
+      "to_address": "Actor wallet (not published)",
+      "tx_hash": "",
+      "description": "Ransom paid in cryptocurrency; no addresses or tx hashes are published in the advisory. Paste them here when a case yields them: the card then links to the block explorer.\ntags: ransom\nexhibit E51",
+      "confidence": 40
+    },
+    {
+      "type": "location",
+      "spec_version": "2.1",
+      "id": "location--e730dbce-a558-4350-b0a4-495cfcfeb337",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Vilnius, Lithuania — UAB Bacloud (AS61272) hosting soc.dll C2",
+      "description": "RDAP: LT-BACLOUD, UAB Bacloud, AS61272. Hosts 88.119.167[.]239, the soc.dll command-and-control address in the advisory. VirusTotal: 14/92 vendors flag the IP.\ntags: infra, c2\nexhibit E52"
+    },
+    {
+      "type": "location",
+      "spec_version": "2.1",
+      "id": "location--fa0cfe1a-8f1c-47dc-9c3d-1d8fe9a91d45",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Falkenstein, Germany — Hetzner CLOUD-FSN1 hosting client login panels",
+      "description": "RDAP: CLOUD-FSN1 (Hetzner, DE). Hosts 167.235.225[.]149, listed as \"client login panels\".\ntags: infra, panel\nexhibit E53"
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--60708dea-65e8-4496-afa7-fa30abae1d66",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Encryption: ChaCha20 stream cipher with ",
+      "content": "Encryption: ChaCha20 stream cipher with RSA key exchange; full or partial by file type/size; extension .SafePay; binary deletes itself afterwards.",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--08e091cc-de6b-4186-af65-ec42f4601669",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "CISA advisory page — capture 09 Nov 2026",
+      "content": "date: 2026-11-09",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--dcd8705e-8862-4365-bea6-706453dea29c",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "abstract": "Attack path — analyst diagram",
+      "content": "date: 2026-11-09",
+      "object_refs": [
+        "report--1fc352e9-05a9-4fd1-ad4a-cbf73777d291"
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--b21e799c-4d15-4125-9c8c-8632b70eba8c",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "CVE-2024-40711",
+      "description": "NVD: A deserialization of untrusted data vulnerability with a malicious payload can allow an unauthenticated remote code execution (RCE). | CVSS 9.8 CRITICAL | Published 2024-09-07 | IN CISA KEV since 2024-10-17 — actively exploited\nexhibit E57",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2024-40711"
+        }
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "LockBit",
+      "description": "Comparison only: SafePay is a distinct operation (CISA). LockBit's affiliate playbook overlaps (exposed services, valid accounts, remote services, encryption) but no attribution to LockBit is made.\ntags: actor\nexhibit E58",
+      "confidence": 10
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--23e0f733-1efa-4d0a-8769-76e3b21209a6",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Exploit Public-Facing Application",
+      "description": "tags: actor\nexhibit E59",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1190",
+          "url": "https://attack.mitre.org/techniques/T1190/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--9e925929-5194-4822-ab5b-0bcd832140aa",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Valid Accounts",
+      "description": "tags: actor\nexhibit E60",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1078",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--e1b6d30e-f3f1-48c8-90bf-6c68960ab49e",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Remote Services",
+      "description": "tags: actor\nexhibit E61",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021",
+          "url": "https://attack.mitre.org/techniques/T1021/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--e2b6a576-b8d8-4f94-ab0a-5c5b3949ca70",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Data Encrypted for Impact",
+      "description": "tags: actor\nexhibit E62",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1486",
+          "url": "https://attack.mitre.org/techniques/T1486/"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--bb3291e5-4769-44c0-97ae-c5f46e37f699",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "controls",
+      "source_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "target_ref": "indicator--7b184d15-eaed-46db-b837-735bcdf3b42d",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--ed63ce74-4bb3-4ef1-9791-7222c62b5e6f",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "controls",
+      "source_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "target_ref": "indicator--949c63e7-214f-49bd-b1b5-ef7ab28ad257",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--50b401fa-b281-4547-98e4-340fa6893cf1",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "controls",
+      "source_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "target_ref": "indicator--03f963d1-02d5-484e-85a5-a05cab71262f",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--9a4c320b-fd61-4813-a7ad-8da7bfc9f16a",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "located-at",
+      "source_ref": "indicator--7b184d15-eaed-46db-b837-735bcdf3b42d",
+      "target_ref": "location--e730dbce-a558-4350-b0a4-495cfcfeb337",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--a85eff5c-c77f-436f-9cca-1b04daca6530",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "located-at",
+      "source_ref": "indicator--0a7e829d-6f8c-457e-a3ae-8e79cf0ba818",
+      "target_ref": "location--fa0cfe1a-8f1c-47dc-9c3d-1d8fe9a91d45",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--865b0673-7527-4d83-bb51-a8783f524a06",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "resolves-to",
+      "source_ref": "indicator--dab4160a-87a4-480b-9fd6-7b2dea9b7422",
+      "target_ref": "indicator--7b184d15-eaed-46db-b837-735bcdf3b42d",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7c97c404-09f9-4553-a4f3-e132af53bd5c",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--d469567e-2356-427e-a203-93f3ab7d24fb",
+      "target_ref": "indicator--c99b268f-1e3e-4513-87ab-9585ec92b12a",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7a239b39-781c-44b4-b2e2-9ba67bce2ecc",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--8b4034bf-6bcb-469e-8a00-34e38fd242c9",
+      "target_ref": "vulnerability--0c1be09f-9e1f-4f78-abcb-32204f4ff2a9",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--63f0a415-eff2-4c7d-bdd9-56688df38844",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--8b4034bf-6bcb-469e-8a00-34e38fd242c9",
+      "target_ref": "vulnerability--bd9324b8-9200-40e8-8720-0037556f6d63",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--6e01dba2-1a31-44fb-ab53-f064bd236f9d",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "target_ref": "note--86d7304d-a709-42ba-b013-89846489c99d",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--bbf405f1-31c1-4a2d-a501-ca004320cd51",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "target_ref": "note--9889ace6-22eb-49e2-9323-f08a72871471",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--5e21ce18-78d6-4f80-a70b-ec1ffe5c5308",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--9889ace6-22eb-49e2-9323-f08a72871471",
+      "target_ref": "x-cryptocurrency-transaction--e087f565-fead-446a-b501-368057c8e908",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--03add751-ff36-438d-b1d0-6cc327ce3129",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--daf6e421-bc15-4c3d-844b-3344c41fe88f",
+      "target_ref": "note--3b24cc97-f90a-4e5f-a8fa-9b38e1bfc864",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--51196dab-28df-4c68-bfac-d708791003e6",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--60708dea-65e8-4496-afa7-fa30abae1d66",
+      "target_ref": "attack-pattern--daf6e421-bc15-4c3d-844b-3344c41fe88f",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--94a67823-b6ef-4174-ac49-0cb107b9eb37",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--38dca305-cfef-4319-95f5-94f3accae367",
+      "target_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--8dce68a8-731e-444e-b14c-54de11803d7d",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--dcd8705e-8862-4365-bea6-706453dea29c",
+      "target_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--00a7bf78-6e51-4a76-959e-5f9dccd6b2d6",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--c67e0596-c554-4f11-a397-6b1acc59b4ec",
+      "target_ref": "note--8bd15d22-1146-48c2-bef5-eabaf7e554d9",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0332c028-9f50-4186-aada-81284998a565",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+      "target_ref": "attack-pattern--23e0f733-1efa-4d0a-8769-76e3b21209a6",
+      "description": "Typical of LockBit in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0778ec13-078d-416b-8990-18099e757d09",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+      "target_ref": "attack-pattern--9e925929-5194-4822-ab5b-0bcd832140aa",
+      "description": "Typical of LockBit in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--71ee36fa-3a1d-4df9-95e3-4dbac0484a23",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+      "target_ref": "attack-pattern--e1b6d30e-f3f1-48c8-90bf-6c68960ab49e",
+      "description": "Typical of LockBit in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3577c10e-7d74-471f-8e82-4d3980607b96",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+      "target_ref": "attack-pattern--e2b6a576-b8d8-4f94-ab0a-5c5b3949ca70",
+      "description": "Typical of LockBit in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--e460cb8e-c0de-4fba-846c-3708fa0e6efd",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "threat-actor--47579675-a447-4bf2-9485-2b436410e8ea",
+      "target_ref": "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--fd94bf19-b57c-4aef-8834-966537d6a2c4",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--c5117fe0-5bbc-44e5-b2f7-90b91dd0a879",
+      "target_ref": "note--38dca305-cfef-4319-95f5-94f3accae367",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "grouping",
+      "spec_version": "2.1",
+      "id": "grouping--75f05000-ea66-4ff7-bea5-151509614807",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Infrastructure · C2, exfil, panels (9 IPs)",
+      "context": "suspicious-activity",
+      "object_refs": [
+        "indicator--93ff9e48-5f21-4a1e-b68f-cf6a2469ec6e",
+        "indicator--818e6dd3-b8f4-4223-b8ae-8a1694438ac7",
+        "indicator--ed9eda91-64a3-438c-ae30-31efa911a978",
+        "indicator--d56a835c-c27a-438b-a7a8-3fa476ac39f8",
+        "indicator--56fdf721-fca0-4d5b-8eee-886db2a9e1d7",
+        "indicator--0a7e829d-6f8c-457e-a3ae-8e79cf0ba818",
+        "indicator--949c63e7-214f-49bd-b1b5-ef7ab28ad257",
+        "indicator--7b184d15-eaed-46db-b837-735bcdf3b42d",
+        "indicator--03f963d1-02d5-484e-85a5-a05cab71262f"
+      ]
+    },
+    {
+      "type": "grouping",
+      "spec_version": "2.1",
+      "id": "grouping--b6835685-3329-48fc-ae83-136abbf16e1e",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Malware & exploited CVEs",
+      "context": "suspicious-activity",
+      "object_refs": [
+        "vulnerability--41e58613-7d1c-4860-b70a-38b70f5042d0",
+        "vulnerability--a2789b1c-293d-44fb-8b8e-fee18e89d149",
+        "vulnerability--8e5a76b5-f27c-47ba-a034-4ddd0212299b",
+        "vulnerability--0c1be09f-9e1f-4f78-abcb-32204f4ff2a9",
+        "vulnerability--bd9324b8-9200-40e8-8720-0037556f6d63",
+        "indicator--dab4160a-87a4-480b-9fd6-7b2dea9b7422",
+        "indicator--2e0150e4-56fd-4b18-bda4-595fdeecbe51",
+        "indicator--d009e8bd-ddf0-44e4-acc4-18e82a6b46e1",
+        "indicator--d469567e-2356-427e-a203-93f3ab7d24fb",
+        "indicator--c99b268f-1e3e-4513-87ab-9585ec92b12a",
+        "indicator--65dad7da-78c9-42df-b4fb-3a9844425d75",
+        "indicator--4e105a4e-8666-44ee-ad69-0fad0388bb4a",
+        "indicator--a38e51df-b8a5-405b-97c6-8e2c4d253763",
+        "vulnerability--b21e799c-4d15-4125-9c8c-8632b70eba8c"
+      ]
+    },
+    {
+      "type": "grouping",
+      "spec_version": "2.1",
+      "id": "grouping--f3ad1090-cd46-4517-ab30-4a49c7cf4c2f",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "Playbook · ATT&CK techniques",
+      "context": "suspicious-activity",
+      "object_refs": [
+        "attack-pattern--8b4034bf-6bcb-469e-8a00-34e38fd242c9",
+        "attack-pattern--daf6e421-bc15-4c3d-844b-3344c41fe88f",
+        "attack-pattern--a89b8a9f-760a-43dd-8c7b-d1b6d601da19",
+        "attack-pattern--ea511b8e-8e7c-446a-934e-750ff6f697e1",
+        "attack-pattern--3a2d8602-d930-4459-ad7e-19530b17b5cc",
+        "attack-pattern--c8b107ad-7e3c-435d-b100-4d75844875c3",
+        "attack-pattern--47aa7e58-54b7-4082-9afc-31118fb71210",
+        "attack-pattern--9e1bf1ad-cee4-4d64-bb84-fe7f851ca14a",
+        "attack-pattern--84fbd533-9d8f-46e9-b1fa-c9b747dc4c9c",
+        "attack-pattern--c01cb123-42e5-45b4-b2d3-2348c98ccaf2",
+        "attack-pattern--9cc57335-9076-433d-b237-471210fb5b64",
+        "attack-pattern--df14876f-880b-408d-9589-7a909f947348",
+        "attack-pattern--969f2c6d-b8c5-41e0-9cc8-4abf31baa186"
+      ]
+    },
+    {
+      "type": "grouping",
+      "spec_version": "2.1",
+      "id": "grouping--414435f9-6960-4653-a105-0d4a51c8fd6f",
+      "created": "2026-11-09T15:38:19.084Z",
+      "modified": "2026-11-09T15:38:19.084Z",
+      "name": "LockBit",
+      "context": "suspicious-activity",
+      "object_refs": [
+        "threat-actor--03061ccf-e0d3-442f-9a12-384dbb6fe61f",
+        "attack-pattern--23e0f733-1efa-4d0a-8769-76e3b21209a6",
+        "attack-pattern--9e925929-5194-4822-ab5b-0bcd832140aa",
+        "attack-pattern--e1b6d30e-f3f1-48c8-90bf-6c68960ab49e",
+        "attack-pattern--e2b6a576-b8d8-4f94-ab0a-5c5b3949ca70"
+      ]
+    }
+  ]
+}

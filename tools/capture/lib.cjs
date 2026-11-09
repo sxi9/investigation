@@ -22,7 +22,7 @@ async function check(name, fn) {
 
 async function launch(opts = {}) {
   const browser = await chromium.launch();
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, acceptDownloads: true, ...opts });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, acceptDownloads: true, permissions: ['clipboard-read', 'clipboard-write'], ...opts });
   const page = await ctx.newPage();
   page.errors = [];
   page.on('pageerror', e => page.errors.push(e.message));

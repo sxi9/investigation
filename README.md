@@ -6,6 +6,8 @@ A noir-style investigation board for cyber intelligence work: pinned evidence ca
 
 - **[Feature guide](docs/FEATURES.md)** — every function with a labelled screenshot.
 - **[Worked investigation](docs/TUTORIAL.md)** — a real October 2026 campaign (vendor-themed Okta / ServiceNow vishing against e-commerce SaaS providers) built up step by step, with instructions.
+- **[Case file: SafePay ransomware](docs/CASE-SAFEPAY.md)** — a second real case (CISA advisory AA26-293A) that uses every feature: pictures on cards, OSINT on IPs / hashes / CVEs, VirusTotal and other pivots, clusters, merges, snapshots, playback, STIX round trip, encryption.
+- **[Improvements log](docs/IMPROVEMENTS.md)** — problems met while building the cases, and the features or data that would fix them.
 - **[Backend specification](docs/BACKEND-SPEC.md)** — data model and API for a multi-user server behind this front end.
 - **[Verification report](docs/feature-check.json)** — the automated run that produced the screenshots, with a pass/fail line per feature.
 
@@ -70,6 +72,10 @@ node tools/capture/tutorial.cjs
 ```
 
 ```bash
+node tools/capture/safepay.cjs
+```
+
+```bash
 python3 tools/capture/compress.py
 ```
 
@@ -77,7 +83,7 @@ python3 tools/capture/compress.py
 node tools/write-docs.mjs
 ```
 
-The first script writes `docs/screenshots/*.png` and `docs/feature-check.json`; the second writes `docs/tutorial/*.png`, `docs/tutorial/tutorial-run.json` and the sample exports in `docs/exports/`; the last two shrink the PNGs and rebuild `docs/FEATURES.md` and `docs/TUTORIAL.md` from the captions recorded during the runs.
+The first script writes `docs/screenshots/*.png` and `docs/feature-check.json`; the second writes `docs/tutorial/*.png`, `docs/tutorial/tutorial-run.json` and the sample exports in `docs/exports/`; the third writes `docs/case-safepay/` (it uploads the pictures in `docs/case-safepay/evidence/`); the last two shrink the PNGs and rebuild `docs/FEATURES.md`, `docs/TUTORIAL.md` and `docs/CASE-SAFEPAY.md` from the captions recorded during the runs.
 
 ## Notes
 

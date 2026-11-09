@@ -38,4 +38,23 @@ const textras = [
 if (textras.length) { t += `## Outputs\n\n`; for (const [file, title, cap] of textras) t += `### ${title}\n\n![${title}](tutorial/${file})\n\n${cap}\n\n`; }
 t += fs.readFileSync(path.join(root, 'tools', 'tutorial-outro.md'), 'utf8');
 fs.writeFileSync(path.join(docs, 'TUTORIAL.md'), t);
-console.log('wrote docs/FEATURES.md and docs/TUTORIAL.md');
+// ---- CASE-SAFEPAY.md
+const caseJson = path.join(docs, 'case-safepay', 'case-run.json');
+if (fs.existsSync(caseJson)) {
+  const run = JSON.parse(fs.readFileSync(caseJson, 'utf8'));
+  let c = fs.readFileSync(path.join(root, 'tools', 'case-safepay-intro.md'), 'utf8') + '\n';
+  const ok = run.checks.filter(x => x.ok).length;
+  c = c.replace('## Steps\n', `**Verification:** ${ok} of ${run.checks.length} checks passed.\n\n<details><summary>Check list</summary>\n\n| Result | Check | Detail |\n| --- | --- | --- |\n` + run.checks.map(x => `| ${x.ok ? 'PASS' : 'FAIL'} | ${x.name} | ${(x.detail || '').replace(/\|/g, '\\|')} |`).join('\n') + '\n\n</details>\n\n## Steps\n');
+  for (const s of run.shots) c += section(s, 'case-safepay');
+  const cx = [
+    ['s10b-virustotal.png', 'VirusTotal pivot result', 'What the VirusTotal pivot opened for 88.119.167[.]239 on 9 November 2026: 14 of 92 vendors flag the address; AS61272 UAB Bacloud, Lithuania.'],
+    ['s20b-rfi-letter.png', 'The RFI letter', 'Request for information to the hosting provider, as opened by the request generator.'],
+    ['s22-case-brief.png', 'The case brief', 'Printable brief: judgement, sign-off, exhibits with stamps and grades, threads with evidence, timeline, tasks, board image.'],
+    ['s22b-one-pager.png', 'The executive one-pager', 'Judgement, confidence, what happened, next actions.'],
+    ['s22c-board-export.png', 'The board as exported', 'What "Export image" downloads for this case.'],
+  ].filter(([f]) => fs.existsSync(path.join(docs, 'case-safepay', f)));
+  if (cx.length) { c += `## Generated documents\n\n`; for (const [file, title, cap] of cx) c += `### ${title}\n\n![${title}](case-safepay/${file})\n\n${cap}\n\n`; }
+  c += fs.readFileSync(path.join(root, 'tools', 'case-safepay-outro.md'), 'utf8');
+  fs.writeFileSync(path.join(docs, 'CASE-SAFEPAY.md'), c);
+}
+console.log('wrote docs/FEATURES.md, docs/TUTORIAL.md' + (fs.existsSync(caseJson) ? ' and docs/CASE-SAFEPAY.md' : ''));
