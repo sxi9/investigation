@@ -1,0 +1,620 @@
+{
+  "type": "bundle",
+  "id": "bundle--30096822-aaa3-4646-8ab0-234ed9d8e71c",
+  "objects": [
+    {
+      "type": "report",
+      "spec_version": "2.1",
+      "id": "report--1ad3150d-4886-44cd-8957-83a6d6f572ac",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "CASE 0419 — Vendor-themed Okta vishing wave",
+      "description": "WORKING THEORY\nWaves of <vendor>-okta / -servicenow domains since late July support live vishing: the caller sends the target to the look-alike SSO page and talks them through a fallback MFA method.\n\nOPEN\n- any of the 13 domains resolving / serving a page today?\n- registrar + nameserver overlap between waves\n- which of our vendors appear in the pattern\n\nSOURCES\n- Dataminr TRACE brief, 19 Oct 2026\n- Okta reporting on MFA enrolment weaknesses (referenced by the brief)",
+      "published": "2026-11-09T14:37:04.317Z",
+      "report_types": [
+        "threat-report"
+      ],
+      "object_refs": [
+        "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+        "note--64c3286b-d769-485d-9158-a0e0d148c484",
+        "note--f1fecbae-eda9-4ad4-aa49-907aa05e7163",
+        "note--a8773b05-7472-4c53-919d-424c359dda73",
+        "note--c2491eba-2db9-484e-821e-28968cd46286",
+        "indicator--5968bbf0-aae6-497b-8467-509273f90323",
+        "indicator--f8d6e9f2-d47a-4027-bb60-cfc0ea2d719f",
+        "indicator--8597cda7-d864-4df8-94ed-342b0aee8ee4",
+        "indicator--cfe3ea25-74c8-4cf4-bb12-1bf786a2e859",
+        "indicator--b7d95356-07c7-4c7e-9191-9759c303eb09",
+        "indicator--e7bde034-6fd9-4d44-b052-965ece1e1f1b",
+        "indicator--40e58db9-d61f-468c-9aec-4fc5b15e122f",
+        "indicator--67cbd3a0-7bd2-4849-81cd-0cff24993c5d",
+        "indicator--ba72e963-713b-4126-b525-0fa0d763feb2",
+        "indicator--ee1fcd99-81e8-4e04-a7ef-518a1f40e02c",
+        "indicator--d11714eb-9b6e-445c-a108-db33dd2808d6",
+        "indicator--88acd1f2-37d2-419e-b8e5-bebb55effbfc",
+        "indicator--f0e5dce8-bfcf-4d7b-a836-7ac174f369ca",
+        "attack-pattern--ae76df60-e1cb-4280-9483-804b00798965",
+        "attack-pattern--412bf8d1-b707-4164-9aab-fe04393c089a",
+        "attack-pattern--57131b69-8170-4b6c-9278-bd03b33197e7",
+        "attack-pattern--a32b871e-1bc2-42d5-a5f6-cf511a29dbdc",
+        "note--aee4d6e6-4f5e-4332-b9f3-2bfe808fec19",
+        "note--c6cae053-0bb4-4db2-8bce-ffb8013bf3c1",
+        "note--a5efe443-502c-43b2-88af-694ba38f75fe",
+        "note--4bf20418-29cc-4c07-bf4e-14f3da65b20b",
+        "note--d6d944af-206b-4197-8990-ebc75c280ac7",
+        "relationship--1b679deb-8045-460c-8758-a9e27e683f9b",
+        "relationship--b888c948-af2f-48c7-b360-ce175918eb5e",
+        "relationship--b3c71c5a-35a6-40b6-92db-d725983da18a",
+        "relationship--3b22cece-7ca3-4fba-8779-98345a4a6579",
+        "relationship--8cbff8c0-d276-41d5-a362-52d65e998f5b",
+        "relationship--8b821449-6bd6-4697-a273-c72e8055446d",
+        "relationship--0d1f95a3-160d-44b3-93c4-45bb19f9977a",
+        "relationship--70936f25-0c41-4747-b487-e02ae8109acf",
+        "relationship--64c27fcd-e300-40b9-99e1-5da971f97b1b",
+        "relationship--0fb0e113-d000-445b-8706-995535923d4f",
+        "relationship--ba882c99-575c-4109-838e-addba6ea166d",
+        "relationship--fd2f2aa5-1d90-4eea-8b41-871207213713",
+        "relationship--d6667582-e4e6-4ea8-812f-4bce4713c6d0"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "English-speaking cybercrime crew (unnamed)",
+      "description": "Dataminr links the domains with high confidence to earlier English-language cybercrime activity with the same targeting. No group name published. Tradecraft: vendor-themed SSO lures + live vishing + MFA downgrade.\ntags: actor, vishing\nexhibit E5",
+      "confidence": 40
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--64c3286b-d769-485d-9158-a0e0d148c484",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "B2B e-commerce SaaS & infrastructure providers",
+      "content": "Marketing / customer-engagement platforms, logistics partners, payment and fraud-prevention providers. Several hit more than once. Likely chosen for downstream third-party breach leverage.",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--f1fecbae-eda9-4ad4-aa49-907aa05e7163",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "Vishing calls using the look-alike SSO pages",
+      "content": "September 2026: targeting pattern against e-commerce SaaS providers observed. Callers direct users to the fake Okta page and talk them into a fallback MFA method.\ndate: 2026-09-15",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--a8773b05-7472-4c53-919d-424c359dda73",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "Case plan",
+      "content": "Opening tasks for this playbook. Tick them off in the inspector.",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--c2491eba-2db9-484e-821e-28968cd46286",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "Dataminr TRACE brief — Okta-themed phishing targets e-commerce providers",
+      "content": "https://www.dataminr.com/resources/intel-brief/okta-themed-phishing-campain-targets-e-commerce-providers/\nPublished 19 Oct 2026. Waves of look-alike Okta / ServiceNow domains since late July 2026; September targeting pattern against e-commerce SaaS and infrastructure providers. Domains support vishing calls that walk users through an MFA downgrade (SMS / email code) to get past YubiKeys.\ndate: 2026-10-19",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--5968bbf0-aae6-497b-8467-509273f90323",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "gladly-okta.com",
+      "description": "exhibit E10",
+      "pattern": "[domain-name:value = 'gladly-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 85,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--f8d6e9f2-d47a-4027-bb60-cfc0ea2d719f",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "riskified-okta.com",
+      "description": "exhibit E11",
+      "pattern": "[domain-name:value = 'riskified-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 85,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--8597cda7-d864-4df8-94ed-342b0aee8ee4",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "shipmonk-servicenow.com",
+      "description": "exhibit E12",
+      "pattern": "[domain-name:value = 'shipmonk-servicenow.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 85,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--cfe3ea25-74c8-4cf4-bb12-1bf786a2e859",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "yotpo-okta.com",
+      "description": "exhibit E13",
+      "pattern": "[domain-name:value = 'yotpo-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--b7d95356-07c7-4c7e-9191-9759c303eb09",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "paddleokta.com",
+      "description": "exhibit E14",
+      "pattern": "[domain-name:value = 'paddleokta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--e7bde034-6fd9-4d44-b052-965ece1e1f1b",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "moengageinc-okta.com",
+      "description": "exhibit E15",
+      "pattern": "[domain-name:value = 'moengageinc-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--40e58db9-d61f-468c-9aec-4fc5b15e122f",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "vzw-web-portal.com",
+      "description": "exhibit E16",
+      "pattern": "[domain-name:value = 'vzw-web-portal.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--67cbd3a0-7bd2-4849-81cd-0cff24993c5d",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "listrak-okta.com",
+      "description": "exhibit E17",
+      "pattern": "[domain-name:value = 'listrak-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ba72e963-713b-4126-b525-0fa0d763feb2",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "oktadialpad.com",
+      "description": "exhibit E18",
+      "pattern": "[domain-name:value = 'oktadialpad.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--ee1fcd99-81e8-4e04-a7ef-518a1f40e02c",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "servicenow-ticket2478.com",
+      "description": "exhibit E19",
+      "pattern": "[domain-name:value = 'servicenow-ticket2478.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--d11714eb-9b6e-445c-a108-db33dd2808d6",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "servicenow-ticket2829.com",
+      "description": "exhibit E20",
+      "pattern": "[domain-name:value = 'servicenow-ticket2829.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--88acd1f2-37d2-419e-b8e5-bebb55effbfc",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "servicenow-ticket.com",
+      "description": "exhibit E21",
+      "pattern": "[domain-name:value = 'servicenow-ticket.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--f0e5dce8-bfcf-4d7b-a836-7ac174f369ca",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "attentive-okta.com",
+      "description": "exhibit E22",
+      "pattern": "[domain-name:value = 'attentive-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:37:04.317Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--ae76df60-e1cb-4280-9483-804b00798965",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "Acquire Infrastructure: Domains",
+      "description": "exhibit E23",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1583.001",
+          "url": "https://attack.mitre.org/techniques/T1583/001/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--412bf8d1-b707-4164-9aab-fe04393c089a",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "Spearphishing Voice",
+      "description": "exhibit E24",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.004",
+          "url": "https://attack.mitre.org/techniques/T1566/004/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--57131b69-8170-4b6c-9278-bd03b33197e7",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "Multi-Factor Authentication Request Generation",
+      "description": "exhibit E25",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1621",
+          "url": "https://attack.mitre.org/techniques/T1621/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--a32b871e-1bc2-42d5-a5f6-cf511a29dbdc",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "name": "Valid Accounts",
+      "description": "exhibit E26",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1078",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--aee4d6e6-4f5e-4332-b9f3-2bfe808fec19",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "First wave of look-alike domain registrations",
+      "content": "date: 2026-07-28",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--c6cae053-0bb4-4db2-8bce-ffb8013bf3c1",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "riskified-okta[.]com and shipmonk-servicenow[.]com registered",
+      "content": "date: 2026-10-18",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--a5efe443-502c-43b2-88af-694ba38f75fe",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "gladly-okta[.]com registered (~20h later)",
+      "content": "date: 2026-10-19",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--4bf20418-29cc-4c07-bf4e-14f3da65b20b",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "MFA downgrade: where policy allows SMS o",
+      "content": "MFA downgrade: where policy allows SMS or email codes as fallback, the caller gets the user to enrol or use one, bypassing the YubiKey.",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--d6d944af-206b-4197-8990-ebc75c280ac7",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "abstract": "Naming pattern: <vendor>-okta[.]com, okt",
+      "content": "Naming pattern: <vendor>-okta[.]com, okta<vendor>[.]com, <vendor>-servicenow[.]com, servicenow-ticket<n>[.]com. Monitor new registrations matching it.",
+      "object_refs": [
+        "report--1ad3150d-4886-44cd-8957-83a6d6f572ac"
+      ]
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--1b679deb-8045-460c-8758-a9e27e683f9b",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "controls",
+      "source_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "target_ref": "indicator--5968bbf0-aae6-497b-8467-509273f90323",
+      "description": "Dataminr: high-confidence link to earlier English-language cybercrime activity with the same targeting.",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--b888c948-af2f-48c7-b360-ce175918eb5e",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "controls",
+      "source_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "target_ref": "indicator--f8d6e9f2-d47a-4027-bb60-cfc0ea2d719f",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--b3c71c5a-35a6-40b6-92db-d725983da18a",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "controls",
+      "source_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "target_ref": "indicator--8597cda7-d864-4df8-94ed-342b0aee8ee4",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3b22cece-7ca3-4fba-8779-98345a4a6579",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "target_ref": "attack-pattern--412bf8d1-b707-4164-9aab-fe04393c089a",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--8cbff8c0-d276-41d5-a362-52d65e998f5b",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--412bf8d1-b707-4164-9aab-fe04393c089a",
+      "target_ref": "note--f1fecbae-eda9-4ad4-aa49-907aa05e7163",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--8b821449-6bd6-4697-a273-c72e8055446d",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--f1fecbae-eda9-4ad4-aa49-907aa05e7163",
+      "target_ref": "note--64c3286b-d769-485d-9158-a0e0d148c484",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0d1f95a3-160d-44b3-93c4-45bb19f9977a",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--57131b69-8170-4b6c-9278-bd03b33197e7",
+      "target_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--70936f25-0c41-4747-b487-e02ae8109acf",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--a32b871e-1bc2-42d5-a5f6-cf511a29dbdc",
+      "target_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--64c27fcd-e300-40b9-99e1-5da971f97b1b",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--ae76df60-e1cb-4280-9483-804b00798965",
+      "target_ref": "note--aee4d6e6-4f5e-4332-b9f3-2bfe808fec19",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0fb0e113-d000-445b-8706-995535923d4f",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--a5efe443-502c-43b2-88af-694ba38f75fe",
+      "target_ref": "indicator--5968bbf0-aae6-497b-8467-509273f90323",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--ba882c99-575c-4109-838e-addba6ea166d",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--c6cae053-0bb4-4db2-8bce-ffb8013bf3c1",
+      "target_ref": "indicator--f8d6e9f2-d47a-4027-bb60-cfc0ea2d719f",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--fd2f2aa5-1d90-4eea-8b41-871207213713",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--c2491eba-2db9-484e-821e-28968cd46286",
+      "target_ref": "threat-actor--120eb39c-67cf-40e2-af7b-54283be600ec",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--d6667582-e4e6-4ea8-812f-4bce4713c6d0",
+      "created": "2026-11-09T14:37:04.317Z",
+      "modified": "2026-11-09T14:37:04.317Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--40e58db9-d61f-468c-9aec-4fc5b15e122f",
+      "target_ref": "note--64c3286b-d769-485d-9158-a0e0d148c484",
+      "description": "",
+      "confidence": 85
+    }
+  ]
+}

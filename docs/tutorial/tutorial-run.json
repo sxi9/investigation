@@ -1,0 +1,224 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "step 1: create the case from the Phishing campaign template",
+      "detail": "CASE 0419 · 8 starter cards"
+    },
+    {
+      "ok": true,
+      "name": "step 2: add the source link and pull the 13 domains with Extract IOCs",
+      "detail": "13 domains pinned; pinned now 22"
+    },
+    {
+      "ok": true,
+      "name": "step 3: delete unused placeholders, edit the operator and target cards",
+      "detail": "18 pinned"
+    },
+    {
+      "ok": true,
+      "name": "step 4: quick-add techniques, events and a note",
+      "detail": "27 pinned"
+    },
+    {
+      "ok": true,
+      "name": "step 5: arrange the board by dragging cards",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "step 6: connect the evidence with threads",
+      "detail": "threads 0 -> 13"
+    },
+    {
+      "ok": true,
+      "name": "step 6b: thread editor — record why two cards are linked",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "step 7: OSINT workbench on a domain",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "step 8: stamp and grade the indicators, add tasks",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "step 9: score the template hypotheses in ACH",
+      "detail": "81 cells"
+    },
+    {
+      "ok": true,
+      "name": "step 10: key judgement, notes, snapshot, review state",
+      "detail": "review=in review"
+    },
+    {
+      "ok": true,
+      "name": "step 11: timeline and kill-chain views",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "step 12: generate a takedown request",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "step 13: case brief, STIX and case export",
+      "detail": "case-0419-vendor-themed-okta-vishing-wave.stix.json, case-0419-vendor-themed-okta-vishing-wave.json"
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "t01-new-case.png",
+      "title": "Step 1 · Start the case",
+      "caption": "Click New case and choose the Phishing campaign template. It pre-loads three hypotheses, seven starter cards and four tasks, and sets TLP:AMBER.",
+      "marks": [
+        "New case",
+        "Choose \"Phishing campaign\""
+      ]
+    },
+    {
+      "file": "t02-template-board.png",
+      "title": "Step 1 · The empty case",
+      "caption": "The new case opens with the template's starter cards pinned. Rename the case in the title box, type your name in Analyst (it is stamped on every log entry), and set the TLP. Public reporting goes in as TLP:GREEN.",
+      "marks": [
+        "Case title",
+        "Analyst name",
+        "TLP:GREEN",
+        "Starter cards from the template: lure domain, sender, landing page, technique, operator, target, first event"
+      ]
+    },
+    {
+      "file": "t03-extract.png",
+      "title": "Step 2 · Pull the indicators out of the report",
+      "caption": "Paste the brief's indicator list into Extract IOCs and press Extract. Every defanged domain is recognised and typed. Leave them all ticked and press \"Pin selected to board\".",
+      "marks": [
+        "Extract",
+        "13 indicators found, all ticked",
+        "Pin selected to board"
+      ]
+    },
+    {
+      "file": "t04-edit-cards.png",
+      "title": "Step 3 · Flesh out the actors and victims",
+      "caption": "Click any card to edit it in the Inspector. Give the operator and target cards real titles and bodies, stamp what the source confirms, and record where each fact came from under SOURCE. Select a placeholder you do not need and press Delete.",
+      "marks": [
+        "Operator card (stamped Unverified: no named group)",
+        "Target card with sector, region, impact",
+        "Inspector: title, body, stamp, tags, source"
+      ]
+    },
+    {
+      "file": "t05-arranged.png",
+      "title": "Step 5 · Arrange the evidence",
+      "caption": "Drag cards to arrange them: dated events down the left, actor / victim / analyst notes next, the thirteen domains as a grid, ATT&CK techniques on the right. Drag empty board to pan, use the mouse wheel to zoom, press F to fit.",
+      "marks": [
+        "Event cards (red edge) carry the date",
+        "Domain indicators from Extract IOCs",
+        "ATT&CK techniques added with \"t T1566.004\""
+      ]
+    },
+    {
+      "file": "t06-threads.png",
+      "title": "Step 6 · Thread the evidence",
+      "caption": "Press C (Connect), pick a relation on the toolbar, then click one card and another. \"controls\" for operator → infrastructure, \"linked to\" for evidence, \"suspected\" where the source hedges. Click a thread label to open the thread editor and write down why the two are connected; the case brief prints it.",
+      "marks": [
+        "Connect tool (C)",
+        "Relation picker",
+        "Evidence for this link"
+      ]
+    },
+    {
+      "file": "t07-osint.png",
+      "title": "Step 7 · Pivot on an indicator",
+      "caption": "Select a domain card and press O (or OSINT). The selector is pre-filled; press Run. Live lookups that allow browser access (Google DNS, crt.sh, RDAP, …) return inline; the others are one-click launchers (VirusTotal, urlscan, Shodan, Wayback). \"Copy findings\" puts the results on the clipboard; pinning writes them into the card.",
+      "marks": [
+        "Selector, type auto-detected as Domain",
+        "Run",
+        "Copy findings"
+      ]
+    },
+    {
+      "file": "t08-grade.png",
+      "title": "Step 8 · Grade the evidence",
+      "caption": "For each key indicator: stamp it Confirmed, name the source, set the collection date and the Admiralty grade (B2 = usually reliable source, probably true). First seen / last seen feed the staleness check in the Audit tab.",
+      "marks": [
+        "Stamp: Confirmed",
+        "Source, collected date, grade B2"
+      ]
+    },
+    {
+      "file": "t08b-tasks.png",
+      "title": "Step 8 · Tasks and comments",
+      "caption": "Further down the same card: the follow-up tasks (block, hunt in SSO logs, registrar abuse report) and a dated comment. Open tasks are listed in the Audit tab until they are ticked off.",
+      "marks": [
+        "Tasks on this indicator (3 open)",
+        "Comments, stamped with analyst and time"
+      ]
+    },
+    {
+      "file": "t09-ach.png",
+      "title": "Step 9 · Test the hypotheses",
+      "caption": "ACH: the template seeded three hypotheses. Click each cell to mark an exhibit Consistent (C) or Inconsistent (I) with a hypothesis. Repeated targeting, vendor-specific domains and live vishing are consistent with an organised crew and inconsistent with an opportunistic actor.",
+      "marks": [
+        "Three hypotheses from the template",
+        "Click a cell to cycle consistent → inconsistent → neutral"
+      ]
+    },
+    {
+      "file": "t10-judgement.png",
+      "title": "Step 10 · Write the judgement",
+      "caption": "Write the key judgement in the Notes tab with a confidence level and the dissenting view. Keep the working theory and open questions in the notes. Save a named snapshot in the Log tab so you can diff the board later, and move the review state to \"In review\".",
+      "marks": [
+        "Key judgement + confidence + dissent",
+        "Working notes",
+        "Review state: In review"
+      ]
+    },
+    {
+      "file": "t11-timeline.png",
+      "title": "Step 11 · Timeline",
+      "caption": "Press T for the timeline view: the dated cards line up from the July registration wave to the 19 Oct brief; undated cards sit on the shelf. The rail at the bottom lists the same events.",
+      "marks": [
+        "Timeline view",
+        "Timeline rail"
+      ]
+    },
+    {
+      "file": "t12-kill-chain.png",
+      "title": "Step 11 · Kill chain",
+      "caption": "Press K for kill-chain lanes: Resource Development (acquire domains) → Initial Access (vishing) → Credential Access (MFA request generation) → Valid Accounts, with the evidence threaded to each technique shown beneath it.",
+      "marks": [
+        "Kill-chain lanes"
+      ]
+    },
+    {
+      "file": "t13-requests.png",
+      "title": "Step 12 · Ask for the takedown",
+      "caption": "Requests → Takedown request. All indicators are pre-ticked; name the recipient and open the letter. It lists the domains defanged, the case number, TLP and your name, ready to paste into an abuse report.",
+      "marks": [
+        "Takedown request / RFI",
+        "Open letter"
+      ]
+    },
+    {
+      "file": "t15-final-board.png",
+      "title": "Step 13 · Report and share",
+      "caption": "The finished board. Case brief prints everything (judgement, exhibits, threads with their evidence, timeline, tasks) for PDF; STIX exports the indicators, techniques and relationships for MISP / OpenCTI; Export case saves the JSON you can re-import later.",
+      "marks": [
+        "Case brief (printable)",
+        "STIX 2.1 bundle",
+        "Case JSON",
+        "Finished board"
+      ]
+    }
+  ]
+}

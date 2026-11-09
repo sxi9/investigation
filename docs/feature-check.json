@@ -1,0 +1,484 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "initial render: two sample cases, Binance case active",
+      "detail": "CASE 0417 Operation Lantern | CASE 0418 Binance $6.3B heist"
+    },
+    {
+      "ok": true,
+      "name": "case bar: set TLP, review state, analyst, title",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "quick add: \"d\" command pins a domain indicator",
+      "detail": "pinned 26 -> 27"
+    },
+    {
+      "ok": true,
+      "name": "quick add: technique, CVE, event and note commands",
+      "detail": "pinned now 31"
+    },
+    {
+      "ok": true,
+      "name": "inspector: select a card and edit title/body/tags/stamp",
+      "detail": "sel=imw9d6b2j6uqj"
+    },
+    {
+      "ok": true,
+      "name": "inspector: tasks and comments",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "inspector: pivots, custody, Claude button present",
+      "detail": "5 pivot links"
+    },
+    {
+      "ok": true,
+      "name": "connect tool: C, click two cards, thread created",
+      "detail": "threads 26 -> 27"
+    },
+    {
+      "ok": true,
+      "name": "thread editor opens for the new thread",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "reveal mode dims everything but the selection",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "timeline layout (T)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "kill chain lanes (K)",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "+ Cluster adds a group region",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "search dims non-matching cards and lists other-case hits",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "inbox: + Person adds an unpinned card; Pin moves it to the board",
+      "detail": "items 34->35, pinned 31->32"
+    },
+    {
+      "ok": true,
+      "name": "inbox: type filter hides a card type",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "actor library: drop in a known group with its techniques",
+      "detail": "pinned 32 -> 37, threads 27 -> 31"
+    },
+    {
+      "ok": true,
+      "name": "extract IOCs: paste report text, rows found, add to inbox",
+      "detail": "7 rows; items 40 -> 46"
+    },
+    {
+      "ok": true,
+      "name": "OSINT workbench: detect type and run lookups",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "ACH: add hypotheses and score evidence",
+      "detail": "111 matrix cells"
+    },
+    {
+      "ok": true,
+      "name": "request generator: takedown letter from selected indicators",
+      "detail": "1215 chars"
+    },
+    {
+      "ok": true,
+      "name": "threads tab: suggestions and manual thread",
+      "detail": "threads 31 -> 32"
+    },
+    {
+      "ok": true,
+      "name": "audit tab: hygiene checks for indicators",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "log tab: snapshots, playback and the case log",
+      "detail": "snapshots 1, log entries 27"
+    },
+    {
+      "ok": true,
+      "name": "notes tab: key judgement, sign-off and notes",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "present mode walks exhibits with arrow keys",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "case brief opens as a printable document",
+      "detail": "13225 chars"
+    },
+    {
+      "ok": true,
+      "name": "one-pager opens as a printable document",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "download: STIX",
+      "detail": "case-0418-binance-6-3b-heist.stix.json (44976 bytes)"
+    },
+    {
+      "ok": true,
+      "name": "download: Export image",
+      "detail": "case-0418-binance-6-3b-heist.png (7367473 bytes)"
+    },
+    {
+      "ok": true,
+      "name": "download: Export case",
+      "detail": "case-0418-binance-6-3b-heist.json (83710 bytes)"
+    },
+    {
+      "ok": true,
+      "name": "STIX bundle is valid STIX 2.1 with indicators and relationships",
+      "detail": "{\"report\":1,\"threat-actor\":2,\"location\":1,\"note\":22,\"attack-pattern\":8,\"identity\":2,\"x-cryptocurrency-transaction\":2,\"indicator\":7,\"vulnerability\":1,\"relationship\":32,\"grouping\":2}"
+    },
+    {
+      "ok": true,
+      "name": "case export has the documented shape",
+      "detail": "format=cyber-investigation-board v1, 46 items"
+    },
+    {
+      "ok": true,
+      "name": "import: case JSON round-trips as a new case",
+      "detail": "cases 2 -> 3 (46 items)"
+    },
+    {
+      "ok": true,
+      "name": "import: CSV indicator list lands in the inbox",
+      "detail": "items 46 -> 49"
+    },
+    {
+      "ok": true,
+      "name": "new case from the Phishing campaign template",
+      "detail": "CASE 0419 Phishing campaign · 8 items, 3 hypotheses, tlp amber"
+    },
+    {
+      "ok": true,
+      "name": "Delete key removes the selected card; Ctrl+Z restores it",
+      "detail": "8 -> 7 -> 8"
+    },
+    {
+      "ok": true,
+      "name": "zoom buttons, Fit, Inbox and Panel toggles",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "encrypt at rest: set passphrase, reload shows lock screen, unlock restores cases",
+      "detail": "4 cases restored"
+    },
+    {
+      "ok": true,
+      "name": "mobile layout under 720px switches to list mode",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors during the run (OSINT CORS refusals are expected and handled)"
+    }
+  ],
+  "shots": [
+    {
+      "file": "01-overview.png",
+      "title": "Investigation Board · overview",
+      "caption": "The board at first launch, with the sample case \"Binance $6.3B heist\" open. Cases autosave to the browser (localStorage).",
+      "marks": [
+        "Case bar: switch case, title, TLP marking, review state, analyst name, encryption, new/delete case, quick add",
+        "Actions: search, OSINT workbench, ACH, request generator, present mode, case brief, one-pager, STIX, exports, import",
+        "Tools: Move / Connect / Reveal / Timeline / Kill chain / + Cluster, thread relation picker, zoom, Fit, panel toggles",
+        "Evidence inbox: add cards of 11 types, actor library, Extract IOCs, type filters, unpinned evidence",
+        "Cork board: pinned exhibits (numbered) joined by red threads; drag to pan, wheel to zoom",
+        "Side panel: Inspector / Threads / Audit / Log / Notes",
+        "Timeline rail: every dated card in order; click one to jump to it"
+      ]
+    },
+    {
+      "file": "02-case-bar.png",
+      "title": "Case bar",
+      "caption": "Case handling lives in the top bar. TLP and review state are printed on every export; the analyst name is stamped on log entries, custody records and sign-off.",
+      "marks": [
+        "Case switcher (search covers all cases)",
+        "Case title (click to edit)",
+        "TLP marking, now AMBER",
+        "Review state: Draft / In review / Published (published = sign-off)",
+        "Analyst name",
+        "Encrypt saved cases with a passphrase",
+        "New case from a template",
+        "Quick add (press / to focus)"
+      ]
+    },
+    {
+      "file": "03-quick-add.png",
+      "title": "Quick add",
+      "caption": "Quick add: type a one-letter command and a value, press Enter. d domain · i ip · h hash · m email · w wallet · cve · @handle · u url · e date title · n note · p person · t technique · l location · c cluster. With no command the value is auto-detected.",
+      "marks": [
+        "Quick add box",
+        "New indicator card pinned to the board (red \"Unverified\" stamp by default)",
+        "T1566.004 resolved to its ATT&CK name and tactic",
+        "CVE indicator from \"cve CVE-2026-20700\" (pivots to NVD, EPSS, CISA KEV; exported to STIX as a vulnerability)"
+      ]
+    },
+    {
+      "file": "04-inspector.png",
+      "title": "Inspector",
+      "caption": "Click a card to edit it in the Inspector: title, body, indicator type/value, date, tags, stamp (Confirmed / Unverified / False lead), Admiralty grading, source, custody, tasks, comments and pivots.",
+      "marks": [
+        "Title, body, indicator type and value",
+        "Tags (comma separated)",
+        "Source, collected date, Admiralty reliability / credibility grades"
+      ]
+    },
+    {
+      "file": "05-inspector-pivots.png",
+      "title": "Inspector · pivots and custody",
+      "caption": "Further down the Inspector: pivot links open VirusTotal, urlscan, Shodan, crt.sh, etc. for the indicator; chain of custody records who added what and when; \"Analyse with Claude\" asks for an assessment (works inside the Claude app preview).",
+      "marks": [
+        "Pivots: one-click lookups for this indicator",
+        "Analyse with Claude",
+        "Delete the card (or press Del)"
+      ]
+    },
+    {
+      "file": "06-connect-thread.png",
+      "title": "Connect tool and thread editor",
+      "caption": "Connect tool (C): pick a relation, click one card then another. The thread editor opens: relation, confidence, evidence note, swap direction, cut. You can also drag a card's pin onto another card.",
+      "marks": [
+        "Connect tool",
+        "Relation to use: linked / suspected / alias / controls / resolves / located",
+        "Thread editor: relation + confidence",
+        "Evidence for this link (printed in the brief)",
+        "Swap direction / Cut"
+      ]
+    },
+    {
+      "file": "07-reveal.png",
+      "title": "Reveal",
+      "caption": "Reveal (R): with a card selected, everything except that card, its direct threads and second-degree neighbours is dimmed. Click Reveal again to leave.",
+      "marks": [
+        "Reveal toggle",
+        "Selected card stays lit; neighbours half-lit"
+      ]
+    },
+    {
+      "file": "08-timeline.png",
+      "title": "Timeline layout",
+      "caption": "Timeline (T): cards are laid out left-to-right by date with a dated axis; undated cards go on a shelf. Press T again (or click Timeline) to return to the free board.",
+      "marks": [
+        "Timeline toggle (active)",
+        "Dated axis across the board; cards in chronological order"
+      ]
+    },
+    {
+      "file": "09-kill-chain.png",
+      "title": "Kill-chain lanes",
+      "caption": "Kill chain (K): technique cards are grouped into ATT&CK tactic lanes, with the evidence threaded to each technique shown beneath it.",
+      "marks": [
+        "Kill chain toggle (active)",
+        "One lane per ATT&CK tactic"
+      ]
+    },
+    {
+      "file": "10-cluster.png",
+      "title": "Clusters",
+      "caption": "+ Cluster: a labelled region on the board. Cards whose centre is inside it move with it; drag the corner to resize, click the label to rename.",
+      "marks": [
+        "Add a cluster",
+        "Cluster label: drag to move the whole group",
+        "Rename or remove the cluster in the side panel"
+      ]
+    },
+    {
+      "file": "11-search.png",
+      "title": "Search",
+      "caption": "Search: cards that do not match are dimmed; matches in other cases are listed under the search box so you can jump across cases.",
+      "marks": [
+        "Search box (all cases)",
+        "Matching card stays bright"
+      ]
+    },
+    {
+      "file": "12-inbox.png",
+      "title": "Evidence inbox",
+      "caption": "Evidence inbox: add any of 11 card types; new cards wait unpinned in the inbox until you Pin them or drag them onto the board. Type filters hide whole categories on the board.",
+      "marks": [
+        "Add buttons: Photo, Note, Link, Person, Indicator, Document, Event, Location, Technique, Transfer, Target",
+        "Show on board: toggle a type on/off",
+        "Unpinned evidence: Pin, or drag onto the board",
+        "Actor library",
+        "Extract IOCs from pasted text"
+      ]
+    },
+    {
+      "file": "13-actors.png",
+      "title": "Actor library",
+      "caption": "Actor library: twelve well-known groups with aliases, origin, motive and typical ATT&CK techniques. \"Drop in\" pins a person card plus one technique card per TTP, threaded together.",
+      "marks": [
+        "Actor library modal",
+        "Drop in: pins actor + techniques + threads"
+      ]
+    },
+    {
+      "file": "14-extract-iocs.png",
+      "title": "Extract IOCs",
+      "caption": "Extract IOCs: paste a report, press Extract, and every domain, IP, URL, email, hash, wallet, CVE and handle is listed with a type. Untick what you do not want, then add to the inbox or pin straight to the board.",
+      "marks": [
+        "Extract IOCs modal",
+        "Extract",
+        "Found indicators (tick to keep)",
+        "Pin selected to board / Add selected to inbox"
+      ]
+    },
+    {
+      "file": "15-osint.png",
+      "title": "OSINT workbench",
+      "caption": "OSINT workbench (O): paste one selector (domain, IP, URL, email, handle, hash, wallet, CVE, phone or a name). The type is detected, live lookups run against public endpoints that allow browser access (DNS, crt.sh, RDAP, …), and launcher links open the rest. Pin the result as an indicator card with the findings attached.",
+      "marks": [
+        "OSINT workbench modal",
+        "Selector box (type auto-detected)",
+        "Run live lookups",
+        "Copy findings / pin as a card"
+      ]
+    },
+    {
+      "file": "16-ach.png",
+      "title": "Analysis of competing hypotheses",
+      "caption": "Analysis of Competing Hypotheses: add hypotheses, then click each cell to mark an exhibit Consistent, Inconsistent or Neutral with that hypothesis. The least-contradicted hypothesis is the one to carry into the key judgement.",
+      "marks": [
+        "ACH matrix modal",
+        "Add a hypothesis",
+        "Click a cell to cycle consistent → inconsistent → neutral"
+      ]
+    },
+    {
+      "file": "17-requests.png",
+      "title": "Request generator",
+      "caption": "Request generator: choose Takedown request or Request for information, tick the indicators to include, name the recipient, then open the letter in a printable window or copy the text.",
+      "marks": [
+        "Request generator modal",
+        "Recipient",
+        "Open letter (printable) / Copy text"
+      ]
+    },
+    {
+      "file": "18-threads-tab.png",
+      "title": "Threads tab",
+      "caption": "Threads tab: every thread on the board with its relation and confidence, a manual \"new thread\" form, and suggested threads when two cards share an indicator, tag or handle (accept or dismiss).",
+      "marks": [
+        "Threads tab",
+        "New thread: pick two cards and a relation"
+      ]
+    },
+    {
+      "file": "19-audit.png",
+      "title": "Audit tab",
+      "caption": "Audit tab: automatic hygiene checks across the case: indicators with no source, no grading, no sighting dates, stale beyond the staleness window, unstamped exhibits, threads without evidence. Click a row to jump to the card.",
+      "marks": [
+        "Audit tab",
+        "Each group counts the exhibits that still need work"
+      ]
+    },
+    {
+      "file": "20-log.png",
+      "title": "Snapshots, playback and log",
+      "caption": "Log tab: named snapshots (save, restore, diff against the current board), playback that rebuilds the board card by card in date order, and the append-only case log with time and analyst for every action.",
+      "marks": [
+        "Log tab",
+        "Snapshots: name + Save, then Restore or diff",
+        "Playback controls",
+        "Case log (append-only)"
+      ]
+    },
+    {
+      "file": "21-notes.png",
+      "title": "Judgement and notes",
+      "caption": "Notes tab: the key judgement with confidence level and dissent, the dated timeline of the case, and free-text working notes. Setting the review state to Published records a sign-off by the analyst.",
+      "marks": [
+        "Notes tab",
+        "Key judgement, confidence, dissent, sign-off status",
+        "Case notes (autosaved)",
+        "Published = signed off by the analyst"
+      ]
+    },
+    {
+      "file": "22-present.png",
+      "title": "Presentation mode",
+      "caption": "Present (P): panels hide, the board goes full-bleed, and arrow keys (or the on-screen controls) walk through the exhibits in number order. Esc exits.",
+      "marks": [
+        "Exhibit counter; arrow keys step through the exhibits"
+      ]
+    },
+    {
+      "file": "25-exports.png",
+      "title": "Exports and import",
+      "caption": "Exports: STIX 2.1 bundle (for MISP / OpenCTI / a TIP), the board as a PNG, and the whole case as JSON. Import accepts case JSON, STIX bundles and CSV / text indicator lists. Every export stamps TLP, case number, analyst and time.",
+      "marks": [
+        "STIX 2.1 bundle",
+        "Board as PNG",
+        "Case as JSON",
+        "Import JSON / STIX / CSV"
+      ]
+    },
+    {
+      "file": "27-new-case.png",
+      "title": "New case",
+      "caption": "New case: start blank or from a template (phishing campaign, crypto theft, ransomware intrusion, insider threat, impersonation / disinformation). Templates pre-load hypotheses, starter cards and tasks.",
+      "marks": [
+        "Template picker",
+        "Phishing campaign template"
+      ]
+    },
+    {
+      "file": "28-encrypt.png",
+      "title": "Encryption at rest",
+      "caption": "Encrypt: set a passphrase and saved cases are stored AES-GCM encrypted in the browser. On the next load the board asks for the passphrase before anything is shown.",
+      "marks": [
+        "Encryption at rest dialog",
+        "Passphrase",
+        "Encrypt saved cases"
+      ]
+    },
+    {
+      "file": "29-locked.png",
+      "title": "Locked case files",
+      "caption": "Locked: with encryption on, the next visit shows only the passphrase prompt. \"Forgot it\" wipes the store and starts over.",
+      "marks": [
+        "Enter the passphrase",
+        "Unlock"
+      ]
+    },
+    {
+      "file": "30-mobile.png",
+      "title": "Mobile layout",
+      "caption": "Narrow screens (under 720px): the board becomes a list with the same cards, inspector and actions.",
+      "marks": []
+    }
+  ]
+}

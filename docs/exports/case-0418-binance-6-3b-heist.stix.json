@@ -1,0 +1,1117 @@
+{
+  "type": "bundle",
+  "id": "bundle--e331cea0-a4e5-4370-a4a3-ee9802fc0071",
+  "objects": [
+    {
+      "type": "report",
+      "spec_version": "2.1",
+      "id": "report--396001b9-37e1-4104-bb2b-0853555353fe",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "CASE 0418 — Binance $6.3B heist",
+      "description": "WORKING THEORY\n\nVendor-themed Okta/ServiceNow domains support vishing calls that talk users through an MFA downgrade.\n\nTODO\n- block the 13 domains\n- audit SSO logs for enrolment changes\n- check fallback MFA policy",
+      "published": "2026-11-09T14:36:45.491Z",
+      "report_types": [
+        "threat-report"
+      ],
+      "object_refs": [
+        "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+        "location--1194c79d-b800-4231-8b5b-8ec86ae212cc",
+        "note--115f4fec-8172-4f77-8054-caa8aa600ac0",
+        "note--25056b04-b159-45c1-896c-4c2cef846a40",
+        "attack-pattern--b0333c14-c4a4-4de1-80c1-c4c3fffbcdc0",
+        "note--a372f295-3030-423e-9adb-97f266c39995",
+        "note--9ab8cf0c-055b-4d59-bbd4-0898a98d2ea7",
+        "note--99c43e33-2dae-4c7d-917d-c1a9664331d7",
+        "note--bc4a11f1-bb16-45a2-b0f7-d1bb1a17ea03",
+        "note--0c37d359-2fcc-46fc-ba4e-3b2ca580d876",
+        "note--1f0f056c-befb-45e7-9bbc-330e3c6e3cca",
+        "note--1890b156-3e06-43bd-bdc9-7596dcf0afa4",
+        "note--b71f2d63-b776-43e5-8eaa-8caa2fd33b13",
+        "note--695e0e9e-f0e5-4782-87ae-31a427dca68c",
+        "note--e9edbb08-3fde-460c-9eef-6fc7b9969e18",
+        "attack-pattern--aa0a9584-477a-4f30-bcee-0e13305c9f62",
+        "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+        "note--371bbbf8-3e1e-41b2-aa44-0930ace85d8e",
+        "note--d729ed34-94f3-4993-9989-6edea65262cb",
+        "note--b20d1ba3-b7d5-4c2d-a86f-b34bac946eaf",
+        "attack-pattern--2bda5600-6bed-4435-8534-d31dcce641d4",
+        "note--e09eff36-7176-43a6-89b7-80a5b57eeb17",
+        "identity--73436307-3d37-4153-bd4b-141c58535716",
+        "note--75d021a5-5d54-46b6-b6f9-fa0ce6162a60",
+        "x-cryptocurrency-transaction--49f2dcd5-719b-440e-a20e-af0eaa76a520",
+        "x-cryptocurrency-transaction--5142f448-4870-4945-8ce6-fef67f81a8e4",
+        "note--8a9e7fbe-5ecf-4e07-93e5-cc4b7e2168a8",
+        "note--de33e9bc-3722-4703-b069-e0c70b8bc7a1",
+        "indicator--465f7547-2486-4199-880b-2037640bc190",
+        "attack-pattern--2fd69ca8-a33c-46e6-a7e1-aca8beb84e57",
+        "vulnerability--8e6c2567-7ef8-4919-8be9-1e604d120906",
+        "note--e402b6de-9c0b-4450-a86a-58115a5c3dba",
+        "note--1634c1eb-a4ed-4a4b-a99b-618b357e2070",
+        "identity--d4c40b02-6774-4648-a17c-3bf35705b84c",
+        "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+        "attack-pattern--bc8d790a-66dd-4f0d-bd3b-84372b9cf7d8",
+        "attack-pattern--667e67b9-e90b-43a9-9a76-da5dd1461470",
+        "attack-pattern--f7369737-e220-4881-8959-86aff3d222a3",
+        "attack-pattern--70a194ef-5008-4477-adab-7775e634486f",
+        "indicator--7516a653-4833-45a9-be13-4913c57108b2",
+        "indicator--54938f42-cd84-428e-8804-1e99db9d0235",
+        "indicator--f9b1b28f-03e6-48e6-93d6-d66509f2430f",
+        "indicator--6cd7474a-6c1b-4af5-b984-f7974ded014e",
+        "indicator--9eaa2a83-a8a6-4dc2-8fe9-11847e55a541",
+        "indicator--1f243e0d-3398-45d7-a371-1c45ea786040",
+        "relationship--24249391-082d-4e4a-a1ff-abb34cf43e79",
+        "relationship--1560c7ed-c5f0-40c0-afb3-a67c4799c007",
+        "relationship--9397e60c-5f55-44a1-b835-b1c2472c7e2d",
+        "relationship--3b4bd081-5814-4879-ac46-91952c61bf58",
+        "relationship--69aa658e-7794-4dd1-9d27-fb778be7f4f3",
+        "relationship--26ed0091-9d3a-469b-ad62-93e711c6410e",
+        "relationship--d636f483-600d-4502-83dd-f4eaa199e7ff",
+        "relationship--f0a320fb-164b-4d22-888f-f0d377ba95a7",
+        "relationship--91d5bcd4-bc06-4bca-a692-8136b256898e",
+        "relationship--feaf6d17-5a67-4d05-b5b0-3bb67c94cd07",
+        "relationship--4c71cb74-1c64-41f9-a2f9-958b45c49d76",
+        "relationship--dd1e1fb5-17c5-4c82-88ee-c1c46a1573af",
+        "relationship--7f8a8eeb-652e-451a-8161-9c1fda7df7c6",
+        "relationship--9445186e-202f-4545-80e9-6e598fc02dd2",
+        "relationship--0d391dd2-7f70-440b-b9bb-5f4eca5c4e7f",
+        "relationship--3555e898-503d-4eba-81d5-16d0647ea731",
+        "relationship--7a225fc8-0275-4266-b594-3c6745136533",
+        "relationship--cfe6f64c-b706-4378-ad39-ce15886b8314",
+        "relationship--962de738-a5df-4281-8fe9-db631ded399e",
+        "relationship--50963df2-2a01-4bd1-a503-8666b569675b",
+        "relationship--7b111fd6-1937-4a9e-b634-9c9535022915",
+        "relationship--74c1020c-1b9b-4682-9bda-1921a427d7ef",
+        "relationship--d74e4117-486b-497c-b03b-3d9a2945f868",
+        "relationship--dbaf4918-a317-4085-8cc4-02c4b8840e8a",
+        "relationship--89c592d7-71a7-424e-b6d6-5a634ca4aab6",
+        "relationship--bb49cb2e-2e07-487d-a9f8-da0bb3aa00a4",
+        "relationship--7426d55e-342e-4984-97dc-5bd39d8b1944",
+        "relationship--a59f85d7-eb41-4151-a866-7652895871d0",
+        "relationship--b7768273-f558-48db-b950-2b433cdc9e51",
+        "relationship--1affa4a2-7a57-432c-97fe-482901142975",
+        "relationship--8d102a63-6b5b-4c9c-b977-025cfe74cb00",
+        "relationship--4780ff01-f275-4148-960a-5248b7a89cf9",
+        "grouping--e713c9b6-db82-42ac-8459-b4017d756d90",
+        "grouping--1dc08588-2758-474c-97ff-588ebaa68292"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "TraderTraitor (DPRK)",
+      "description": "aliases: Lazarus-linked unit\nAttributed by FBI, TRM Labs, Chainalysis.\nAlso behind the $1.5B Bybit hack (2025).\ntags: actor, dprk\nexhibit E1",
+      "confidence": 85
+    },
+    {
+      "type": "location",
+      "spec_version": "2.1",
+      "id": "location--1194c79d-b800-4231-8b5b-8ec86ae212cc",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Pyongyang, DPRK — attributed origin",
+      "description": "State-sponsored; proceeds reported to fund weapons programmes.\ntags: actor\nexhibit E2"
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--115f4fec-8172-4f77-8054-caa8aa600ac0",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Attribution assessments",
+      "content": "TRM Labs: linked to North Korean hackers.\nChainalysis (Levin): likely TraderTraitor, citing links to earlier attacks.\nElliptic: almost certainly the largest known theft of any kind.\nFBI alert 31 Oct: North Korea responsible.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--25056b04-b159-45c1-896c-4c2cef846a40",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Related incidents — same playbook",
+      "content": "Bybit, $1.5B (Feb 2025) — FBI: TraderTraitor.\nKelpDAO (Apr 2026).\nBinance: features of this attack match both.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--b0333c14-c4a4-4de1-80c1-c4c3fffbcdc0",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Spearphishing via Service",
+      "description": "Fake job interviews used to reach engineers (Binance statement).\ntags: intrusion\nexhibit E5",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.003",
+          "url": "https://attack.mitre.org/techniques/T1566/003/"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--a372f295-3030-423e-9adb-97f266c39995",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "FBI attributes the attack to DPRK",
+      "content": "Publishes ETH, BTC and SOL addresses tied to the theft; asks the public for information. Same day Binance reports 90% of losses replenished.\ndate: 2026-10-31",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--9ab8cf0c-055b-4d59-bbd4-0898a98d2ea7",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "FBI Cyber alert — North Korea responsible",
+      "content": "https://www.fbi.gov/investigate/cyber/alerts/2026/north-korea-responsible-for-6-billion-binance-attack\nSource of the published attacker addresses.\ndate: 2026-10-31",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--99c43e33-2dae-4c7d-917d-c1a9664331d7",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Intrusion campaign begins",
+      "content": "June 2026 (day not published). Multi-stage: employee devices, internal development systems, wallet infrastructure. The platform's own AI tool was reportedly leveraged.\ndate: 2026-06-01",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--bc4a11f1-bb16-45a2-b0f7-d1bb1a17ea03",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Status of the funds",
+      "content": "Binance, 3 Nov: ~$2.85B frozen or intercepted (≈45% of $6.34B).\nPress summary: ~$3.0B frozen by issuers and partners · ~$1.5B could not be frozen · ~$1.8B still with the attackers.\nNo conversion to fiat observed as of 30 Oct.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--0c37d359-2fcc-46fc-ba4e-3b2ca580d876",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Binance preliminary report; DPRK denial",
+      "content": "$2.85B frozen/intercepted; 98% of stolen tokens replenished. Kim Yo Jong (KCNA) denies North Korean involvement, also for Bybit. US Secret Service tracking and freezing funds.\ndate: 2026-11-03",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--1f0f056c-befb-45e7-9bbc-330e3c6e3cca",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Withdrawals resume",
+      "content": "$4.65B processed on day one, starting with ETH, USDT, USDC. Losses covered from SAFU, futures insurance fund, BTC reserve and treasury.\ndate: 2026-11-01",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--1890b156-3e06-43bd-bdc9-7596dcf0afa4",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Initial statement: entry via a compromis",
+      "content": "Initial statement: entry via a compromised software engineer's laptop. Later: other issues found. Attack prepared at least 36 hours in advance.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--b71f2d63-b776-43e5-8eaa-8caa2fd33b13",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Issuers freeze stablecoins",
+      "content": "Tether freezes wallets 17:01 ET, Circle 17:04. Tether blocks the Binance hot wallet 18:06, Circle 19:53. Binance revokes the attackers' permissions 20:10 ET. Ripple also freezes.\ndate: 2026-10-29",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--695e0e9e-f0e5-4782-87ae-31a427dca68c",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Losses by chain: ETH $3.8B · BTC $1.5B (",
+      "content": "Losses by chain: ETH $3.8B · BTC $1.5B (18,270 BTC) · TRON $628M · XRP $296M · SOL $96M. Ten chains in total.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--e9edbb08-3fde-460c-9eef-6fc7b9969e18",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "CNBC — what we know and what comes next",
+      "content": "https://www.cnbc.com/2026/10/30/billions-in-crypto-frozen-in-binance-hack-heres-what-happens-next-.html\n$6.36B moved across 10 blockchains, most within ~20 minutes.\ndate: 2026-10-30",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--aa0a9584-477a-4f30-bcee-0e13305c9f62",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "User Execution",
+      "description": "Malicious software delivered through the interview lure; engineer device compromised.\ntags: intrusion\nexhibit E16",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1204",
+          "url": "https://attack.mitre.org/techniques/T1204/"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Hot wallets drained — 16:05 ET",
+      "content": "Starts on XRP Ledger 16:05 ET; Ethereum and Bitcoin 16:20. Main ETH transaction 16:24 (64 transfers); one transfer above $2.5B. ~20 minutes, ten chains.\ndate: 2026-10-29",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--371bbbf8-3e1e-41b2-aa44-0930ace85d8e",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Second wave — Avalanche, Polygon",
+      "content": "19:05 ET. Final Ethereum transaction 19:56 ET.\ndate: 2026-10-29",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--d729ed34-94f3-4993-9989-6edea65262cb",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Wikipedia — 2026 Binance hack",
+      "content": "https://en.wikipedia.org/wiki/2026_Binance_hack\nRunning summary with per-chain losses and the freeze timeline.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--b20d1ba3-b7d5-4c2d-a86f-b34bac946eaf",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Attack path — EIP-7702",
+      "content": "Hot wallet drained via EIP-7702 account delegation (CEO Richard Teng). Signatures obtained in advance, executed in one burst. Full post-mortem pending.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--2bda5600-6bed-4435-8534-d31dcce641d4",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Financial Theft",
+      "description": "$6.3B across ten chains.\ntags: heist\nexhibit E21",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1657",
+          "url": "https://attack.mitre.org/techniques/T1657/"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--e09eff36-7176-43a6-89b7-80a5b57eeb17",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "17,260 ETH moved to a fresh wallet",
+      "content": "01:15 ET. First visible laundering step; funds not yet converted to fiat.\ndate: 2026-10-30",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--73436307-3d37-4153-bd4b-141c58535716",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Richard Teng — Binance CEO",
+      "identity_class": "individual",
+      "description": "Public statements: EIP-7702 used on the hot wallet; $6B set aside; services to resume within 40 hours.\ntags: witness\nexhibit E23"
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--75d021a5-5d54-46b6-b6f9-fa0ce6162a60",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Pattern match with Bybit and KelpDAO: sm",
+      "content": "Pattern match with Bybit and KelpDAO: small Tornado Cash withdrawals fund an operator wallet; staging long before the theft; pre-signed, one burst.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "x-cryptocurrency-transaction",
+      "spec_version": "2.1",
+      "id": "x-cryptocurrency-transaction--49f2dcd5-719b-440e-a20e-af0eaa76a520",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Largest single transfer of the drain",
+      "chain": "Ethereum",
+      "amount": "> $2.5B in one transfer",
+      "from_address": "Binance hot wallet",
+      "to_address": "Attacker-controlled wallet",
+      "tx_hash": "",
+      "description": "Part of the 64-transfer Ethereum batch at 16:24 ET.\ntags: heist\nexhibit E25",
+      "confidence": 85
+    },
+    {
+      "type": "x-cryptocurrency-transaction",
+      "spec_version": "2.1",
+      "id": "x-cryptocurrency-transaction--5142f448-4870-4945-8ce6-fef67f81a8e4",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "First laundering hop",
+      "chain": "Ethereum",
+      "amount": "17,260 ETH",
+      "from_address": "Attacker-controlled wallet",
+      "to_address": "Fresh wallet (unlabelled)",
+      "tx_hash": "",
+      "description": "01:15 ET, 30 Oct. Paste the published address and tx hash here.\ntags: laundering\nexhibit E26",
+      "confidence": 85
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--8a9e7fbe-5ecf-4e07-93e5-cc4b7e2168a8",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Open the FBI alert, copy the published E",
+      "content": "Open the FBI alert, copy the published ETH / BTC / SOL addresses, then run Extract IOCs to pin them as wallet indicators.",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--de33e9bc-3722-4703-b069-e0c70b8bc7a1",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Guardian — withdrawals resume after record hack",
+      "content": "https://www.theguardian.com/business/2026/nov/01/binance-losses-covered-hack-fbi-north-korea-cryptocurrency\ndate: 2026-11-01",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--465f7547-2486-4199-880b-2037640bc190",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Okta look-alike login domain",
+      "description": "Spoofed SSO portal; registered via privacy proxy. Pivot on registrar + cert.\ntags: infra, phish\nexhibit E27",
+      "pattern": "[domain-name:value = 'okta-sso-verify.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 85,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--2fd69ca8-a33c-46e6-a7e1-aca8beb84e57",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Spearphishing Voice",
+      "description": "exhibit E28",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.004",
+          "url": "https://attack.mitre.org/techniques/T1566/004/"
+        }
+      ]
+    },
+    {
+      "type": "vulnerability",
+      "spec_version": "2.1",
+      "id": "vulnerability--8e6c2567-7ef8-4919-8be9-1e604d120906",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "CVE-2026-20700",
+      "description": "exhibit E29",
+      "external_references": [
+        {
+          "source_name": "cve",
+          "external_id": "CVE-2026-20700"
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--e402b6de-9c0b-4450-a86a-58115a5c3dba",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Help-desk vishing call reported",
+      "content": "date: 2026-11-08",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "note",
+      "spec_version": "2.1",
+      "id": "note--1634c1eb-a4ed-4a4b-a99b-618b357e2070",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "abstract": "Check whether SMS fallback is still enab",
+      "content": "Check whether SMS fallback is still enabled for admins",
+      "object_refs": [
+        "report--396001b9-37e1-4104-bb2b-0853555353fe"
+      ]
+    },
+    {
+      "type": "identity",
+      "spec_version": "2.1",
+      "id": "identity--d4c40b02-6774-4648-a17c-3bf35705b84c",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Unknown subject",
+      "identity_class": "individual",
+      "description": ""
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "TraderTraitor",
+      "description": "aka Jade Sleet, UNC4899, Slow Pisces\nDPRK · crypto theft\n\nTargets exchanges and Web3 developers with fake job offers and trojanised coding tasks, then drains hot wallets in one burst. Attributed by the FBI to the Bybit (2025) and Binance (2026) heists.\ntags: actor\nexhibit E33",
+      "confidence": 40
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--bc8d790a-66dd-4f0d-bd3b-84372b9cf7d8",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Spearphishing via Service",
+      "description": "tags: actor\nexhibit E34",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.003",
+          "url": "https://attack.mitre.org/techniques/T1566/003/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--667e67b9-e90b-43a9-9a76-da5dd1461470",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "User Execution",
+      "description": "tags: actor\nexhibit E35",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1204",
+          "url": "https://attack.mitre.org/techniques/T1204/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--f7369737-e220-4881-8959-86aff3d222a3",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Compromise Software Supply Chain",
+      "description": "tags: actor\nexhibit E36",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1195.002",
+          "url": "https://attack.mitre.org/techniques/T1195/002/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--70a194ef-5008-4477-adab-7775e634486f",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Financial Theft",
+      "description": "tags: actor\nexhibit E37",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1657",
+          "url": "https://attack.mitre.org/techniques/T1657/"
+        }
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--7516a653-4833-45a9-be13-4913c57108b2",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "helpdesk@servicenow-ticket.com",
+      "description": "",
+      "pattern": "[email-addr:value = 'helpdesk@servicenow-ticket.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 40,
+      "labels": [
+        "email",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--54938f42-cd84-428e-8804-1e99db9d0235",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "3b9f2a1c0d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4",
+      "description": "",
+      "pattern": "[file:hashes.'SHA-256' = '3b9f2a1c0d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 40,
+      "labels": [
+        "hash",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--f9b1b28f-03e6-48e6-93d6-d66509f2430f",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "198.51.100.23",
+      "description": "",
+      "pattern": "[ipv4-addr:value = '198.51.100.23']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 40,
+      "labels": [
+        "ip",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--6cd7474a-6c1b-4af5-b984-f7974ded014e",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "riskified-okta.com",
+      "description": "",
+      "pattern": "[domain-name:value = 'riskified-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--9eaa2a83-a8a6-4dc2-8fe9-11847e55a541",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "shipmonk-servicenow.com",
+      "description": "",
+      "pattern": "[domain-name:value = 'shipmonk-servicenow.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--1f243e0d-3398-45d7-a371-1c45ea786040",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "gladly-okta.com",
+      "description": "",
+      "pattern": "[domain-name:value = 'gladly-okta.com']",
+      "pattern_type": "stix",
+      "valid_from": "2026-11-09T14:36:45.491Z",
+      "confidence": 40,
+      "labels": [
+        "domain",
+        "malicious-activity"
+      ]
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--24249391-082d-4e4a-a1ff-abb34cf43e79",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "target_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--1560c7ed-c5f0-40c0-afb3-a67c4799c007",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "located-at",
+      "source_ref": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "target_ref": "location--1194c79d-b800-4231-8b5b-8ec86ae212cc",
+      "description": "",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--9397e60c-5f55-44a1-b835-b1c2472c7e2d",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "target_ref": "attack-pattern--b0333c14-c4a4-4de1-80c1-c4c3fffbcdc0",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3b4bd081-5814-4879-ac46-91952c61bf58",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--b0333c14-c4a4-4de1-80c1-c4c3fffbcdc0",
+      "target_ref": "note--99c43e33-2dae-4c7d-917d-c1a9664331d7",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--69aa658e-7794-4dd1-9d27-fb778be7f4f3",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--99c43e33-2dae-4c7d-917d-c1a9664331d7",
+      "target_ref": "note--1890b156-3e06-43bd-bdc9-7596dcf0afa4",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--26ed0091-9d3a-469b-ad62-93e711c6410e",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--1890b156-3e06-43bd-bdc9-7596dcf0afa4",
+      "target_ref": "attack-pattern--aa0a9584-477a-4f30-bcee-0e13305c9f62",
+      "description": "",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--d636f483-600d-4502-83dd-f4eaa199e7ff",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--aa0a9584-477a-4f30-bcee-0e13305c9f62",
+      "target_ref": "note--b20d1ba3-b7d5-4c2d-a86f-b34bac946eaf",
+      "description": "",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--f0a320fb-164b-4d22-888f-f0d377ba95a7",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--b20d1ba3-b7d5-4c2d-a86f-b34bac946eaf",
+      "target_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--91d5bcd4-bc06-4bca-a692-8136b256898e",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "target_ref": "note--b71f2d63-b776-43e5-8eaa-8caa2fd33b13",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--feaf6d17-5a67-4d05-b5b0-3bb67c94cd07",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "target_ref": "note--371bbbf8-3e1e-41b2-aa44-0930ace85d8e",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--4c71cb74-1c64-41f9-a2f9-958b45c49d76",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--371bbbf8-3e1e-41b2-aa44-0930ace85d8e",
+      "target_ref": "note--e09eff36-7176-43a6-89b7-80a5b57eeb17",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--dd1e1fb5-17c5-4c82-88ee-c1c46a1573af",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--e09eff36-7176-43a6-89b7-80a5b57eeb17",
+      "target_ref": "note--75d021a5-5d54-46b6-b6f9-fa0ce6162a60",
+      "description": "",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7f8a8eeb-652e-451a-8161-9c1fda7df7c6",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "target_ref": "note--695e0e9e-f0e5-4782-87ae-31a427dca68c",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--9445186e-202f-4545-80e9-6e598fc02dd2",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--b71f2d63-b776-43e5-8eaa-8caa2fd33b13",
+      "target_ref": "note--bc4a11f1-bb16-45a2-b0f7-d1bb1a17ea03",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--0d391dd2-7f70-440b-b9bb-5f4eca5c4e7f",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--0c37d359-2fcc-46fc-ba4e-3b2ca580d876",
+      "target_ref": "note--bc4a11f1-bb16-45a2-b0f7-d1bb1a17ea03",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3555e898-503d-4eba-81d5-16d0647ea731",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--a372f295-3030-423e-9adb-97f266c39995",
+      "target_ref": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7a225fc8-0275-4266-b594-3c6745136533",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--9ab8cf0c-055b-4d59-bbd4-0898a98d2ea7",
+      "target_ref": "note--a372f295-3030-423e-9adb-97f266c39995",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--cfe6f64c-b706-4378-ad39-ce15886b8314",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--115f4fec-8172-4f77-8054-caa8aa600ac0",
+      "target_ref": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--962de738-a5df-4281-8fe9-db631ded399e",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--25056b04-b159-45c1-896c-4c2cef846a40",
+      "target_ref": "threat-actor--289e60a3-ef17-447c-af28-c9b1bc3473e2",
+      "description": "",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--50963df2-2a01-4bd1-a503-8666b569675b",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "identity--73436307-3d37-4153-bd4b-141c58535716",
+      "target_ref": "note--b20d1ba3-b7d5-4c2d-a86f-b34bac946eaf",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7b111fd6-1937-4a9e-b634-9c9535022915",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "attack-pattern--2bda5600-6bed-4435-8534-d31dcce641d4",
+      "target_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--74c1020c-1b9b-4682-9bda-1921a427d7ef",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--bc4a11f1-bb16-45a2-b0f7-d1bb1a17ea03",
+      "target_ref": "note--695e0e9e-f0e5-4782-87ae-31a427dca68c",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--d74e4117-486b-497c-b03b-3d9a2945f868",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--1f0f056c-befb-45e7-9bbc-330e3c6e3cca",
+      "target_ref": "note--0c37d359-2fcc-46fc-ba4e-3b2ca580d876",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--dbaf4918-a317-4085-8cc4-02c4b8840e8a",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--df58b52c-28bb-44b2-89c7-5bcde1fa8491",
+      "target_ref": "x-cryptocurrency-transaction--49f2dcd5-719b-440e-a20e-af0eaa76a520",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--89c592d7-71a7-424e-b6d6-5a634ca4aab6",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "note--e09eff36-7176-43a6-89b7-80a5b57eeb17",
+      "target_ref": "x-cryptocurrency-transaction--5142f448-4870-4945-8ce6-fef67f81a8e4",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--bb49cb2e-2e07-487d-a9f8-da0bb3aa00a4",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "related-to",
+      "source_ref": "x-cryptocurrency-transaction--49f2dcd5-719b-440e-a20e-af0eaa76a520",
+      "target_ref": "x-cryptocurrency-transaction--5142f448-4870-4945-8ce6-fef67f81a8e4",
+      "description": "",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7426d55e-342e-4984-97dc-5bd39d8b1944",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "controls",
+      "source_ref": "indicator--465f7547-2486-4199-880b-2037640bc190",
+      "target_ref": "attack-pattern--2fd69ca8-a33c-46e6-a7e1-aca8beb84e57",
+      "description": "Domain is the landing page used during the vishing call.",
+      "confidence": 85
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--a59f85d7-eb41-4151-a866-7652895871d0",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+      "target_ref": "attack-pattern--bc8d790a-66dd-4f0d-bd3b-84372b9cf7d8",
+      "description": "Typical of TraderTraitor in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--b7768273-f558-48db-b950-2b433cdc9e51",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+      "target_ref": "attack-pattern--667e67b9-e90b-43a9-9a76-da5dd1461470",
+      "description": "Typical of TraderTraitor in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--1affa4a2-7a57-432c-97fe-482901142975",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+      "target_ref": "attack-pattern--f7369737-e220-4881-8959-86aff3d222a3",
+      "description": "Typical of TraderTraitor in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--8d102a63-6b5b-4c9c-b977-025cfe74cb00",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+      "target_ref": "attack-pattern--70a194ef-5008-4477-adab-7775e634486f",
+      "description": "Typical of TraderTraitor in public reporting; confirm against this case.",
+      "confidence": 55
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--4780ff01-f275-4148-960a-5248b7a89cf9",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--465f7547-2486-4199-880b-2037640bc190",
+      "target_ref": "note--e402b6de-9c0b-4450-a86a-58115a5c3dba",
+      "description": "",
+      "confidence": 85
+    },
+    {
+      "type": "grouping",
+      "spec_version": "2.1",
+      "id": "grouping--e713c9b6-db82-42ac-8459-b4017d756d90",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "Attacker infrastructure",
+      "context": "suspicious-activity",
+      "object_refs": [
+        "note--8a9e7fbe-5ecf-4e07-93e5-cc4b7e2168a8"
+      ]
+    },
+    {
+      "type": "grouping",
+      "spec_version": "2.1",
+      "id": "grouping--1dc08588-2758-474c-97ff-588ebaa68292",
+      "created": "2026-11-09T14:36:45.491Z",
+      "modified": "2026-11-09T14:36:45.491Z",
+      "name": "TraderTraitor",
+      "context": "suspicious-activity",
+      "object_refs": [
+        "threat-actor--b982fd6d-b1fb-4365-9779-b89c63b480e2",
+        "attack-pattern--bc8d790a-66dd-4f0d-bd3b-84372b9cf7d8",
+        "attack-pattern--667e67b9-e90b-43a9-9a76-da5dd1461470",
+        "attack-pattern--f7369737-e220-4881-8959-86aff3d222a3",
+        "attack-pattern--70a194ef-5008-4477-adab-7775e634486f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+type,value,title
+domain,yotpo-okta[.]com,Okta look-alike
+domain,paddleokta[.]com,Okta look-alike
+ip,203.0.113.77,Lure host
