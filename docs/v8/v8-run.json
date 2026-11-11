@@ -1,0 +1,117 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "V01 setup: admin and the sample case on the board",
+      "detail": "CASE 0418 open"
+    },
+    {
+      "ok": true,
+      "name": "V02 build the story from the timeline: one scene per day, then evidence, assessment and asks",
+      "detail": "8 scenes: happened, happened, happened, happened, happened, happened, found, assess"
+    },
+    {
+      "ok": true,
+      "name": "V03 edit a scene: caption, kind and the cards it rests on",
+      "detail": "caption set, 5 cards in scene 2"
+    },
+    {
+      "ok": true,
+      "name": "V04 draft with AI appends scenes written from the whole case (rules engine without a key)",
+      "detail": "8 → 16 scenes"
+    },
+    {
+      "ok": true,
+      "name": "V05 play the story full screen, one scene at a time",
+      "detail": "advanced with →, closed with Esc"
+    },
+    {
+      "ok": true,
+      "name": "V06 print: one scene per page with its exhibits",
+      "detail": "17 pages for 16 scenes"
+    },
+    {
+      "ok": true,
+      "name": "V07 the case brief gains a Story chapter before the timeline",
+      "detail": "Story chapter present before Timeline"
+    },
+    {
+      "ok": true,
+      "name": "V08 the public share page shows the storyboard first",
+      "detail": "16 scenes on the public page"
+    },
+    {
+      "ok": true,
+      "name": "V09 the story survives a reload and is part of the case document",
+      "detail": "16 scenes on the server"
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "v01-build-from-timeline.png",
+      "title": "V01 · Build from timeline",
+      "caption": "Storyboard: press Story on the toolbar and \"Build from timeline\". Every day with dated cards becomes a \"what happened\" scene (many days are merged into spans), then \"what the evidence shows\" from confirmed indicators, \"assessment\" from the judgement, and \"what we ask for\". Each scene carries the cards that back it.",
+      "marks": [
+        "Build from the timeline",
+        "Scenes in order, by kind",
+        "Scene editor with its cards"
+      ]
+    },
+    {
+      "file": "v02-edit-scene.png",
+      "title": "V02 · Edit a scene",
+      "caption": "Editing a scene: the title, the kind (what happened, what we found, what we assess, what we ask for), the date range and a caption that cites exhibits. Add the board's selected card or pick any pinned card; remove with ×; reorder with the arrows. Everything is saved on the case, so it syncs and versions like the rest.",
+      "marks": [
+        "Caption citing exhibits",
+        "Add a card to the scene",
+        "Card tile in the scene"
+      ]
+    },
+    {
+      "file": "v03-draft-ai.png",
+      "title": "V03 · AI-drafted scenes",
+      "caption": "Draft with AI: the model (or the rules engine when no key is configured) writes scenes from the whole case — notes, exhibits, threads, hypotheses — with captions citing exhibit numbers that are checked against the board. Replace your scenes or append to them.",
+      "marks": [
+        "Draft with AI",
+        "Appended, engine named"
+      ]
+    },
+    {
+      "file": "v04-play.png",
+      "title": "V04 · Play",
+      "caption": "Play: a full-screen view of one scene at a time — kind and dates, title, caption, the cards as tiles. Arrow keys or the buttons move between scenes; Esc returns to the editor. Made for the briefing room.",
+      "marks": [
+        "Scene counter and kind",
+        "Backing cards"
+      ]
+    },
+    {
+      "file": "v05-print.png",
+      "title": "V05 · Printed storyboard",
+      "caption": "Print: a cover with the scene list, then one page per scene with the kind, dates, caption and the exhibits as tiles. Save as PDF from the browser for a hand-over or a leadership pack.",
+      "marks": [
+        "One scene per page"
+      ]
+    },
+    {
+      "file": "v06-brief-story.png",
+      "title": "V06 · Brief chapter",
+      "caption": "The case brief prints the storyboard as a chapter before the timeline: every scene with its kind, dates, caption and the exhibits it cites, so the narrative and the evidence tables travel together.",
+      "marks": [
+        "Story chapter in the brief"
+      ]
+    },
+    {
+      "file": "v07-public-story.png",
+      "title": "V07 · Storyboard on the share page",
+      "caption": "On the public page the storyboard comes first: scene by scene, with the exhibits each one rests on as chips. Readers get the narrative before the tables, and only the cards the team pinned.",
+      "marks": [
+        "Scene on the public page"
+      ]
+    }
+  ]
+}

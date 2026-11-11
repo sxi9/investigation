@@ -473,6 +473,9 @@ export default function render(v) {
               <button onClick={v.toggleKillchain} title="Kill-chain lanes (K): techniques by ATT&CK tactic, evidence beneath each" style={{height: "26px", padding: "0 10px", border: `1px solid ${v.kcBorder ?? ""}`, background: `${v.kcBg ?? ""}`, color: `${v.kcFg ?? ""}`, font: "12px 'Archivo Narrow',sans-serif", letterSpacing: ".12em", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap", flex: "none"}}>
                 {"Kill chain"}
               </button>
+              <button data-story-btn="1" onClick={v.toggleStory} title="Storyboard: the case as scenes for the brief, the public page and a slide-by-slide playback" style={{height: "26px", padding: "0 10px", border: "1px solid #2c2c31", background: "#17171a", color: "#d8d3c7", font: "12px 'Archivo Narrow',sans-serif", letterSpacing: ".12em", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap", flex: "none"}} className="scb1">
+                {"Story"}
+              </button>
               {"\n  "}
               <button onClick={v.toggleGeo} title="Geo view (G): every located card on one map" style={{height: "26px", padding: "0 10px", border: `1px solid ${v.geoBorder ?? ""}`, background: `${v.geoBg ?? ""}`, color: `${v.geoFg ?? ""}`, font: "12px 'Archivo Narrow',sans-serif", letterSpacing: ".12em", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap", flex: "none"}}>
                 {"Geo"}

@@ -89,7 +89,7 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 | `GET /comments?caseId=`, `POST /comments` | readers of the case | List (editors see pending and rejected too) and write `{caseId, itemId?, text}`; accepted at once for signed-in accounts. |
 | `POST /comments/:id/accept\|reject\|reply` | editors | Moderate a pending comment or reply to an accepted one (`{text}`). |
 | `POST /ingest` | account | Raw file body with `X-File-Name`: `.eml`, `.pdf`, text/HTML → `{summary, cards, threads, sources, kind}` in the research-result shape. |
-| `POST /ai/draft` | account | `{caseId or case, kind: summary\|takedown\|rfi\|hypotheses, to, ids}` → `{text or hypotheses, engine}`. |
+| `POST /ai/draft` | account | `{caseId or case, kind: summary\|takedown\|rfi\|hypotheses\|story, to, ids}` → `{text, hypotheses or scenes, engine}`. |
 | `GET /store/case/:id/stix.json` | readers of the case | STIX 2.1 bundle of the case with stable ids. |
 | `GET\|POST /feeds`, `DELETE /feeds/:id`, `POST /feeds/push` | admin | Manage token feeds (name, `tlpMax`, `confirmedOnly`, `indicatorsOnly`, `tags`, `caseIds`, `webhook`, `everyH`); the token is returned once. |
 | `GET /feeds/:id/stix.json\|indicators.csv\|indicators.txt?token=` | token (no session) | Poll a feed; also `Authorization: Bearer <token>`. 404 for a wrong token. |
@@ -177,6 +177,10 @@ Without a model key the gateway still answers the board's four prompts, from rul
 - **Translate**: language detection by script and stop-words; the text is returned unchanged with a note, since no translation model is available offline.
 
 Configure any provider above to replace all four with a model.
+
+## Storyboard
+
+The story lives on the case document (`story.scenes[]`: id, title, kind, from, to, caption, item ids), so it syncs, merges and versions with the rest and is part of every export. The server contributes `POST /ai/draft` with `kind: "story"`: the model writes 4–8 scenes citing exhibit numbers (checked against the board), and `localStory()` in `server/src/drafts.js` builds the same structure from the chronology, the indicators, the judgement and open tasks when no model is configured. `publicCase()` passes the scenes (with only the visible cards) to the share page.
 
 ## Sharing and review
 

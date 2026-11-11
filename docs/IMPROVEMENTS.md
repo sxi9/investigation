@@ -84,3 +84,11 @@ Found while porting the second design package and putting the server behind it.
 56. **The public page is not cached or rate-limited for bursts.** A link posted widely hits the API once per view; a short server-side cache of the projection per share id would carry that comfortably.
 57. **No notification back to the guest.** When a comment is accepted or replied to, the guest only finds out by revisiting. An optional email on the form would close the loop (and give a reply address).
 
+## Version 8 (storyboard)
+
+58. **Scenes do not branch by hypothesis.** The plan had the same story replayed under each ACH hypothesis so a reviewer sees where they diverge. Scenes have a single caption today; a per-hypothesis caption with the discriminating exhibit is the next step.
+59. **Play mode is separate from Present mode.** The board's own Present (P) still steps through exhibits; the storyboard has its own full-screen player. Merging them (scenes as chapters, exhibits as sub-steps) would give one remote-friendly flow, and the recorded walkthrough could take scene markers from it.
+60. **The storyboard print is HTML to print.** Like the brief it relies on the browser's Save as PDF; a server-side PDF (Chromium is already a dev dependency through Playwright) would give a stable hand-over file with the board image on the cover.
+61. **Scene tiles show text only.** Photos and board snippets would make scenes far stronger; the media mirror already holds the files, so a thumbnail per scene is mostly plumbing.
+62. **Comments can target a scene but the panel does not show them.** The comment channel stores `sceneId`; the Story panel should list and allow comments per scene the way the Activity drawer does per card.
+

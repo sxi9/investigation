@@ -105,3 +105,10 @@ test('drafts: summary, takedown, RFI and hypotheses come back from the rules eng
   assert.equal((await call('POST', '/api/ai/draft', { caseId: 'c-rep', kind: 'poem' }, 'ana')).status, 400);
   assert.equal((await call('POST', '/api/ai/draft', { caseId: 'c-red', kind: 'summary' }, 'ana')).status, 404, 'cannot draft from a case you cannot see');
 });
+
+test('drafts: a storyboard from the chronology, with exhibit numbers, assessment and asks', async () => {
+  const r = await call('POST', '/api/ai/draft', { caseId: 'c-rep', kind: 'story' }, 'ana'); assert.equal(r.status, 200); assert.equal(r.body.engine, 'rules');
+  const sc = r.body.scenes; assert.ok(sc.length >= 3); assert.equal(sc[0].kind, 'happened'); assert.equal(sc[0].from, '2026-03-14'); assert.match(sc[0].caption, /09:14 — First lure sent/);
+  assert.ok(sc.some(x => x.kind === 'found' && x.exhibits.includes(1))); assert.ok(sc.some(x => x.kind === 'ask' && /portal-secure-login\.com/.test(x.caption)));
+  assert.ok(sc.some(x => x.kind === 'assess' && /Lantern crew/.test(x.caption)));
+});
