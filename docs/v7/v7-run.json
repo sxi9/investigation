@@ -1,0 +1,112 @@
+{
+  "checks": [
+    {
+      "ok": true,
+      "name": "W01 setup: admin, reviewer and viewer accounts, the sample case on the board",
+      "detail": "CASE 0418 open"
+    },
+    {
+      "ok": true,
+      "name": "W02 create a share link from Account → Share (label, expiry, comments allowed)",
+      "detail": "http://127.0.0.1:8787/share.html#shXFI0qBQ5mwbsn7h2:…"
+    },
+    {
+      "ok": true,
+      "name": "W03 the public page opens without a login and shows only what is safe: pinned, non-falsified cards, no notes or tasks",
+      "detail": "26 cards shown, no session on the page"
+    },
+    {
+      "ok": true,
+      "name": "W04 a guest leaves a comment on a card; it waits for moderation",
+      "detail": "1 comment awaiting moderation"
+    },
+    {
+      "ok": true,
+      "name": "W05 the analyst moderates in Activity → comments: accept and reply",
+      "detail": "accepted with a reply"
+    },
+    {
+      "ok": true,
+      "name": "W06 the public page now shows the accepted comment with the team's reply",
+      "detail": ""
+    },
+    {
+      "ok": true,
+      "name": "W07 a reviewer comments on the board without edit rights",
+      "detail": "reviewer commented on CASE 0417"
+    },
+    {
+      "ok": true,
+      "name": "W08 revoking the link stops the public page; a TLP:RED case cannot be shared",
+      "detail": "revoked → 410; TLP:RED → 403"
+    },
+    {
+      "ok": true,
+      "name": "no unexpected page errors"
+    }
+  ],
+  "shots": [
+    {
+      "file": "w01-share-link.png",
+      "title": "W01 · Share link",
+      "caption": "Share link: from Account → Share an analyst creates a read-only link for one case, with a label, an expiry in days and whether readers may comment. Only TLP:CLEAR and TLP:GREEN cases can be shared. The link is copied once; the list shows views, expiry and a Revoke button.",
+      "marks": [
+        "Create the link",
+        "Link copied; what the page shows",
+        "Revoke at any time"
+      ]
+    },
+    {
+      "file": "w02-public-page.png",
+      "title": "W02 · Public page",
+      "caption": "The public page: a reader with the link sees the case brief as a page — TLP, summary, chronology, exhibits grouped by type with defanged indicators, hypotheses under test — and nothing else. No login, no toolbars, no notes, tasks, internal comments, falsified or unpinned cards. The link expiry is printed at the top.",
+      "marks": [
+        "Read-only, with the expiry",
+        "Exhibits, defanged"
+      ]
+    },
+    {
+      "file": "w03-guest-comment.png",
+      "title": "W03 · Guest comment",
+      "caption": "Guest comment: the reader picks the card (or the case as a whole), gives a name and writes. The comment is stored in its own channel, never in the case document, and waits for an analyst to accept it. Thirty comments an hour per link, and the link can be revoked.",
+      "marks": [
+        "Send",
+        "Held for moderation"
+      ]
+    },
+    {
+      "file": "w04-moderate.png",
+      "title": "W04 · Moderation",
+      "caption": "Moderation: the Activity button shows how many comments wait; the comments tab lists them with the card they refer to. Accept publishes the comment on the public page and the board, Reject hides it (it stays in the audit trail). Team members can reply; the reply is shown under the comment on the public page.",
+      "marks": [
+        "Guest comment, pending",
+        "Accept",
+        "Your own comment"
+      ]
+    },
+    {
+      "file": "w05-public-comment.png",
+      "title": "W05 · Published comment",
+      "caption": "After acceptance the comment appears on the public page under the card it refers to, with the team's reply. Rejected comments never appear.",
+      "marks": [
+        "Accepted guest comment with reply"
+      ]
+    },
+    {
+      "file": "w06-reviewer-comment.png",
+      "title": "W06 · Reviewer comment",
+      "caption": "Reviewers and viewers comment without edit rights: the comment channel is separate from the case document, so nothing they write touches the board's cards or the merge. Editors are notified; the comment shows the author's role.",
+      "marks": [
+        "Reviewer's comment, no edit rights needed"
+      ]
+    },
+    {
+      "file": "w07-revoked.png",
+      "title": "W07 · Revoked link",
+      "caption": "Revoked: the page says so and shows nothing. Expired links behave the same. Every creation, view count, revocation, comment and moderation decision is in the audit trail.",
+      "marks": [
+        "Link revoked"
+      ]
+    }
+  ]
+}

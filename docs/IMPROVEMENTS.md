@@ -28,7 +28,7 @@ Everything below came up while driving the board through the two worked cases (t
 19. **Transfers need addresses to be useful.** The transfer card links to a block explorer only when a tx hash or address is present; public advisories often give amounts without addresses. Allow an amount-only transfer to still appear in the brief's financial summary, and let several transfers roll up into a total.
 20. **Merge is manual, one card at a time.** After an actor drop-in or a second extraction there can be many duplicates. A "find duplicates" button (same value, same technique ID, same title) with a merge-all review would save time.
 21. **ACH has no scoring summary.** Cells can be marked, and the count of inconsistencies is shown per hypothesis, but there is no weighting by evidence grade and the matrix is not in the case brief. Weight by Admiralty grade and print the matrix.
-22. **The request letter cannot be sent or tracked.** Open letter / Copy text is all there is; the Requests count in the audit is not tied to a card. Record each generated request as a task with a reference number and a due date.
+22. *(still open)* **The request letter cannot be sent or tracked.** Open letter / Copy text is all there is; the Requests count in the audit is not tied to a card. Record each generated request as a task with a reference number and a due date.
 23. **"Analyse with Claude" only works in the Claude app preview.** Elsewhere the button just shows a toast. With a backend key (see `/v1/ai/assess` in the spec) it could run anywhere, and the assessment could be stored on the card instead of only shown.
 24. **Mobile is read-mostly.** Narrow screens get a list, but cards cannot be arranged or connected and the OSINT workbench is cramped. Fine for review; say so in the UI.
 25. **Single-letter shortcuts fire while a button has focus.** After clicking a toolbar button, pressing `t` or `k` toggles a layout even though the user is not "on the board". Scope shortcuts to the board or require focus there.
@@ -75,4 +75,12 @@ Found while porting the second design package and putting the server behind it.
 50. **ACH weights are per evidence row, not per cell.** Diagnosticity usually differs per hypothesis; a per-cell weight (or a credibility weight on the source grade) would be the next refinement, and the brief should print the weight next to each row.
 51. **Timeline shows order but not the clock.** Cards on the same day now stack by time, but the axis still labels the day only; a time label under each card in the column (and a toggle for the viewer's time zone versus UTC) is the natural follow-up.
 52. **Integration pushes are one-way.** A MISP event or Jira issue created from the board is linked, but later changes on either side are not reflected. A watcher on the Jira status or the MISP event's attribute count would close the loop using the existing watcher scheduler.
+
+## Version 7 (sharing and review)
+
+53. **Share links are per case and all-or-nothing.** A link shows every pinned card; a reader-specific view (only indicators, or only the storyboard) would need per-link scopes. The projection already has the switches, the link form does not expose them yet.
+54. **Guest identity is a typed name.** Nothing stops a reader from typing another name; for partners who comment often, a per-link passphrase or a magic-link email would tie comments to a person.
+55. **Comments do not thread.** One reply per comment, no discussion below it. Threads with resolve/unresolve, and the ability to turn an accepted comment into a card or a task in one click, are the next step.
+56. **The public page is not cached or rate-limited for bursts.** A link posted widely hits the API once per view; a short server-side cache of the projection per share id would carry that comfortably.
+57. **No notification back to the guest.** When a comment is accepted or replied to, the guest only finds out by revisiting. An optional email on the form would close the loop (and give a reply address).
 

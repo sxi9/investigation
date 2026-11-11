@@ -82,6 +82,7 @@ const S = {
     const removeLocal = (id) => { const local = readJson(KEY) || {}; const cases = (local.cases || []).filter(x => x.id !== id); snapshot.delete(id); rawSet(KEY, JSON.stringify({ ...local, cases, activeId: local.activeId === id ? (cases[0] && cases[0].id) : local.activeId })); for (const f of listeners) { try { f({ type: 'case-deleted', id }); } catch (e) {} } };
     es.addEventListener('case', (ev) => { try { const d = JSON.parse(ev.data); apply(d.id); } catch (e) {} });
     es.addEventListener('case-deleted', (ev) => { try { const d = JSON.parse(ev.data); removeLocal(d.id); } catch (e) {} });
+    es.addEventListener('comment', (ev) => { try { window.dispatchEvent(new CustomEvent('cib:comment', { detail: JSON.parse(ev.data) })); } catch (e) {} });
     es.addEventListener('presence', (ev) => { try { window.dispatchEvent(new CustomEvent('cib:presence', { detail: JSON.parse(ev.data) })); } catch (e) {} });
     es.addEventListener('notify', (ev) => { try { const d = JSON.parse(ev.data); window.dispatchEvent(new CustomEvent('cib:notify', { detail: d.notification })); if (window.CIBAuth && d.notification) window.CIBAuth.toast(d.notification.text); } catch (e) {} });
   },

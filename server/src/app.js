@@ -26,6 +26,8 @@ import { available as integrationsAvailable, pushMisp, pushTheHive, createJira }
 import { ingest } from './ingest.js';
 import { draft } from './drafts.js';
 import { caseToStix, bundle as stixBundle } from './stix.js';
+import { shares } from './shares.js';
+import { comments } from './comments.js';
 import { actors } from './actors.js';
 import { watchers, runWatcher, startWatcherScheduler, WATCH_INTERVALS, WATCH_CHECKS } from './watchers.js';
 
@@ -293,6 +295,16 @@ export function buildApp(opts = {}) {
     if (req.params.system === 'misp') return pushMisp(cs, o); if (req.params.system === 'thehive') return pushTheHive(cs, o); if (req.params.system === 'jira') return createJira(cs, o);
     throw err('Unknown system', 404);
   });
+
+  // ---- share links (read-only public page per case) and the comment channel
+  app.post('/api/shares', async (req) => { const u = needAccount(req); return { share: shares.create(u, req.body || {}, ip(req)) }; });
+  app.get('/api/shares', async (req) => { const u = needAccount(req); return { shares: shares.list(u, String(req.query.caseId || '')) }; });
+  app.delete('/api/shares/:id', async (req) => { const u = needAccount(req); shares.revoke(u, req.params.id, ip(req)); return { ok: true }; });
+  app.get('/api/share/:id', { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } }, async (req) => { const v = shares.view(req.params.id, String(req.query.token || '')); return { ...v, comments: comments.listPublic(v.case.id) }; });
+  app.post('/api/share/:id/comments', { config: { rateLimit: { max: 20, timeWindow: '10 minutes' } } }, async (req) => { const o = shares.open(req.params.id, String(req.query.token || '')); return { comment: comments.addPublic(o.raw, o.kase, req.body || {}, ip(req)) }; });
+  app.get('/api/comments', async (req) => { const u = need(req); return { comments: comments.list(u, String(req.query.caseId || '')), pending: comments.list(u, String(req.query.caseId || '')).filter(c => c.status === 'pending').length }; });
+  app.post('/api/comments', { config: { rateLimit: { max: 60, timeWindow: '10 minutes' } } }, async (req) => { const u = needAccount(req); return { comment: comments.add(u, req.body || {}, ip(req)) }; });
+  app.post('/api/comments/:id/:verb', async (req) => { const u = needAccount(req); const v = req.params.verb; if (v === 'accept' || v === 'reject') return { comment: comments.moderate(u, req.params.id, v === 'accept', ip(req)) }; if (v === 'reply') return { comment: comments.reply(u, req.params.id, (req.body || {}).text, ip(req)) }; throw err('Not found', 404); });
 
   // ---- administration: backups, retention, personal data
   app.post('/api/admin/backup', { config: { rateLimit: { max: 6, timeWindow: '1 hour' } } }, async (req) => { const me = needAdmin(req); return backupNow(me.name); });

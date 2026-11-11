@@ -83,6 +83,11 @@ All routes are under `/api`. Writes need the `X-Requested-With: CIB` header. Err
 | `POST /admin/purge` | admin | `{days}` → hard-delete wastebasket cases older than that (legal holds skipped). |
 | `GET /admin/holds`, `POST /admin/holds/:id` | admin | List cases with their hold state; `{on}` sets or clears a legal hold and broadcasts the change. |
 | `GET /admin/person-data?name=` | admin | Personal-data export for a named person across all cases. |
+| `POST /shares`, `GET /shares?caseId=`, `DELETE /shares/:id` | editors of the case | Create (`{caseId, label, days, allowComments}` → token once, 403 for TLP above GREEN), list with views and expiry, revoke. |
+| `GET /share/:id?token=` | anyone with the link | Sanitised case (pinned, non-falsified cards; no notes, tasks or internal comments) plus accepted comments; 404 for a bad token, 410 when revoked or expired. Counts a view. |
+| `POST /share/:id/comments?token=` | anyone with the link | `{name, text, itemId?}` → pending comment; 403 when the link disallows comments; 30 per link per hour. |
+| `GET /comments?caseId=`, `POST /comments` | readers of the case | List (editors see pending and rejected too) and write `{caseId, itemId?, text}`; accepted at once for signed-in accounts. |
+| `POST /comments/:id/accept\|reject\|reply` | editors | Moderate a pending comment or reply to an accepted one (`{text}`). |
 | `POST /ingest` | account | Raw file body with `X-File-Name`: `.eml`, `.pdf`, text/HTML → `{summary, cards, threads, sources, kind}` in the research-result shape. |
 | `POST /ai/draft` | account | `{caseId or case, kind: summary\|takedown\|rfi\|hypotheses, to, ids}` → `{text or hypotheses, engine}`. |
 | `GET /store/case/:id/stix.json` | readers of the case | STIX 2.1 bundle of the case with stable ids. |
@@ -173,6 +178,12 @@ Without a model key the gateway still answers the board's four prompts, from rul
 
 Configure any provider above to replace all four with a model.
 
+## Sharing and review
+
+- **Share links** (`server/src/shares.js`): token hashed at rest, expiry and revocation checked on every open, view counter, the case's TLP re-checked on every open so raising a case to AMBER or RED closes its links. The projection in `publicCase()` is the only thing the page receives: pinned, non-falsified cards with their public fields, threads between them, groups, hypotheses, the storyboard, the judgement as summary. Notes, tasks, internal card comments, handling fields and unpinned cards never leave the server.
+- **Comments** (`server/src/comments.js`): their own table, never part of the case document, so they do not enter revisions or the three-way merge. Signed-in comments are accepted at once and carry the author's role; guest comments carry the share id and wait for moderation. Editors are notified (`comment` type) and a `comment` server-sent event refreshes open boards. Every write, acceptance, rejection and reply is audited.
+- **Public page** (`share.html`): a static page that reads the hash (`id:token`), fetches the projection, and renders without any session. `noindex` is set; the page has no links back into the application.
+
 ## Reporting, feeds and integrations
 
 - **STIX** (`server/src/stix.js`): the same mapping the board's export uses, but with ids derived from case and item ids (UUIDv5) so repeated exports and feeds describe the same objects. Falsified items are dropped; hash patterns name the algorithm by length; `hostname` maps to `domain-name`, `filename` to `file:name`.
@@ -196,4 +207,4 @@ The image is multi-stage (`Dockerfile`): Vite builds the pages, then a slim Node
 cd server && npm test
 ```
 
-`test/reporting.test.js` covers STIX conversion, feed creation, scoping, token checks and the three output formats, the MISP/TheHive/Jira payloads against a mocked HTTP layer, `.eml` and text ingestion, and the four draft kinds. `test/security.test.js` covers TOTP setup, the two-step login, challenge reuse, admin and self disable, RS256 id_token verification (tampering, audience, issuer, expiry, nonce, `alg: none`), SSO account creation and password refusal, per-file access on a TLP:RED case, legal hold through the API and the sync path, retention purge, backups (the snapshot opens as a database) and the personal-data export. The older suites cover setup, CSRF and origin checks, weak passwords, roles and scopes, lockout and reset, server-assigned numbers and revisions, reviewer and viewer limits, guests, files, proxy guards, the local AI shapes, logout and the audit chain. The end-to-end browser run is `node tools/capture/v2.cjs` (see `docs/V2.md`).
+`test/sharing.test.js` covers share-link rules (roles, TLP, token once, views, revoke, expiry), the public projection, guest comments with moderation and replies, and team comments without edit rights. `test/reporting.test.js` covers STIX conversion, feed creation, scoping, token checks and the three output formats, the MISP/TheHive/Jira payloads against a mocked HTTP layer, `.eml` and text ingestion, and the four draft kinds. `test/security.test.js` covers TOTP setup, the two-step login, challenge reuse, admin and self disable, RS256 id_token verification (tampering, audience, issuer, expiry, nonce, `alg: none`), SSO account creation and password refusal, per-file access on a TLP:RED case, legal hold through the API and the sync path, retention purge, backups (the snapshot opens as a database) and the personal-data export. The older suites cover setup, CSRF and origin checks, weak passwords, roles and scopes, lockout and reset, server-assigned numbers and revisions, reviewer and viewer limits, guests, files, proxy guards, the local AI shapes, logout and the audit chain. The end-to-end browser run is `node tools/capture/v2.cjs` (see `docs/V2.md`).
